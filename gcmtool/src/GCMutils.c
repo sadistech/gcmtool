@@ -40,43 +40,57 @@ static int getFileCount(char *path);
 static u32 writeStringToTempFile(char *string);
 static u32 writeDataToTempFile(char *path);
 
-void GCMGetDiskHeader(FILE *ifile, char *buf) {
+GCMError GCMGetDiskHeader(FILE *ifile, char *buf) {
 	/* 
 	**	sets buf to the diskheader (boot.bin)
 	**  use functions in GCMExtras.h to manipulate data in a useful manner
+	**
+	**	returns a GCMError, and sets GCMErrno
 	*/
 	
-	if (!ifile || !buf) return;
+	if (!ifile || !buf) {
+		GCM_RETURN_ERROR(GCM_ERR_NULL_ARG);
+	}
 	
 	fseek(ifile, GCM_DISK_HEADER_OFFSET, SEEK_SET);
 	if (fread(buf, 1, GCM_DISK_HEADER_LENGTH, ifile) != GCM_DISK_HEADER_LENGTH) {
 		free(buf);
-		return;
+		
+		GCM_RETURN_ERROR(GCM_ERR_FILE);
 	}
+	
+	GCM_RETURN_SUCCESS();
 }
 
-void GCMGetDiskHeaderInfo(FILE *ifile, char *buf) {
+GCMError GCMGetDiskHeaderInfo(FILE *ifile, char *buf) {
 	/*
 	**  sets buf to the diskheaderinfo from ifile (bi2.bin)
 	**  use functions from GCMExtras.h to manipulate it in a useful manner
 	*/
 	
-	if (!ifile || !buf) return;
+	if (!ifile || !buf) {
+		GCM_RETURN_ERROR(GCM_ERR_NULL_ARG);
+	}
 	
 	fseek(ifile, GCM_DISK_HEADER_INFO_OFFSET, SEEK_SET);
 	if (fread(buf, 1, GCM_DISK_HEADER_INFO_LENGTH, ifile) != GCM_DISK_HEADER_INFO_LENGTH) {
 		free(buf);
-		return;
+		
+		GCM_RETURN_ERROR(GCM_ERR_FILE);
 	}
+	
+	GCM_RETURN_SUCCESS();
 }
 
-void GCMGetApploader(FILE *ifile, char *buf) {
+GCMError GCMGetApploader(FILE *ifile, char *buf) {
 	/*
 	**  sets buf to the apploader (appldr.bin)
 	**  use functions from GCMExtras.h to manipulate it in a useful manner
 	*/
 	
-	if (!ifile || !buf) return;
+	if (!ifile || !buf) {
+		GCM_RETURN_ERROR(GCM_ERR_NULL_ARG);
+	}
 	
 	//this could be wrong...
 	//currently it's grabbing apploaderSize + 0x0020 starting at the apploader's start
@@ -87,11 +101,14 @@ void GCMGetApploader(FILE *ifile, char *buf) {
 	fseek(ifile, GCM_APPLOADER_OFFSET, SEEK_SET);
 	if (fread(buf, 1, appSize, ifile) != appSize) {
 		free(buf);
-		return;
+		
+		GCM_RETURN_ERROR(GCM_ERR_FILE);
 	}
+	
+	GCM_RETURN_SUCCESS();
 }
 
-void GCMGetFST(FILE *ifile, char *buf) {
+GCMError GCMGetFST(FILE *ifile, char *buf) {
 	/*
 	**  sets buf to the entire filesystem table (fst.bin)
 	**  be sure to use GCMGetFSTSize() to get the size of the FST when you allocate buf.
@@ -99,15 +116,20 @@ void GCMGetFST(FILE *ifile, char *buf) {
 	**  this function isn't really useful. GCMGetNthFileEntry() is more useful.
 	*/
 	
-	if (!ifile || !buf) return;
+	if (!ifile || !buf) {
+		GCM_RETURN_ERROR(GCM_ERR_NULL_ARG);
+	}
 	
 	//first we need to get the size of the FST...
 	u32 fstSize = GCMGetFSTSize(ifile);
 	fseek(ifile, GCMGetFSTOffset(ifile), SEEK_SET);
 	if (fread(buf, 1, fstSize, ifile) != fstSize) {
 		free(buf);
-		return;
+		
+		GCM_RETURN_ERROR(GCM_ERR_FILE);
 	}
+	
+	GCM_RETURN_SUCCESS();
 }
 
 int GCMPutDiskHeader(FILE *ofile, char *buf) {

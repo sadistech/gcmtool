@@ -727,7 +727,12 @@ void extractDiskHeader(char *path) {
 	
 	//get the data...
 	char *buf = (char*)malloc(GCM_DISK_HEADER_LENGTH);
-	GCMGetDiskHeader(gcmFile, buf);
+	
+	if (GCMGetDiskHeader(gcmFile, buf) != GCM_SUCCESS) {
+		free(buf);
+		printf("An error occurred while reading the disk header (%d)\n", GCMErrno);
+		exit(EXIT_FAILURE);
+	}
 		
 	WriteDataToFile(buf, GCM_DISK_HEADER_LENGTH, path);
 		
@@ -743,7 +748,12 @@ void extractDiskHeaderInfo(char *path) {
 	
 	//get the data...
 	char *buf = (char*)malloc(GCM_DISK_HEADER_INFO_LENGTH);
-	GCMGetDiskHeaderInfo(gcmFile, buf);
+	
+	if (GCMGetDiskHeaderInfo(gcmFile, buf) != GCM_SUCCESS) {
+		free(buf);
+		printf("An error occurred while reading the disk header info (%d)\n", GCMErrno);
+		exit(EXIT_FAILURE);
+	}
 	
 	WriteDataToFile(buf, GCM_DISK_HEADER_INFO_LENGTH, path);
 	
@@ -760,7 +770,12 @@ void extractApploader(char *path) {
 	//get the data...
 	u32 apploaderLength = GCMGetApploaderSize(gcmFile) + GCM_APPLOADER_CODE_OFFSET;
 	char *buf = (char*)malloc(apploaderLength);
-	GCMGetApploader(gcmFile, buf);
+	
+	if (GCMGetApploader(gcmFile, buf) != GCM_SUCCESS) {
+		free(buf);
+		printf("An error occurred while reading the apploader (%d)\n", GCMErrno);
+		exit(EXIT_FAILURE);
+	}
 	
 	WriteDataToFile(buf, apploaderLength, path);
 	
@@ -780,9 +795,9 @@ void extractBootDol(char *path) {
 	char *buf = (char*)malloc(length);
 	
 	if (GCMGetBootDol(gcmFile, buf) != length) {
-		printf("An error occurred when getting the DOL.\n");
 		free(buf);
-		return;
+		printf("An error occurred when getting the DOL. (%d)\n", GCMErrno);
+		exit(EXIT_FAILURE);
 	}
 	
 	WriteDataToFile(buf, length, path);
