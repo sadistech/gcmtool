@@ -104,12 +104,16 @@ uchar GCMBnrReverseBits(uchar v, int bitCount) {
 	uchar t = 0;
 	int i = 0;
 
+	printf("%d\n", v);
+
 	for (i = bitCount - 1; i; i--)
 	{
 		if (v % 2) 
 			t++;
 			
-		t <<= 1;
+		if (i != 1) {
+			t <<= 1;
+		}
 		v >>= 1;
 	}
 
@@ -140,6 +144,7 @@ GCMRgbColor *GCMRGB5A1toColor(u16 s) {
 		
 		s = s >> 1;
 	}
+	//b <<= 1;
 	b = GCMBnrReverseBits(b, 5);
 	
 	for (i = 0; i < 5; i++) {
@@ -150,6 +155,7 @@ GCMRgbColor *GCMRGB5A1toColor(u16 s) {
 		
 		s = s >> 1;
 	}
+	//g <<= 1;
 	g = GCMBnrReverseBits(g, 5);
 	
 	for (i = 0; i < 5; i++) {
@@ -160,6 +166,7 @@ GCMRgbColor *GCMRGB5A1toColor(u16 s) {
 		
 		s = s >> 1;
 	}
+	//r <<= 1;
 	r = GCMBnrReverseBits(r, 5);
 	
 	if (s % 2) {
@@ -186,9 +193,10 @@ u16 GCMColorToRGB5A1(GCMRgbColor *c) {
 	*/
 	
 	//first we reverse the bits...
-	uchar r = GCMBnrReverseBits(c->red / (255.0 / 31.0), 5);
-	uchar g = GCMBnrReverseBits(c->green / (255.0 / 31.0), 5);
-	uchar b = GCMBnrReverseBits(c->blue / (255.0 / 31.0), 5);
+	uchar r = GCMBnrReverseBits((uchar)(c->red / (256.0 / 32.0)), 5);
+	uchar g = GCMBnrReverseBits((uchar)(c->green / (256.0 / 32.0)), 5);
+	uchar b = GCMBnrReverseBits((uchar)(c->blue / (256.0 / 32.0)), 5);
+//	printf("rgb:\t%d %d %d\n", r, g, b);
 	
 	u16 s = 0;
 	
@@ -197,26 +205,34 @@ u16 GCMColorToRGB5A1(GCMRgbColor *c) {
 		s <<= 1;
 	}
 	
-	do {
+	int i = 0;
+	
+	for (i = 0; i < 5; i++) {
 		if (r % 2) {
 			s++;
 		}
 		s <<= 1;
-	} while (r <<= 1);
+		r >>= 1;
+	}
 	
-	do {
+	for (i = 0; i < 5; i++) {
 		if (g % 2) {
 			s++;
 		}
 		s <<= 1;
-	} while (g <<= 1);
+		g >>= 1;
+	}
 	
-	do {
+	for (i = 0; i < 5; i++) {
 		if (b % 2) {
 			s++;
 		}
-		s <<= 1;
-	} while (b <<= 1);
+		if (i != 4)
+			s <<= 1;
+		b >>= 1;
+	}
+	
+	//printf("%d\n", b);
 	
 	return s;
 }
@@ -284,8 +300,8 @@ void GCMBnrRawImageToGraphic(char *raw, char *buf) {
 	int i = 0;
 	for (i = 0; i < (GCM_BNR_GRAPHIC_WIDTH * GCM_BNR_GRAPHIC_HEIGHT); i++) {
 		// we've gotta rearrange the order of the pixels for the raw image
-		int j = ((i / 4) * (4 * 4) + (i % 4)) % (96 * 4);
-		j += (i / 96 % 4 * 4) + (i / 384 % 8 * 384);
+		int j = (i % 4) + (i / 16 % 24 * 4);
+		j += (i / 4 % 4 * 96) + (i / 384 % 8 * 384);
 		
 		//convert the pixel into an RgbColor
 		GCMRgbColor *c = (GCMRgbColor*)malloc(sizeof(GCMRgbColor));
