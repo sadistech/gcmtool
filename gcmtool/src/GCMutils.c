@@ -253,7 +253,8 @@ u32 GCMGetDolOffset(FILE *ifile) {
 		free(buf);
 		return 0;
 	}
-	u32 offset = ntohl(*buf);
+	u32 offset = *buf;
+	offset = ntohl(offset); //flip bytes for endian...
 	free(buf);
 	
 	return offset;
