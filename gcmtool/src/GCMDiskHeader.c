@@ -204,12 +204,5 @@ void GCMFreeDiskHeaderStruct(GCMDiskHeaderStruct *dh) {
 
 	if (!dh) return;
 	
-	if (dh->gameID != NULL)
-		free(dh->gameID);
-	if (dh->makerCode != NULL)
-		free(dh->makerCode);
-	if (dh->gameName != NULL)
-		free(dh->gameName);
-		
 	free(dh);
 }
