@@ -7,7 +7,7 @@ void GCMFreeBnrInfoRecordStruct(GCMBnrInfoRecordStruct *r) {
 	*/
 	
 	if (r->next) {
-		GCMFreeBnrInfoRecordStruct(r);
+		GCMFreeBnrInfoRecordStruct(r->next);
 	}
 
 	free(r);
@@ -19,7 +19,7 @@ int GCMBnrInfoRecordCount(GCMBnrInfoRecordStruct *r) {
 	*/
 
 	if (r->next) {
-		return 1 + GCMBnrInfoRecordCount(r);
+		return 1 + GCMBnrInfoRecordCount(r->next);
 	} else {
 		return 1;
 	}

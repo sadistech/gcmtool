@@ -197,48 +197,54 @@ int main(int argc, char **argv) {
 	}
 	
 	//display bnr...
-	printf("Version:       \t%c\n", b->version);
+	printf("Version:        %c\n", b->version);
+	
+	if (GCMBnrInfoRecordCount(b->info) > 1) {
+		printf("Record Count:   %d\n", GCMBnrInfoRecordCount(b->info));
+		printf("\n");
+	}
 	
 	GCMBnrInfoRecordStruct *info = b->info;
 	do {
-		printf("Name:          \t%s\n", info->name);
-		printf("Developer:     \t%s\n", info->developer);
-		printf("Full Name:     \t%s\n", info->fullName);
-		printf("Full Developer:\t%s\n", info->fullDeveloper);
-		printf("Description:   \t%s\n", info->description);
+		printf("Name:           %s\n", info->name);
+		printf("Developer:      %s\n", info->developer);
+		printf("Full Name:      %s\n", info->fullName);
+		printf("Full Developer: %s\n", info->fullDeveloper);
+		printf("Description:    %s\n", info->description);
+		printf("\n");
 	} while (info = info->next);
 	
 	int fileChanged = 0;
-/*
+
 	if (newName != NULL) {
 		//let's set the name...
-		bzero(b->name, GCM_BNR_GAME_NAME_LENGTH);
-		strcpy(b->name, newName);
+		bzero(b->info->name, GCM_BNR_GAME_NAME_LENGTH);
+		strcpy(b->info->name, newName);
 		fileChanged = 1;
 	}
 	
 	if (newDeveloper != NULL) {
 		//let's set the developer...
-		bzero(b->developer, GCM_BNR_DEVELOPER_LENGTH);
-		strcpy(b->developer, newDeveloper);
+		bzero(b->info->developer, GCM_BNR_DEVELOPER_LENGTH);
+		strcpy(b->info->developer, newDeveloper);
 		fileChanged = 1;
 	}
 	
 	if (newFullName != NULL) {
-		bzero(b->fullName, GCM_BNR_FULL_TITLE_LENGTH);
-		strcpy(b->fullName, newFullName);
+		bzero(b->info->fullName, GCM_BNR_FULL_TITLE_LENGTH);
+		strcpy(b->info->fullName, newFullName);
 		fileChanged = 1;
 	}
 	
 	if (newFullDeveloper != NULL) {
-		bzero(b->fullDeveloper, GCM_BNR_FULL_DEVELOPER_LENGTH);
-		strcpy(b->fullDeveloper, newFullDeveloper);
+		bzero(b->info->fullDeveloper, GCM_BNR_FULL_DEVELOPER_LENGTH);
+		strcpy(b->info->fullDeveloper, newFullDeveloper);
 		fileChanged = 1;
 	}
 	
 	if (newDescription != NULL) {
-		bzero(b->description, GCM_BNR_DESCRIPTION_LENGTH);
-		strcpy(b->description, newDescription);
+		bzero(b->info->description, GCM_BNR_DESCRIPTION_LENGTH);
+		strcpy(b->info->description, newDescription);
 		fileChanged = 1;
 	}
 	
@@ -289,6 +295,10 @@ int main(int argc, char **argv) {
 	}
 	
 	if (fileChanged) {
+		if (b->version > 1) {
+			printf("ERROR: No support for modifying Version 2 BNRs, yet!\n");
+			exit(1);
+		}
 		//printf("Writing bnr file...\n");
 		rewind(bnrFile);
 		char *buf = (char*)malloc(GCM_BNR_LENGTH_V1);
@@ -299,7 +309,8 @@ int main(int argc, char **argv) {
 			exit(1);
 		}
 	}
-*/	
+
+	GCMFreeBnrInfoRecordStruct(b->info);
 	closeBnr();
 	
 	return 0;
