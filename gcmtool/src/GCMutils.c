@@ -22,13 +22,18 @@
 static FILE *fstTempFile;
 static FILE *stringTableTempFile;
 
+static int lastDir;
+static int currentEntryIndex;
+
 static void initRecursion();
 static int recurseDirectory(char *path, char *buf);
 
 static int getFileCount(char *path);
+static u32 getFilesize(char *path);
 
 //for string table stuff...
-static int writeStringToTempFile(char *string);
+static u32 writeStringToTempFile(char *string);
+static u32 writeDataToTempFile(char *path);
 
 void GCMGetDiskHeader(FILE *ifile, char *buf) {
 	/* 
@@ -364,6 +369,9 @@ void GCMReplaceFilesystem(FILE *ifile, char *fsRootPath) {
 	
 	GCMFileEntryStruct *root= (GCMFileEntryStruct*)malloc(sizeof(GCMFileEntryStruct));
 	
+	lastDir = 0;
+	currentEntryIndex = 0;
+	
 	//initialize the entry...
 	root->isDir = 1;
 	root->filename = ""; //because it's root, it don't mattah!
@@ -434,33 +442,46 @@ static int recurseDirectory(char *path, char *buf) {
 			continue; 
 		}
 		
+		currentEntryIndex++;
+		
 		GCMFileEntryStruct *e = (GCMFileEntryStruct*)malloc(sizeof(GCMFileEntryStruct));
 		
+		char newPath[255] = "";
+		strcpy(newPath, path);
+		strcat(newPath, "/");
+		strcat(newPath, de->d_name);
+		
 		if (de->d_type == DT_DIR) {
+			printf("dir : %s\n", de->d_name);
+			
+			count = getFileCount(newPath);
+			
 			e->isDir = 1;
 			e->filenameOffset = writeStringToTempFile(de->d_name);
-			e->offset = 0; //FIX THIS!
-			e->length = 0; //FIX THIS!
+			e->offset = lastDir;
+			e->length = currentEntryIndex + count + 1;
 			
-			printf("dir : %s\n", de->d_name);
-		
-			char newPath[255] = "";
-			strcpy(newPath, path);
-			strcat(newPath, "/");
-			strcat(newPath, de->d_name);
+			char *fstBuf = (char*)malloc(count * GCM_FST_ENTRY_LENGTH);
 			
-			count = recurseDirectory(newPath, NULL);
-		//	printf("%d (%s)\n", count, de->d_name);
+			recurseDirectory(newPath, fstBuf);
+			
+			memcpy(buf, fstBuf, count * GCM_FST_ENTRY_LENGTH);
+
 			i += count;
 		} else if (de->d_type == DT_REG) {
+			printf("file: %s\n", de->d_name);
+			
 			e->isDir = 0;
 			e->filenameOffset = writeStringToTempFile(de->d_name);
-			e->offset = 0; //FIX THIS!
-			e->length = 0; //FIX THIS!
+			e->offset = writeDataToTempFile(newPath); 
+			e->length = getFilesize(newPath); 
 			
 		//	printf("%d\n", e->filenameOffset);
 			
-			printf("file: %s\n", de->d_name);
+			char *rawEntry = (char*)malloc(GCM_FST_ENTRY_LENGTH);
+			GCMFileEntryStructToRaw(e, rawEntry);
+			
+			memcpy(buf, rawEntry, GCM_FST_ENTRY_LENGTH);
 		} else {
 			printf("unknown filetype! (%d)\n", de->d_type);
 			exit(1);
@@ -514,7 +535,9 @@ static int getFileCount(char *path) {
 	return i;
 }
 
-static int writeStringToTempFile(char *string) {
+static u32 writeStringToTempFile(char *string) {
+	//returns the offset in the file...
+	
 	int len = strlen(string) + 1;
 	
 	if (fwrite(string, 1, len, stringTableTempFile) != len) {
@@ -522,5 +545,54 @@ static int writeStringToTempFile(char *string) {
 		exit(1);
 	}
 	
-	return (int)ftell(stringTableTempFile);
+	return ftell(stringTableTempFile) - len;
+}
+
+static u32 writeDataToTempFile(char *path) {
+	FILE *ifile = NULL;
+	
+	u32 offset = ftell(fstTempFile);
+	
+	if (!(ifile = fopen(path, "r"))) {
+		perror(path);
+		exit(1);
+	}
+	
+	fseek(ifile, 0, SEEK_END);
+	u32 fsize = ftell(ifile);
+	rewind(ifile);
+	
+	char *buf = (char*)malloc(fsize);
+	
+	if (fread(buf, 1, fsize, ifile) != fsize) {
+		perror("read error!");
+		exit(1);
+	}
+	
+	if (fwrite(buf, 1, fsize, fstTempFile) != fsize) {
+		perror("write error!");
+		exit(1);
+	}
+	
+	free(buf);
+	
+	fclose(ifile);
+	
+	return offset;
+}
+
+static u32 getFilesize(char *path) {
+	FILE *ifile = NULL;
+	
+	if (!(ifile = fopen(path, "r"))) {
+		perror(path);
+		exit(1);
+	}
+	
+	fseek(ifile, 0, SEEK_END);
+	u32 fsize = ftell(ifile);
+	
+	fclose(ifile);
+	return fsize;
+	
 }
