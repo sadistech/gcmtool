@@ -41,12 +41,12 @@ int main(int argc, char **argv) {
 	GCMBnrStruct *b = GCMRawBnrToStruct(data);
 	fclose(ifile);
 
-	printf("version:\t%c\n", b->version);
-	printf("name:   \t%s\n", b->name);
-	printf("developer:\t%s\n", b->developer);
-	printf("fullname:\t%s\n", b->fullName);
-	printf("fullDev:\t%s\n", b->fullDeveloper);
-	printf("desc:\t%s\n", b->description);
+	printf("Version:	   \t%c\n", b->version);
+	printf("Name:          \t%s\n", b->name);
+	printf("Developer:     \t%s\n", b->developer);
+	printf("Full Name:     \t%s\n", b->fullName);
+	printf("Full Developer:\t%s\n", b->fullDeveloper);
+	printf("Description:   \t%s\n", b->description);
 
 
 	FILE *ofile = NULL;
