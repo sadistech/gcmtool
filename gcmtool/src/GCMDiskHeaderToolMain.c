@@ -70,57 +70,57 @@
 #define ARG_UNKNOWN1		"-u1"
 #define ARG_UNKNOWN1_SYN	"--unknown-1"
 #define ARG_UNKNOWN1_OPT	"<value>"
-#define ARG_UNKNOWN1_HELP	"Set unknown1 to " ARG_UNKNOWN1_OPT
+#define ARG_UNKNOWN1_HELP	"Set unknown1 to " ARG_UNKNOWN1_OPT " (unsigned 32-bit int)"
 
 #define ARG_GAME_NAME		"-n"
 #define ARG_GAME_NAME_SYN	"--game-name"
 #define ARG_GAME_NAME_OPT	"<name>"
-#define ARG_GAME_NAME_HELP	"Set game's name to " ARG_GAME_NAME_OPT
+#define ARG_GAME_NAME_HELP	"Set game's name to " ARG_GAME_NAME_OPT " (string, max-chars: " QQ(GCM_GAME_NAME_LENGTH) ")"
 
 #define ARG_DEBUG_OFFSET	"-dmo"
 #define ARG_DEBUG_OFFSET_SYN	"--debug-monitor-offset"
 #define ARG_DEBUG_OFFSET_OPT	"<offset>"
-#define ARG_DEBUG_OFFSET_HELP	"Set the debug monitor offset to " ARG_DEBUG_OFFSET_OPT
+#define ARG_DEBUG_OFFSET_HELP	"Set the debug monitor offset to " ARG_DEBUG_OFFSET_OPT " (unsigned 32-bit int)"
 
 #define ARG_DEBUG_ADDRESS	"-dma"
 #define ARG_DEBUG_ADDRESS_SYN	"--debug-monitor-address"
 #define ARG_DEBUG_ADDRESS_OPT	"<address>"
-#define ARG_DEBUG_ADDRESS_HELP	"Set the debug monitor address to " ARG_DEBUG_ADDRESS_OPT
+#define ARG_DEBUG_ADDRESS_HELP	"Set the debug monitor address to " ARG_DEBUG_ADDRESS_OPT " (unsigned 32-bit int)"
 
 #define ARG_DOL_OFFSET		"-do"
 #define ARG_DOL_OFFSET_SYN	"--dol-offset"
 #define ARG_DOL_OFFSET_OPT	"<offset>"
-#define ARG_DOL_OFFSET_HELP	"Set the offset of the main executable DOL to " ARG_DOL_OFFSET_OPT
+#define ARG_DOL_OFFSET_HELP	"Set the offset of the main executable DOL to " ARG_DOL_OFFSET_OPT " (unsigned 32-bit int)"
 
 #define ARG_FST_OFFSET		"-fo"
 #define ARG_FST_OFFSET_SYN	"--fst-offset"
 #define ARG_FST_OFFSET_OPT	"<offset>"
-#define ARG_FST_OFFSET_HELP	"Set the offset of the FST to " ARG_FST_OFFSET_OPT
+#define ARG_FST_OFFSET_HELP	"Set the offset of the FST to " ARG_FST_OFFSET_OPT " (unsigned 32-bit int)"
 
 #define ARG_FST_SIZE		"-fs"
 #define ARG_FST_SIZE_SYN	"--fst-size"
 #define ARG_FST_SIZE_OPT	"<size>"
-#define ARG_FST_SIZE_HELP	"Set the size of the FST to " ARG_FST_SIZE_OPT
+#define ARG_FST_SIZE_HELP	"Set the size of the FST to " ARG_FST_SIZE_OPT " (unsigned 32-bit int)"
 
 #define ARG_FST_SIZE_MAX	"-fsm"
 #define ARG_FST_SIZE_MAX_SYN	"--fst-size-max"
 #define ARG_FST_SIZE_MAX_OPT	"<size>"
-#define ARG_FST_SIZE_MAX_HELP	"Set the size of FST Size-Max (for multi-disc games) to " ARG_FST_SIZE_MAX_OPT
+#define ARG_FST_SIZE_MAX_HELP	"Set the size of FST Size-Max (for multi-disc games) to " ARG_FST_SIZE_MAX_OPT " (unsigned 32-bit int)"
 
 #define ARG_USER_POS		"-up"
 #define ARG_USER_POS_SYN	"--user-position"
 #define ARG_USER_POS_OPT	"<position>"
-#define ARG_USER_POS_HELP	"Set the user position to " ARG_USER_POS_OPT
+#define ARG_USER_POS_HELP	"Set the user position to " ARG_USER_POS_OPT " (unsigned 32-bit int)"
 
 #define ARG_USER_LEN		"-ul"
 #define ARG_USER_LEN_SYN	"--user-length"
 #define ARG_USER_LEN_OPT	"<length>"
-#define ARG_USER_LEN_HELP	"Set the user length to " ARG_USER_LEN_OPT
+#define ARG_USER_LEN_HELP	"Set the user length to " ARG_USER_LEN_OPT " (unsigned 32-bit int)"
 
 #define ARG_UNKNOWN2		"-u2"
 #define ARG_UNKNOWN2_SYN	"--unknown-2"
 #define ARG_UNKNOWN2_OPT	"<value>"
-#define ARG_UNKNOWN2_HELP	"Set unknown2 to " ARG_UNKNOWN2_OPT
+#define ARG_UNKNOWN2_HELP	"Set unknown2 to " ARG_UNKNOWN2_OPT " (unsigned 32-bit int)"
 
 void printUsage();
 void printExtendedUsage();
