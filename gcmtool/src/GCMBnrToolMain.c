@@ -74,10 +74,6 @@ void printExtendedUsage();
 void openBnr();
 void closeBnr();
 
-/*void writeToFile(char *data, u32 length, char *path);
-u32 readFromFile(char *buf, char *path);
-u32 getFilesize(char *path);*/
-
 FILE *bnrFile;
 char *filename;
 
@@ -300,29 +296,6 @@ int main(int argc, char **argv) {
 	}
 	
 	closeBnr();
-/*
-	FILE *ofile = NULL;
-
-	char outfilename[255];
-	strcpy(outfilename, filename);
-	strcat(outfilename, ".ppm");
-
-	if (!(ofile = fopen(outfilename, "w"))) {
-		printf("ERROR!\n");
-		exit(1);
-	}
-
-	len = GCM_BNR_GRAPHIC_WIDTH * GCM_BNR_GRAPHIC_HEIGHT * 3 + 256;
-	char *pic = (char*)malloc(len);
-	
-	GCMBnrGetImagePPM(b, pic);
-
-	if (fwrite(pic, 1, len, ofile) != len) {
-		printf("woops!\n");
-		exit(1);
-	}
-
-	fclose(ofile);*/
 	
 	return 0;
 }

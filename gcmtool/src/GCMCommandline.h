@@ -10,6 +10,12 @@
 #ifndef _GCM_COMMANDLINE_H_
 #define _GCM_COMMANDLINE_H_
 
+//standard arguments:
+#define ARG_HELP					"-?"
+#define ARG_HELP_SYN				"--help"
+#define ARG_HELP_OPT				""
+#define ARG_HELP_HELP				"Displays this help."
+
 /*
 **  commandline args are set up like this:
 **  ARG_SOME_COMMAND:		The command option (ie: -f or -ps)
