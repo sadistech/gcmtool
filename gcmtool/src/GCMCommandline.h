@@ -1,5 +1,5 @@
 /*
-**  Macros and #defines for working with commandline arguments in GCM tool...
+**  Macros and #defines for working with commandline arguments and help in GCM tool...
 **  Part of GCMTool Project
 **  gcmtool.sourceforge.net
 **
