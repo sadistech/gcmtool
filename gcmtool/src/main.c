@@ -178,7 +178,6 @@ int recursiveIndex;				//for the recursive printing...
 int listInfoFlag;				//for listing filesize, directory content count, and filetype (d or f)
 int listPathFlag;				//for listing full file paths...
 char extractRootPath[1024];		//where we're starting to extract from... (directory or file)
-char extractWorkingPath[1024];  //where we're currently extracting to... (directory)
 
 int main (int argc, char **argv) {
 	// start flags declarations...
@@ -388,16 +387,17 @@ int main (int argc, char **argv) {
 		
 		GCMFileEntryStruct *e = NULL;
 		
-		if (strcmp(extractFileFrom, "/") == 0) { //if you wanna extract everything, getting the file entry at path "/" doesn't work... FIX THIS.
+		if (strcmp(extractFileFrom, "/") == 0) {
 			e = GCMGetRootFileEntry(gcmFile);
-		} else {
+		} else {	
 			e = GCMGetFileEntryAtPath(gcmFile, extractFileFrom);
 		}
 		
-		strcpy(extractWorkingPath, extractFileTo);
 		strcpy(extractRootPath, extractFileTo);
 		
 		recurseFileEntry(e, extractFileEntry);
+		
+		free(e);
 		//extractFile(extractFileFrom, extractFileTo);
 	}
 	
@@ -557,7 +557,19 @@ void extractFileEntry(GCMFileEntryStruct *e) {
 		lastDir = e;
 		
 		//printf("mkdir %s\n", s);
-		mkdir(s, S_IRWXU);
+		
+		if (e->index == 0) {
+			strcat(extractRootPath, "/");
+			strcat(extractRootPath, filename);
+			strcat(extractRootPath, ".FILES");
+			
+			printf("MAKING NEW DIR! %s\n", extractRootPath);
+			
+			mkdir(extractRootPath, S_IRWXU);
+		} else {
+			mkdir(s, S_IRWXU);
+		}
+		
 	} else {
 		GCMGetFullPathForFileEntry(gcmFile, lastDir, fp);
 		strcpy(s, extractRootPath);
@@ -805,6 +817,7 @@ void recurseFileEntry(GCMFileEntryStruct *e, void (*func)(GCMFileEntryStruct *))
 	*/
 	
 	if (!e) {
+		printf("ERROR extracting entry (entry doesn't exist?!?!)\n");
 		return;
 	}
 	
