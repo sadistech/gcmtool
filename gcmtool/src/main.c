@@ -690,8 +690,8 @@ void printEntry(GCMFileEntryStruct *e) {
 	if (dirDepth == 0) {
 		printf("%s /\n", size);
 	} else {
-		if (!e->isDir)
-			printf("%s%s%s\n", size, padding, e->filename);
+		if (e->isDir)
+			printf("%s%s%s/\n", size, padding, e->filename);
 		else
 			printf("%s%s%s\n", size, padding, e->filename);
 	}
