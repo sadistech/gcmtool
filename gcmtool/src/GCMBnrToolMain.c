@@ -61,6 +61,16 @@
 #define ARG_OUTPUT_FILE_OPT			"<path>"
 #define ARG_OUTPUT_FILE_HELP		"Write out to a file at <path> instead of the file we read from."
 
+#define ARG_NEW				"-c"
+#define ARG_NEW_SYN			"--create"
+#define ARG_NEW_OPT			"<name> <developer> <full_name> <full_developer> <full_description>"
+#define ARG_NEW_HELP			"Create a new BNR file with those fields"
+
+#define ARG_MOD_NTH			"-m"
+#define ARG_MOD_NTH_SYN			"--modify-nth"
+#define ARG_MOD_NTH_OPT			"<index>"
+#define ARG_MOD_NTH_HELP		"Modify the nth record (only for multi-lingual BNRs)"
+
 //additional options...
 #define OPT_FORMAT_RAW				"-raw"
 #define OPT_FORMAT_PPM				"-ppm"
@@ -88,6 +98,8 @@ int main(int argc, char **argv) {
 	
 	char *extractIconPath = NULL;
 	char *injectIconPath = NULL;
+
+	int modIndex = 0;
 	
 	int extractFormat = RAW_FORMAT;
 	int injectFormat = RAW_FORMAT;
@@ -105,6 +117,9 @@ int main(int argc, char **argv) {
 			
 			printExtendedUsage();
 			exit(1);
+		} else if (CHECK_ARG(ARG_MOD_NTH)) {
+			//they only want the nth record to be printed...
+		
 		} else if (CHECK_ARG(ARG_SET_NAME)) {
 			//they want to set the name...
 			if (PEEK_ARG) {
