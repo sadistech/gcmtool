@@ -1,7 +1,6 @@
-AC_INIT(main.cpp)
+AC_INIT(main.c)
 AM_INIT_AUTOMAKE(gcmtool,0.1)
 AC_PROG_CC
-AC_PROG_CXX
 AC_PROG_INSTALL
 AM_CONFIG_HEADER(config.h)
 AC_OUTPUT(Makefile)
