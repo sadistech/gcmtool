@@ -529,6 +529,21 @@ void listFiles() {
 	**  lists the file system of the GCM...
 	*/
 	
+	//print headings for columns...
+	if (listInfoFlag) {
+		printf("%-14s", "Size");
+	}
+	if (listInfoFlag == 2) {
+		printf("%-14s", "Offset");
+	}
+	if (listPathFlag) {
+		printf("Path");
+	} else {
+		printf("Filename");
+	}
+	printf("\n");
+	//done printing headings for columns...
+	
 	dirDepth = 0;
 	recursiveIndex = 0;
 	GCMFileEntryStruct *r = GCMGetRootFileEntry(gcmFile);
