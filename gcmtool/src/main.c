@@ -33,8 +33,8 @@
 //commandline arguments
 #define ARG_EXTRACT							"-e"
 #define ARG_EXTRACT_SYN						""
-#define ARG_EXTRACT_OPT						"<source> <dest>"
-#define ARG_EXTRACT_HELP					"Extracts the file from <source> (in the GCM) to <dest> (local filesystem)"
+#define ARG_EXTRACT_OPT						"<source> <dest_dir>"
+#define ARG_EXTRACT_HELP					"Extracts the file from <source> (in the GCM) to <dest_dir> (local filesystem)"
 
 #define ARG_VERBOSE							"-v"
 #define ARG_VERBOSE_SYN						"--verbose"
@@ -115,7 +115,7 @@
 #define ARG_DELETE_FILE						"-d"
 #define ARG_DELETE_FILE_SYN					"--delete-file"
 #define ARG_DELETE_FILE_OPT					"<path>"
-#define ARG_DELETE_FILE_HELP				"Deletes the file at " ARG_DELETE_FILE_OPT " in a GCM"
+#define ARG_DELETE_FILE_HELP				"Deletes the file (or directory, and all of its children) at " ARG_DELETE_FILE_OPT " in a GCM"
 
 //commandline options (modifiers to the arguments... hehe)
 #define OPT_FILE							"+f"
@@ -127,9 +127,6 @@
 
 #define OPT_FILE_INFO						"+i"
 #define OPT_FILE_INFO_SYN					"--full-info"
-
-#define OPT_RECURSIVE						"+r"
-#define OPT_RECURSIVE_SYN					"--recursive"
 
 //some utility functions...
 void printEntry(GCMFileEntryStruct *e);
@@ -965,6 +962,7 @@ void printExtendedUsage() {
 	PRINT_HELP(ARG_INFO);
 	PRINT_HELP(ARG_LIST);
 	PRINT_HELP(ARG_HELP);
+	PRINT_HELP(ARG_HEX);
 	printf("\n");
 	printf("  You can add -f <filename> to specify a filename for the following options...\n");
 	
