@@ -475,7 +475,7 @@ static void initRecursion() {
 		exit(1);
 	}
 	
-	printf("%s\t%s\n", fstTempFilename, stringTableTempFilename);
+	//printf("%s\t%s\n", fstTempFilename, stringTableTempFilename);
 }
 
 static int recurseDirectory(char *path, char *buf) {
@@ -513,7 +513,7 @@ static int recurseDirectory(char *path, char *buf) {
 		strcat(newPath, de->d_name);
 		
 		if (de->d_type == DT_DIR) {
-			printf("dir : %s\n", de->d_name);
+			//printf("dir : %s\n", de->d_name);
 			
 			count = getFileCount(newPath);
 			
@@ -544,7 +544,7 @@ static int recurseDirectory(char *path, char *buf) {
 			i += count;
 			buf += (GCM_FST_ENTRY_LENGTH * count);
 		} else if (de->d_type == DT_REG) {
-			printf("file: %s\n", de->d_name);
+			//printf("file: %s\n", de->d_name);
 			
 			e->isDir = 0;
 			e->filenameOffset = writeStringToTempFile(de->d_name);
