@@ -292,7 +292,8 @@ int main(int argc, char **argv) {
 		char *buf = (char*)malloc(GCM_BNR_LENGTH_V1);
 		GCMBnrStructToRaw(b, buf);
 		if (fwrite(buf, 1, GCM_BNR_LENGTH_V1, bnrFile) != GCM_BNR_LENGTH_V1) {
-			printf("error writing to bnr! (%s)\n", filename);
+			perror(filename);
+			//printf("error writing to bnr! (%s)\n", filename);
 			exit(1);
 		}
 	}

@@ -59,7 +59,7 @@ void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf) {
 	**  since version_2 BNRs are still a slight mystery (I've only got one of them), don't even try to play with those...
 	*/
 	
-	if (!b) return;
+	if (!b || !buf) return;
 	
 	char *start = buf;
 	
@@ -68,7 +68,7 @@ void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf) {
 	memcpy(buf, GCM_BNR_MAGIC_WORD_PREFIX, GCM_BNR_MAGIC_WORD_PREFIX_LENGTH);
 	buf += GCM_BNR_MAGIC_WORD_PREFIX_LENGTH;
 	
-	char versionStr[2];
+	char versionStr[2] = "";
 	sprintf(versionStr, "%d", b->version);
 	memcpy(buf, versionStr, GCM_BNR_MAGIC_WORD_SUFFIX_LENGTH);
 	buf += GCM_BNR_MAGIC_WORD_SUFFIX_LENGTH;
