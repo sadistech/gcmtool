@@ -5,8 +5,17 @@
 **	Comments to be added soon enough... blah. ;)
 */
 
+//autoheader stuff
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#else
+#define VERSION ""
+#endif 
+
 #include <stdio.h>
 #include "GCMBnr.h"
+
+void printUsage();
 
 int main(int argc, char **argv) {
 	FILE *ifile = NULL;
@@ -62,4 +71,11 @@ int main(int argc, char **argv) {
 	}
 
 	fclose(ofile);
+}
+
+void printUsage() {
+	printf("gcmbnrtool %s- Utility for working with .bnr files from GameCube DVD Images (GCMs).\n", VERSION);
+	printf("http://gcmtool.sourceforge.net\n\n");
+	printf("Usage:\t");
+	printf("gcmbnrtool <bnr_file>\n\n");
 }
