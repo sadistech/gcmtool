@@ -372,6 +372,16 @@ u32 GCMGetFSTSize(FILE *ifile) {
 	return size;
 }
 
+u32 GCMGetNthFileEntryOffset(FILE *ifile, int n) {
+	/*
+	**	returns the offset of the nth fileEntry in the FST.
+	*/
+	
+	if (!ifile) return 0;
+	
+	return GCMGetFSTOffset(ifile) + (GCM_FST_ENTRY_LENGTH * n);
+}
+
 void GCMGetNthRawFileEntry(FILE *ifile, int n, char *buf) {
 	/*
 	**  sets buf to the nth raw file entry.
@@ -382,7 +392,7 @@ void GCMGetNthRawFileEntry(FILE *ifile, int n, char *buf) {
 		return;
 	}
 	
-	fseek(ifile, GCMGetFSTOffset(ifile) + (GCM_FST_ENTRY_LENGTH * n), SEEK_SET);
+	fseek(ifile, GCMGetNthFileEntryOffset(ifile, n), SEEK_SET);
 	if (fread(buf, 1, GCM_FST_ENTRY_LENGTH, ifile) != GCM_FST_ENTRY_LENGTH) {
 		free(buf);
 		return;
