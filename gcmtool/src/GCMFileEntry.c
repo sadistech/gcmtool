@@ -3,6 +3,9 @@
 #include "GCMextras.h"
 #include <stdlib.h>
 
+//prototype for static function
+static int readCString(char *buf, int maxLen, FILE *ifile);
+
 GCMFileEntryStruct *GCMRawFileEntryToStruct(char *rawEntry, int index) {
 	/*
 	**  converts the rawEntry into a struct.
@@ -46,6 +49,20 @@ GCMFileEntryStruct *GCMRawFileEntryToStruct(char *rawEntry, int index) {
 	return fe;
 }
 
+static int readCString(char *buf, int maxLen, FILE *ifile) {
+	/*
+	**  reads a string only up to a \0... to prevent it from getting data we don't need.
+	*/
+	
+	if (!buf || !maxLen || !ifile) return 0;
+	
+	int i = 0;
+	
+	for (i = 0;(*buf++ = fgetc(ifile)) && i < maxLen; i++);
+	
+	return i + 1;
+}
+
 void GCMFetchFilenameForFileEntry(FILE *ifile, GCMFileEntryStruct *entry) {
 	/*
 	**  inspects entry, looks up the filename and
@@ -58,13 +75,15 @@ void GCMFetchFilenameForFileEntry(FILE *ifile, GCMFileEntryStruct *entry) {
 	
 	fseek(ifile, GCMGetStringTableOffset(ifile) + entry->filenameOffset, SEEK_SET);
 	char *buf = (char*)malloc(MAXFILENAMESIZE);
-	if (fread(buf, 1, MAXFILENAMESIZE, ifile) != MAXFILENAMESIZE) {
+	/*if (fread(buf, 1, MAXFILENAMESIZE, ifile) != MAXFILENAMESIZE) {
 		free(buf);
 		return;
-	}
+	}*/
+	
+	int len = readCString(buf, MAXFILENAMESIZE, ifile);
 	
 	//to save memory, just allocate enough memory for the filename + the \0
-	entry->filename = (char*)malloc(strlen(buf) + 1);
+	entry->filename = (char*)malloc(len);
 	strcpy(entry->filename, buf);
 	free(buf);
 }
