@@ -21,10 +21,12 @@ GCMApploaderStruct *GCMRawApploaderToStruct(char *rawApploader) {
 	
 	memcpy(a->date, rawApploader, GCM_APPLOADER_DATE_LENGTH);
 	rawApploader += GCM_APPLOADER_DATE_LENGTH;
-	
-	a->entrypoint = ntohl(*((u32*)rawApploader)++);
-	a->size = ntohl(*((u32*)rawApploader)++);
-	a->unknown = ntohl(*((u32*)rawApploader)++); // some unknown value...
+
+	u32 *temp = (u32*)rawApploader;
+
+	a->entrypoint = ntohl(*temp++);
+	a->size = ntohl(*temp++);
+	a->unknown = ntohl(*temp++); // some unknown value...
 	
 	rawApploader += 4; //skip some more padding... ?
 	
