@@ -10,6 +10,10 @@
 #ifndef _GCM_TYPES_H_
 #define _GCM_TYPES_H_
 
+//for htonl() and ntohl()
+//#include <netinet/in.h>
+#include <arpa/inet.h>
+
 typedef unsigned long u32;
 
 #endif

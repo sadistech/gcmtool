@@ -8,7 +8,6 @@
  */
 
 #include <stdlib.h>
-#include <arpa/inet.h>
 #include "GCMDiskHeader.h"
 
 void GCMDiskHeaderStructToRaw(GCMDiskHeaderStruct *dh, char *buf) {

@@ -9,13 +9,13 @@
 **
 */
 
+//for the autoheader stuff... (grrr, I hate this thing...)
 #if HAVE_CONFIG_H
 #include <config.h>
 #endif
 
 #include <stdio.h>
 #include <stdlib.h>
-//#include <unistd.h>
 #include <string.h>
 
 #include "GCMutils.h"

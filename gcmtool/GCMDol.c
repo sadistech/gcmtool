@@ -8,7 +8,6 @@
  */
 
 #include "GCMDol.h"
-#include <arpa/inet.h>
 
 GCMDolHeaderStruct *GCMGetDolHeader(FILE *ifile) {
 	/*

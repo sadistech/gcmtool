@@ -11,7 +11,6 @@
 #include "GCMutils.h"
 #include <string.h>
 #include <stdlib.h>
-#include <arpa/inet.h>
 
 void GCMDiskHeaderInfoStructToRaw(GCMDiskHeaderInfoStruct *d, char *buf) {
 	/*
