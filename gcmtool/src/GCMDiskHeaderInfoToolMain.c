@@ -77,7 +77,38 @@ FILE *dhiFile; //the file that we're working with
 void printUsage();
 void printExtendedUsage();
 
+void printDiskHeaderInfoStruct(GCMDiskHeaderInfoStruct *d);
+
 int main(int argc, char **argv) {
+	int fileChanged = 0;
+
+	int modDebugMonitorSize = 0;
+	u32 newDebugMonitorSize = 0;
+
+	int modSimulatedMemorySize = 0;
+	u32 newSimulatedMemorySize = 0;
+	
+	int modArgumentOffset = 0;
+	u32 newArgumentOffset = 0;
+	
+	int modDebugFlag = 0;
+	u32 newDebugFlag = 0;
+	
+	int modTrackLocation = 0;
+	u32 newTrackLocation = 0;
+	
+	int modTrackSize = 0;
+	u32 newTrackSize = 0;
+	
+	int modCountryCode = 0;
+	u32 newCountryCode = 0;
+	
+	int modUnknown1 = 0;
+	u32 newUnknown1 = 0;
+	
+	int modUnknown2 = 0;
+	u32 newUnknown2 = 0;
+
 	char *currentArg = NULL;
 
 	do {
@@ -91,6 +122,60 @@ int main(int argc, char **argv) {
 
 			printExtendedUsage();
 			exit(0);
+		} else if (CHECK_ARG(ARG_DEBUG_MON_SIZE)) {
+			// set the debug monitor size
+
+			newDebugMonitorSize = atol(GET_NEXT_ARG);
+			modDebugMonitorSize++;
+			
+		} else if (CHECK_ARG(ARG_SIM_MEM_SIZE)) {
+			// set the simulated memory size
+
+			newSimulatedMemorySize = atol(GET_NEXT_ARG);
+			modSimulatedMemorySize++;
+			
+		} else if (CHECK_ARG(ARG_ARGUMENT_OFFSET)) {
+			//set the argument offset
+
+			newArgumentOffset = atol(GET_NEXT_ARG);
+			modArgumentOffset++;
+			
+		} else if (CHECK_ARG(ARG_DEBUG_FLAG)) {
+			//set the debug flag
+
+			newDebugFlag = atol(GET_NEXT_ARG);
+			modDebugFlag++;
+			
+		} else if (CHECK_ARG(ARG_TRACK_LOCATION)) {
+			// set the track location
+
+			newTrackLocation = atol(GET_NEXT_ARG);
+			modTrackLocation++;
+			
+		} else if (CHECK_ARG(ARG_TRACK_SIZE)) {
+			//set the track size
+
+			newTrackSize = atol(GET_NEXT_ARG);
+			modTrackSize++;
+			
+		} else if (CHECK_ARG(ARG_COUNTRY_CODE)) {
+			// set the country code
+
+			newCountryCode = atol(GET_NEXT_ARG);
+			modCountryCode++;
+			
+		} else if (CHECK_ARG(ARG_UNKNOWN1)) {
+			// set unknown1
+
+			newUnknown1 = atol(GET_NEXT_ARG);
+			modUnknown1++;
+			
+		} else if (CHECK_ARG(ARG_UNKNOWN2)) {
+			// set unknown2
+
+			newUnknown2 = atol(GET_NEXT_ARG);
+			modUnknown2++;
+			
 		} else {
 			//this is the file...
 			filename = currentArg;
@@ -118,6 +203,75 @@ int main(int argc, char **argv) {
 
 	GCMDiskHeaderInfoStruct *d = GCMRawDiskHeaderInfoToStruct(data);
 
+	printDiskHeaderInfoStruct(d);
+
+	if (modDebugMonitorSize) {
+		d->debugMonitorSize = newDebugMonitorSize;
+		fileChanged++;
+	}
+
+	if (modSimulatedMemorySize) {
+		d->simulatedMemorySize = newSimulatedMemorySize;
+		fileChanged++;
+	}
+
+	if (modArgumentOffset) {
+		d->argumentOffset = newArgumentOffset;
+		fileChanged++;
+	}
+
+	if (modDebugFlag) {
+		d->debugFlag = newDebugFlag;
+		fileChanged++;
+	}
+
+	if (modTrackLocation) {
+		d->trackLocation = newTrackLocation;
+		fileChanged++;
+	}
+
+	if (modTrackSize) {
+		d->trackSize = newTrackSize;
+		fileChanged++;
+	}
+
+	if (modCountryCode) {
+		d->countryCode = newCountryCode;
+		fileChanged++;
+	}
+
+	if (modUnknown1) {
+		d->unknown1 = newUnknown1;
+		fileChanged++;
+	}
+
+	if (modUnknown2) {
+		d->unknown2 = newUnknown2;
+		fileChanged++;
+	}
+
+	if (fileChanged) {
+		printDiskHeaderInfoStruct(d);
+
+		char *data = (char*)malloc(GCM_DISK_HEADER_INFO_LENGTH);
+		GCMDiskHeaderInfoStructToRaw(d, data);
+
+		rewind(dhiFile);
+		if (fwrite(data, 1, GCM_DISK_HEADER_INFO_LENGTH, dhiFile) != GCM_DISK_HEADER_INFO_LENGTH) {
+			perror("Error writing diskheaderinfo!");
+			exit(1);
+		}
+		
+		free(data);
+	}
+
+	
+	closeFile();
+
+	return 0;
+}
+
+void printDiskHeaderInfoStruct(GCMDiskHeaderInfoStruct *d) {	
 	//display that info...
 	printf("Debug Monitor Size:    %08X\n", d->debugMonitorSize);
 	printf("Simulated Memory Size: %08X\n", d->simulatedMemorySize);
@@ -128,10 +282,6 @@ int main(int argc, char **argv) {
 	printf("Country Code:          %08X\n", d->countryCode);
 	printf("Unknown 1:             %08X\n", d->unknown1);
 	printf("Unknown 2:             %08X\n", d->unknown2);
-	
-	closeFile();
-
-	return 0;
 }
 
 void openFile() {
