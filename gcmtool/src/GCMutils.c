@@ -21,8 +21,6 @@
 //some stuff for temp files... (string table and fstData...)
 static FILE *fstTempFile;
 static FILE *stringTableTempFile;
-static int fst_fd;
-static int stringTable_fd;
 
 static void initRecursion();
 static int recurseDirectory(char *path, char *buf);
@@ -151,14 +149,6 @@ int GCMPutApploader(FILE *ofile, char *buf, u32 length) {
 	**  returns GCM_SUCCESS on success
 	**  THIS IS NOT IMPLEMENTED YET (obviously). MAY TAKE A WHILE.
 	*/
-	
-	// first, calculate the size difference...
-	// the old apploader and new one might be different sizes, so you may have to shift
-	// the rest of the file...
-	
-	long lengthDiff = length - GCMGetApploaderSize(ofile);
-	
-	
 	
 	return GCM_ERROR;
 }
@@ -398,21 +388,23 @@ void GCMReplaceFilesystem(FILE *ifile, char *fsRootPath) {
 }
 
 static void initRecursion() {
-	fst_fd = -1;
-	stringTable_fd = -1;
+	int fst_fd = -1;
+	int stringTable_fd = -1;
 	
 	//init the temp file...
 	char fstTempFilename[] = "fstData.tmp.XXXXXX";
-	if ((fst_fd = mkstemp(fstTempFilename) == -1) || !(fstTempFile = fdopen(fst_fd, "w+"))) {
+	if (((fst_fd = mkstemp(fstTempFilename)) == -1) || !(fstTempFile = fdopen(fst_fd, "w+"))) {
 		perror("ERROR OPENING TEMP FILE");
 		exit(1);
 	}
 	
 	char stringTableTempFilename[] = "stringtable.tmp.XXXXXX";
-	if ((stringTable_fd = mkstemp(stringTableTempFilename) == -1) || !(stringTableTempFile = fdopen(stringTable_fd, "w+"))) {
+	if (((stringTable_fd = mkstemp(stringTableTempFilename)) == -1) || !(stringTableTempFile = fdopen(stringTable_fd, "w+"))) {
 		perror("ERROR OPENING TEMP FILE!");
 		exit(1);
 	}
+	
+	printf("%s\t%s\n", fstTempFilename, stringTableTempFilename);
 }
 
 static int recurseDirectory(char *path, char *buf) {
@@ -464,6 +456,8 @@ static int recurseDirectory(char *path, char *buf) {
 			e->offset = 0; //FIX THIS!
 			e->length = 0; //FIX THIS!
 			
+		//	printf("%d\n", e->filenameOffset);
+			
 			printf("file: %s\n", de->d_name);
 		} else {
 			printf("unknown filetype! (%d)\n", de->d_type);
@@ -479,8 +473,6 @@ static int recurseDirectory(char *path, char *buf) {
 static int writeStringToTempFile(char *string) {
 	int len = strlen(string) + 1;
 	
-	printf("%d\t%s\n", len, string);
-
 	if (fwrite(string, 1, len, stringTableTempFile) != len) {
 		perror("Error writing to string table!\n");
 		exit(1);
