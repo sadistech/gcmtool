@@ -29,6 +29,9 @@ extern "C" {
 #define GCM_BNR_DESCRIPTION_OFFSET			0x18e0
 #define GCM_BNR_DESCRIPTION_LENGTH			0x0080
 
+#define GCM_BNR_LENGTH_V1					0x1960		/* file size of a version_1 BNR */
+#define GCM_BNR_LENGTH_V2					asdfasdf	/* still working on this... this will error out */
+
 //graphic constants...
 #define GCM_BNR_GRAPHIC_WIDTH				96
 #define GCM_BNR_GRAPHIC_HEIGHT				32
@@ -53,7 +56,7 @@ typedef struct gcm_rgb_color {
 } GCMRgbColor;
 
 GCMBnrStruct *GCMRawBnrToStruct(char *raw);
-void GCMBnrStructToRaw(GCMBnrStruct *b);
+void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf);
 
 GCMRgbColor *GCMRGB5A1toColor(u16 s);
 void GCMBnrGetImageRaw(GCMBnrStruct *b, char *buf);

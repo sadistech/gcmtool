@@ -49,8 +49,45 @@ GCMBnrStruct *GCMRawBnrToStruct(char *raw) {
 	return b;
 }
 
-void GCMBnrStructToRaw(GCMBnrStruct *b) {
-	// to be written...
+void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf) {
+	/*
+	**  Copies *b into *buf as raw data
+	**  meant for copying changes made to a GCMBnrStruct back into a .bnr file
+	**
+	**  the allocated size of *buf should be malloc'd to GCM_BNR_LENGTH_V1
+	**  since version_2 BNRs are still a slight mystery (I've only got one of them), don't even try to play with those...
+	*/
+	
+	if (!b) return;
+	
+	char *start = buf;
+	
+	memcpy(buf, GCM_BNR_MAGIC_WORD_PREFIX, GCM_BNR_MAGIC_WORD_PREFIX_LENGTH);
+	buf += GCM_BNR_MAGIC_WORD_PREFIX_LENGTH;
+	
+	char versionStr[2];
+	sprintf(versionStr, "%d", b->version);
+	memcpy(buf, versionStr, GCM_BNR_MAGIC_WORD_SUFFIX_LENGTH);
+	buf += GCM_BNR_MAGIC_WORD_SUFFIX_LENGTH;
+	
+	memcpy(buf, b->graphic, GCM_BNR_GRAPHIC_DATA_LENGTH);
+	buf += GCM_BNR_GRAPHIC_DATA_LENGTH;
+	
+	memcpy(buf, b->name, GCM_BNR_GAME_NAME_LENGTH);
+	buf += GCM_BNR_GAME_NAME_LENGTH;
+	
+	memcpy(buf, b->developer, GCM_BNR_DEVELOPER_LENGTH);
+	buf += GCM_BNR_DEVELOPER_LENGTH;
+	
+	memcpy(buf, b->fullName, GCM_BNR_FULL_TITLE_LENGTH);
+	buf += GCM_BNR_FULL_TITLE_LENGTH;
+	
+	memcpy(buf, b->fullDeveloper, GCM_BNR_FULL_DEVELOPER_LENGTH);
+	buf += GCM_BNR_FULL_DEVELOPER_LENGTH;
+	
+	memcpy(buf, b->description, GCM_BNR_DESCRIPTION_LENGTH);
+	
+	buf = start;
 }
 
 
