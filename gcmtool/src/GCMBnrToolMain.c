@@ -255,14 +255,24 @@ int main(int argc, char **argv) {
 	}
 	
 	if (injectIconPath != NULL) {
+		char *imageData = NULL;
+		u32 len = getFilesize(injectIconPath);
 		
 		if (injectFormat == RAW_FORMAT) {
 			//if the file we're injecting is in raw format (default)
-			
+			readFromFile(injectIconPath, imageData);
 		} else {
 			//if the file we're injecting is in ppm format...
 			
 		}
+		
+		char *iconData = (char*)malloc(GCM_BNR_GRAPHIC_DATA_LENGTH);
+		GCMBnrRawImageToGraphic(imageData, iconData);
+		
+		memcpy(b->graphic, iconData, GCM_BNR_GRAPHIC_DATA_LENGTH);
+		
+		free(iconData);
+		
 	}
 	
 	if (fileChanged) {

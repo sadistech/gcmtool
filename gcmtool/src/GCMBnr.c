@@ -270,5 +270,37 @@ void GCMBnrGetImagePPM(GCMBnrStruct *b, char *buf) {
 }
 
 void GCMBnrRawImageToGraphic(char *raw, char *buf) {
-
+	/*
+	**  takes *raw (which contains the pixels of an icon) and re-orders the pixels
+	**  for the bnr icon format as well as converting the 24bit color back into 15bit, 1alpha...
+	**
+	**  NOTE: this completely ignores any alpha... beware.
+	*/
+	
+	if (!raw || !buf) return;
+	
+	int i = 0;
+	for (i = 0; i < (GCM_BNR_GRAPHIC_WIDTH * GCM_BNR_GRAPHIC_HEIGHT); i++) {
+		// we've gotta rearrange the order of the pixels for the raw image
+		int j = ((i / 4) * (4 * 4) + (i % 4)) % (96 * 4);
+		j += (i / 96 % 4 * 4) + (i / 384 % 8 * 384);
+		
+		//convert the pixel into an RgbColor
+		GCMRgbColor *c = (GCMRgbColor*)malloc(sizeof(GCMRgbColor));
+		c->red = raw[j * 3];
+		c->green = raw[j * 3 + 1];
+		c->blue = raw[j * 3 + 2];
+		
+		u16 *p = (u16*)malloc(sizeof(u16));
+		*p = GCMColorToRGB5A1(c);
+		*p = htons(*p);
+		
+		//put the data into buf
+		memcpy(buf, (char*)p, sizeof(u16));
+		buf += sizeof(u16);
+		
+		//free the color...
+		free(c);
+		free(p);
+	}
 }
