@@ -52,14 +52,15 @@ char *lastPathComponent(char *source) {
 
 char *nthPathComponent(char *source, int n, char *buf) {
 	/*
-	**  returns a copy of the nth path component
-	**  nthPathComponent("this/path/is/cool", 2) returns "is"
+	**	returns a pointer to buf
+	**	sets buf to the nth path component of source.
+	**	nthPathComponent("this/path/is/cool", 2) returns "is"
 	*/
 	
 	if (!source || !buf) return NULL;
 	
 	int i = 0;
-	char *pathItem = (char*)malloc(strlen(source));
+	char *pathItem = (char*)malloc(strlen(source) + 1);
 	char *os1 = pathItem;
 	char *s = source;
 	
@@ -67,14 +68,21 @@ char *nthPathComponent(char *source, int n, char *buf) {
 
 	//printf("- %s\n", s);
 
-	while (*s != kPathSeparator && (*pathItem++ = *s++));
+	//there was an error! (not enough path components!)
+	if (!s) {
+		printf("not enough path components!!!!!\n");
+		free(pathItem);
+		return NULL;
+	}
 
-	*pathItem++ = 0;
+	while (*s != kPathSeparator && (*os1++ = *s++));	
 	
-	strcpy(buf, os1);
+	*os1++ = 0;
+	
+	strcpy(buf, pathItem);
 	
 	//printf("%d of %s = %s (%s)\n", n, source, buf, os1);
-	free(os1);
+	free(pathItem);
 
 	return buf;
 }
