@@ -21,6 +21,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <errno.h>
+
 #include <unistd.h> /* for mktemp() */
 
 //for mkdir:
@@ -106,6 +108,11 @@
 #define ARG_INJECT_BOOT_DOL_OPT				"[ " OPT_FILE " " OPT_FILE_OPT " ]"
 #define ARG_INJECT_BOOT_DOL_HELP			"Inject the main executable DOL"
 
+#define ARG_REPLACE_FILESYSTEM				"-rfs"
+#define ARG_REPLACE_FILESYSTEM_SYN			"--replace-file-system"
+#define ARG_REPLACE_FILESYSTEM_OPT			"<fs_root>"
+#define ARG_REPLACE_FILESYSTEM_HELP			"Replaces the filesystem from fs_root"
+
 //commandline options (modifiers to the arguments... hehe)
 #define OPT_FILE							"+f"
 #define OPT_FILE_SYN						"--file"
@@ -180,6 +187,8 @@ int main (int argc, char **argv) {
 	char *extractFileFrom = NULL;
 	char *extractFileTo = NULL;
 	
+	char *fsReplacePath = NULL;
+	
 	verboseFlag = 0;
 	
 	int showInfoFlag = 1;
@@ -244,6 +253,16 @@ int main (int argc, char **argv) {
 			hexFlag = 1;
 			
 			verbosePrint("Hex notation ON.");
+		} else if (CHECK_ARG(ARG_REPLACE_FILESYSTEM)) {
+			// they want to replace the filesystem
+			
+			fsReplacePath		= GET_NEXT_ARG;
+			
+			if (!fsReplacePath) {
+				printf("Argument error...\n");
+				printUsage();
+				exit(1);
+			}
 		} else if (CHECK_ARG(ARG_EXTRACT)) {
 			// extract files...
 			// usage: -e <path> <destPath>
@@ -390,6 +409,10 @@ int main (int argc, char **argv) {
 		
 		free(e);
 		//extractFile(extractFileFrom, extractFileTo);
+	}
+	
+	if (fsReplacePath) {
+		GCMReplaceFilesystem(gcmFile, fsReplacePath);
 	}
 	
 	//extract diskheader
@@ -898,7 +921,8 @@ void writeToFile(char *data, u32 length, char *path) {
 	FILE *ofile = NULL;
 	
 	if (!(ofile = fopen(path, "w"))) {
-		printf("An error occurred trying to open %s\n", path);
+		perror(path);
+//		printf("An error occurred trying to open %s (%d)\n", path, errno);
 		return;
 	}
 	
