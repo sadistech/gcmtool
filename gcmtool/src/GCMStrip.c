@@ -23,8 +23,16 @@
 #define ARG_VERBOSE_OPT						""
 #define ARG_VERBOSE_HELP					"Verbose output"
 
-void printUsage();
+#define ARG_OUTPUT_FILE						"-o"
+#define ARG_OUTPUT_FILE_SYN					"--output-file"
+#define ARG_OUTPUT_FILE_OPT					"<path>"
+#define ARG_OUTPUT_FILE_HELP				"Write stripped GCM to " ARG_OUTPUT_FILE_OPT " instead of overwriting the input file."
 
+//prototypes
+void printUsage();
+void stripGCM(FILE *ifile, FILE *ofile);
+
+//global vars
 int verboseFlag;
 
 char *filename;
@@ -129,6 +137,8 @@ int main(int argc, char **argv) {
 	fclose(gcmFile);
 }
 
+
+void stripGCM(FILE *ifile, FILE *ofile);
 void printUsage() {
 	printf("GCMStrip %s- Strips un-needed padding from Gamecube DVD images and reduces filesize.\n\tgcmtool.sourceforge.net\n\n", VERSION);
 	printf("Usage:");
