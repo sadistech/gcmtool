@@ -110,6 +110,10 @@ void GCMFetchFilenameForFileEntry(FILE *ifile, GCMFileEntryStruct *entry) {
 		return;
 	}
 	
+	if (entry->index == 0) { //it's the root entry...
+		entry->filename = "/";
+	}
+	
 	fseek(ifile, GCMGetStringTableOffset(ifile) + entry->filenameOffset, SEEK_SET);
 	char *buf = (char*)malloc(MAXFILENAMESIZE);
 	/*if (fread(buf, 1, MAXFILENAMESIZE, ifile) != MAXFILENAMESIZE) {

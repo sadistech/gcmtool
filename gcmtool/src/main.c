@@ -399,6 +399,7 @@ int main (int argc, char **argv) {
 		
 		if (strcmp(extractFileFrom, "/") == 0) {
 			e = GCMGetRootFileEntry(gcmFile);
+			printf("root file entry index: %d\n", e->index);
 		} else {	
 			e = GCMGetFileEntryAtPath(gcmFile, extractFileFrom);
 		}
@@ -856,7 +857,7 @@ void recurseFileEntry(GCMFileEntryStruct *e, void (*func)(GCMFileEntryStruct *))
 	*/
 	
 	if (!e) {
-		printf("ERROR extracting entry (entry doesn't exist?!?!)\n");
+		printf("ERROR reading entry (entry doesn't exist?!?!)\n");
 		return;
 	}
 	
