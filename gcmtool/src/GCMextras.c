@@ -133,7 +133,7 @@ GCMFileEntryStruct *GCMGetNthFileEntry(FILE *ifile, int n) {
 	*/
 
 	char *rawEntry = (char*)malloc(GCM_FST_ENTRY_LENGTH);
-	printf("alloc'd enry %d\n", n);
+	printf("alloc'd entry %d\n", n);
 	GCMGetNthRawFileEntry(ifile, n, rawEntry);
 	GCMFileEntryStruct *entry = GCMRawFileEntryToStruct(rawEntry, n);
 	free(rawEntry);
@@ -187,7 +187,7 @@ GCMFileEntryStruct *GCMGetFileEntryAtPath(FILE *ifile, char *path) {
 		GCMFetchFilenameForFileEntry(ifile, e);
 		
 		if (!e) {
-			printf("an error occurred! E is NULL!\n");
+			printf("an error occurred! e is NULL!\n");
 			exit(1);
 		}
 		
