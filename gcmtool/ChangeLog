@@ -1,3 +1,6 @@
+
+[all] fixed some internal memory issues
+
 2004/7/19
 0.3.2
 [all] fixed a bug where the file would be opened as read/write even if we
