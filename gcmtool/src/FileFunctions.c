@@ -40,7 +40,7 @@ int CopyData(FILE *source, FILE *dest, u32 length) {
 		}
 		
 		length -= chunkSize;
-		printf("len: %ld\n", length);
+//		printf("len: %ld\n", length);
 	}
 	
 	free(buf);
