@@ -1,3 +1,10 @@
+[gcmtool] Fixed a bug with getting filenames from directories on little endian
+	systems.
+[gcmbnrtool] Fixed a bug where colors would get screwed up extracting icons
+	on little endian systems.
+[gcmbnrtool] Fixed a bug where colors would get screwed up injecting icons
+	on little endian systems.
+
 2004/6/25
 0.2.4
 [gcmtool] Added info output to file listing (shows file sizes, or 
