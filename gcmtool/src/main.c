@@ -114,15 +114,18 @@
 #define ARG_DELETE_FILE_HELP				"Deletes the file at " ARG_DELETE_FILE_OPT " in a GCM"
 
 //commandline options (modifiers to the arguments... hehe)
-#define OPT_FILE							"-f"
+#define OPT_FILE							"+f"
 #define OPT_FILE_SYN						"--file"
 #define OPT_FILE_OPT						"<filename>"
 
-#define OPT_FULL_PATH						"-p"
+#define OPT_FULL_PATH						"+p"
 #define OPT_FULL_PATH_SYN					"--full-path"
 
-#define OPT_FILE_INFO						"-L"
+#define OPT_FILE_INFO						"+i"
 #define OPT_FILE_INFO_SYN					"--full-info"
+
+#define OPT_RECURSIVE						"+r"
+#define OPT_RECURSIVE_SYN					"--recursive"
 
 //some utility functions...
 void printEntry(GCMFileEntryStruct *e);
@@ -138,7 +141,7 @@ void printGCMInfo(int hexFlag);
 void printUsage(void);
 void printExtendedUsage();
 
-void extractFiles(char *source, char *dest);
+void extractFile(char *source, char *dest);
 void extractDiskHeader(char *path);
 void extractDiskHeaderInfo(char *path);
 void extractApploader(char *path);
@@ -372,7 +375,7 @@ int main (int argc, char **argv) {
 	
 	// extract files...
 	if (extractFileFrom && extractFileTo) {
-		extractFiles(extractFileFrom, extractFileTo);
+		extractFile(extractFileFrom, extractFileTo);
 	}
 	
 	//extract diskheader
@@ -507,7 +510,7 @@ void printGCMInfo(int hexFlag) {
 	GCMFreeFileEntryStruct(r);
 }
 
-void extractFiles(char *source, char *dest) {
+void extractFile(char *source, char *dest) {
 	/*
 	**  extract files from source (in GCM) to dest (in the local filesystem)
 	*/
