@@ -660,33 +660,40 @@ void injectApploader(char *sourcePath) {
 }
 
 void printEntry(GCMFileEntryStruct *e) {
+	/*
+	**  this prints the entries. Called from the printDirectory function.
+	**  This formats the output all nice. Puts the info there if it's supposed to be. etc.
+	*/
+	
 	int j = 0;
 	
 	char size[10] = "";
 	char path[1024] = "";
+	char padding[128] = " ";
 	
 	if (listInfoFlag) {
 		if (e->isDir) {
-			sprintf(size, "(%ld)\t", (e->length - recursiveIndex - 1));
+			sprintf(size, "(%ld)", (e->length - recursiveIndex - 1));
 		} else {
-			sprintf(size, "%ldb\t", e->length);
+			sprintf(size, "%ldb", e->length);
 		}
+		sprintf(size, "%-12s", size); //this pads everythign nicely...
 	}
 
 	//space out the next entry...
-	if (!listInfoFlag) {
+	if (!listPathFlag) {
 		for (j = 0; j < dirDepth; j++) {
-			printf(" ");
+			strcat(padding, " ");
 		}
 	}
 	
 	if (dirDepth == 0) {
-		printf("%s/\n", size);
+		printf("%s /\n", size);
 	} else {
 		if (!e->isDir)
-			printf("%s%s\n", size, e->filename);
+			printf("%s%s%s\n", size, padding, e->filename);
 		else
-			printf("%s%s\n", size, e->filename);
+			printf("%s%s%s\n", size, padding, e->filename);
 	}
 }
 
