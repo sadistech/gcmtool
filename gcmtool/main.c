@@ -28,6 +28,10 @@
 #define GCM_TOOL_ARG_LIST		"-l"
 
 
+//macros... although they may be simple...
+#define GET_NEXT_ARG *argv++
+#define CHECK_ARG(ARG) strcmp(ARG, currentArg) == 0
+
 //some utility functions...
 void printEntry(GCMFileEntryStruct *e);
 void printDirectory(GCMFileEntryStruct *e);
@@ -42,7 +46,7 @@ FILE *ifile;
 //for working with printing directories
 int dirDepth;
 
-int i;
+int i; //for the recursive printing... (must change the name of this var soon)
 
 int main (int argc, char * const argv[]) {
 	//for extracting:
@@ -50,28 +54,35 @@ int main (int argc, char * const argv[]) {
 	char *extractTo;
 
 	int listFiles = 0;
+	
+	//start argument parsing...
+	char *currentArg = GET_NEXT_ARG; //loads the first argument (the executable... don't do anything with this).
 
-	for(i = 1; i < argc; i++) {
-		//printf("parsing arg: %s\n", argv[i]);
-		if (strcmp(argv[i], GCM_TOOL_ARG_EXTRACT) == 0) {
+	do {
+		currentArg = GET_NEXT_ARG;
+		if (!currentArg) {
+			//there's no args! uh oh!
+			printUsage();
+			exit(0);
+		} else if (CHECK_ARG(GCM_TOOL_ARG_EXTRACT)) {
 			// extract files...
 			// usage: -e <path> <destPath>
 			
-			extractFrom = argv[++i];
-			extractTo = argv[++i];
-		} else if (strcmp(argv[i], GCM_TOOL_ARG_LIST) == 0) {
+			extractFrom = GET_NEXT_ARG;
+			extractTo = GET_NEXT_ARG;
+		} else if (CHECK_ARG(GCM_TOOL_ARG_LIST)) {
 			// list filesystem
 			
-			listFiles++;
+			listFiles++; //turn the listFiles flag on.
 		} else {
-			// do it to this file...
+			// do it to this file... this is the last argument... just ignore the rest...
 			
-			filepath = argv[i];
+			filepath = currentArg;
 			filename = lastPathComponent(filepath);
 			
 			break;
 		}
-	}
+	} while(*argv);
 	
 	dirDepth = 0;
 	
