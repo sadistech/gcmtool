@@ -8,6 +8,7 @@
 extern "C" {
 #endif
 
+//file offsets and lengths...
 #define GCM_BNR_MAGIC_WORD_PREFIX			"BNR"
 #define GCM_BNR_MAGIC_WORD_SUFFIX_V1		"1"
 #define GCM_BNR_MAGIC_WORD_SUFFIX_MULTI		"2"
@@ -42,7 +43,7 @@ extern "C" {
 #define GCM_BNR_PPM_HEADER_LENGTH			13
 #define GCM_BNR_GRAPHIC_PPM_FILE_LENGTH		GCM_BNR_GRAPHIC_RAW_FILE_LENGTH + GCM_BNR_PPM_HEADER_LENGTH
 
-#define GCM_BNR_ICON_COLOR_STEP				(256.0 / 32.0)
+#define GCM_BNR_ICON_COLOR_STEP				(256.0 / 32.0)  /* 8 */
 
 typedef struct gcm_bnr_struct {
 	char		version;										// the BNR version (1 or 2)
@@ -54,6 +55,7 @@ typedef struct gcm_bnr_struct {
 	char		description[GCM_BNR_DESCRIPTION_LENGTH];		// game description
 } GCMBnrStruct;
 
+//struct that stores an RGB value (0-255 for RGB and 0 or 1 for alpha)
 typedef struct gcm_rgb_color {
 	uchar		alpha; //on or off.......
 	uchar		red;
@@ -61,13 +63,16 @@ typedef struct gcm_rgb_color {
 	uchar		blue;
 } GCMRgbColor;
 
+//converting between raw Bnr and the struct...
 GCMBnrStruct *GCMRawBnrToStruct(char *raw);
 void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf);
 
+//color conversion
 uchar GCMBnrReverseBits(uchar v, int bitCount);
 GCMRgbColor *GCMRGB5A1toColor(u16 s);
 u16 GCMColorToRGB5A1(GCMRgbColor *c);
 
+//working with the icon
 void GCMBnrGetImageRaw(GCMBnrStruct *b, char *buf);
 void GCMBnrGetImagePPM(GCMBnrStruct *b, char *buf);
 void GCMBnrRawImageToGraphic(char *raw, char *buf);
