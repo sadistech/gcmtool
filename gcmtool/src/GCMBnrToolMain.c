@@ -189,7 +189,7 @@ int main(int argc, char **argv) {
 		exit(1);
 	}
 
-	GCMBnrStruct *b = GCMRawBnrToStruct(data);
+	GCMBnrStruct *b = GCMRawBnrToStruct(data, len);
 	
 	if (!b) {
 		printf("error opening banner!\n");

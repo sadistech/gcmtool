@@ -21,16 +21,6 @@ extern "C" {
 #define GCM_BNR_HEADER_PADDING				0x001c
 #define GCM_BNR_GRAPHIC_DATA_OFFSET			0x0020
 #define GCM_BNR_GRAPHIC_DATA_LENGTH			0x1800
-#define GCM_BNR_GAME_NAME_OFFSET			0x1820
-#define GCM_BNR_GAME_NAME_LENGTH			0x0020
-#define GCM_BNR_DEVELOPER_OFFSET			0x1840
-#define GCM_BNR_DEVELOPER_LENGTH			0x0020
-#define GCM_BNR_FULL_TITLE_OFFSET			0x1860
-#define GCM_BNR_FULL_TITLE_LENGTH			0x0040
-#define GCM_BNR_FULL_DEVELOPER_OFFSET		0x18a0
-#define GCM_BNR_FULL_DEVELOPER_LENGTH		0x0040
-#define GCM_BNR_DESCRIPTION_OFFSET			0x18e0
-#define GCM_BNR_DESCRIPTION_LENGTH			0x0080
 
 #define GCM_BNR_LENGTH_V1					0x1960		/* file size of a version_1 BNR */
 #define GCM_BNR_LENGTH_V2					asdfasdf	/* still working on this... this will error out */
@@ -66,10 +56,10 @@ typedef struct gcm_rgb_color {
 } GCMRgbColor;
 
 //converting between raw Bnr and the struct...
-GCMBnrStruct *GCMRawBnrToStruct(char *raw);
+GCMBnrStruct *GCMRawBnrToStruct(char *raw, int dataLen);
 void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf);
 
-GCMBnrAppendInfoRecord(GCMBnrStruct *b, GCMBnrInfoRecordStruct *r);
+//GCMBnrAppendInfoRecord(GCMBnrStruct *b, GCMBnrInfoRecordStruct *r);
 
 //color conversion
 GCMRgbColor *GCMRGB5A1toColor(u16 s);
