@@ -38,11 +38,15 @@ GCMBnrStruct *GCMRawBnrToStruct(char *raw, int dataLen) {
 	// grab the only info record (version 1) or...
 	// loop until we get all of the info (for version 2)
 	
-	GCMBnrInfoRecordStruct *r = b->info;
+	GCMBnrInfoRecordStruct *recordHead = (GCMBnrInfoRecordStruct*)malloc(sizeof(GCMBnrInfoRecordStruct));
+	GCMBnrInfoRecordStruct *r = recordHead;
 	
-	while (raw - start >= GCM_BNR_INFO_RECORD_LENGTH) {
-		r = (GCMBnrInfoRecordStruct*)malloc(sizeof(GCMBnrInfoRecordStruct));
+	int dataLeft = dataLen - (raw - start);
 	
+	while (dataLeft >= GCM_BNR_INFO_RECORD_LENGTH) {
+		r->next = (GCMBnrInfoRecordStruct*)malloc(sizeof(GCMBnrInfoRecordStruct));
+		r = r->next;
+		
 		bzero(r->name, GCM_BNR_GAME_NAME_LENGTH);
 		memcpy(r->name, raw, GCM_BNR_GAME_NAME_LENGTH);
 		raw += GCM_BNR_GAME_NAME_LENGTH;
@@ -63,8 +67,11 @@ GCMBnrStruct *GCMRawBnrToStruct(char *raw, int dataLen) {
 		memcpy(r->description, raw, GCM_BNR_DESCRIPTION_LENGTH);
 		raw += GCM_BNR_DESCRIPTION_LENGTH;
 
-		r = r->next;
+		dataLeft = dataLen - (raw - start);
 	}
+	
+	b->info = recordHead->next;
+	free(recordHead);
 	
 	return b;
 }
