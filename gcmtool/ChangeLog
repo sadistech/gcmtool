@@ -1,5 +1,7 @@
 
 [all] fixed some internal memory issues
+[gcmtool] added extra info to --list-files. use +i +i (Rafael Vuijik)
+[gcmtool] added column headings to --list-files.
 
 2004/7/19
 0.3.2
