@@ -54,6 +54,7 @@ extern "C" {
 #define GCM_DISK_HEADER_INFO_FILENAME   "bi2.bin"
 #define GCM_APPLOADER_FILENAME			"appldr.bin"
 #define GCM_FST_FILENAME				"fst.bin"
+#define GCM_BOOT_DOL_FILENAME			"boot.dol"
 
 
 //structs...
