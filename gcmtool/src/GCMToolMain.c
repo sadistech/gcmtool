@@ -106,7 +106,7 @@
 
 #define ARG_REPLACE_FILE					"-rf"
 #define ARG_REPLACE_FILE_SYN				"--replace-file"
-#define ARG_REPLACE_FILE_OPT				"<gcm_path> <local_path>""
+#define ARG_REPLACE_FILE_OPT				"<gcm_path> <local_path>"
 #define ARG_REPLACE_FILE_HELP				"Replace a file at <gcm_path> with <local_path> (Files MUST be same size)"
 
 #define ARG_REPLACE_FILESYSTEM				"-rfs"
@@ -210,6 +210,9 @@ int main (int argc, char **argv) {
 	
 	int injectApploaderFlag = 0;
 	char *injectApploaderFile = GCM_APPLOADER_FILENAME;
+	
+	char *replaceFileLocalPath = NULL;
+	char *replaceFileGCMPath = NULL;
 
 	int listFilesFlag = 0;
 	listInfoFlag = 0;
@@ -353,6 +356,18 @@ int main (int argc, char **argv) {
 				SKIP_NARG(1);
 				injectApploaderFile = GET_NEXT_ARG;
 			}
+		} else if (CHECK_ARG(ARG_REPLACE_FILE)) {
+			//they want to replace a file...
+			
+			replaceFileGCMPath = GET_NEXT_ARG;
+			replaceFileLocalPath = GET_NEXT_ARG;
+			
+			if (!replaceFileGCMPath || !replaceFileLocalPath) {
+				printf("Argument error!\n");
+				printUsage();
+				exit(1);
+			}
+			
 		} else if (CHECK_ARG(ARG_LIST)) {
 			// list filesystem
 			
@@ -452,6 +467,10 @@ int main (int argc, char **argv) {
 	//inject the apploader
 	if (injectApploaderFlag) {
 		injectApploader(injectApploaderFile);
+	}
+	
+	if (replaceFileLocalPath && replaceFileGCMPath) {
+		replaceFile(replaceFileGCMPath, replaceFileLocalPath);
 	}
 
 	//replace the filesystem
@@ -829,7 +848,30 @@ void replaceFile(char *gcmPath, char *localPath) {
 
 	if (!gcmPath || !localPath) return;
 
+	u32 filesize = GetFilesizeFromPath(localPath);
+	GCMFileEntryStruct *e = GCMGetFileEntryAtPath(gcmFile, gcmPath);
 	
+	if (e->isDir) {
+		printf("GCM file path MUST be a file!\n");
+		exit(1);
+	}
+	
+	if (filesize != e->length) {
+		printf("File sizes of %s and %s do not match!\n", gcmPath, localPath);
+		exit(1);
+	}
+	
+	FILE *ifile = NULL;
+	
+	if (!(ifile = fopen(localPath, "r"))) {
+		perror(localPath);
+		exit(1);
+	}
+	
+	fseek(gcmFile, e->offset, SEEK_SET);
+	CopyData(ifile, gcmFile, filesize);
+	
+	fclose(ifile);
 }
 
 #pragma mark -
@@ -973,6 +1015,7 @@ void printExtendedUsage() {
 	PRINT_HELP(ARG_HELP);
 	PRINT_HELP(ARG_HEX);
 	PRINT_HELP(ARG_REPLACE_FILESYSTEM);
+	PRINT_HELP(ARG_REPLACE_FILE);
 	printf("\n");
 	printf("  You can add -f <filename> to specify a filename for the following options...\n");
 	
