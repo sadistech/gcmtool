@@ -104,21 +104,21 @@ void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf) {
 	memcpy(buf, b->graphic, GCM_BNR_GRAPHIC_DATA_LENGTH);
 	buf += GCM_BNR_GRAPHIC_DATA_LENGTH;
 
-/*
-	memcpy(buf, b->name, GCM_BNR_GAME_NAME_LENGTH);
+
+	memcpy(buf, b->info->name, GCM_BNR_GAME_NAME_LENGTH);
 	buf += GCM_BNR_GAME_NAME_LENGTH;
 	
-	memcpy(buf, b->developer, GCM_BNR_DEVELOPER_LENGTH);
+	memcpy(buf, b->info->developer, GCM_BNR_DEVELOPER_LENGTH);
 	buf += GCM_BNR_DEVELOPER_LENGTH;
 	
-	memcpy(buf, b->fullName, GCM_BNR_FULL_TITLE_LENGTH);
+	memcpy(buf, b->info->fullName, GCM_BNR_FULL_TITLE_LENGTH);
 	buf += GCM_BNR_FULL_TITLE_LENGTH;
 	
-	memcpy(buf, b->fullDeveloper, GCM_BNR_FULL_DEVELOPER_LENGTH);
+	memcpy(buf, b->info->fullDeveloper, GCM_BNR_FULL_DEVELOPER_LENGTH);
 	buf += GCM_BNR_FULL_DEVELOPER_LENGTH;
 	
-	memcpy(buf, b->description, GCM_BNR_DESCRIPTION_LENGTH);
-*/	
+	memcpy(buf, b->info->description, GCM_BNR_DESCRIPTION_LENGTH);
+	
 	buf = start;
 }
 
