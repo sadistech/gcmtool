@@ -820,7 +820,7 @@ void printEntry(GCMFileEntryStruct *e) {
 	
 	int j = 0;
 	
-	char size[10] = "";
+	char size[100] = "";
 	char *path = (char*)malloc(1024);
 	char padding[128] = " ";
 	
@@ -833,7 +833,7 @@ void printEntry(GCMFileEntryStruct *e) {
 		if (e->isDir) {
 			sprintf(size, "(%ld)", (e->length - recursiveIndex - 1));
 		} else {
-			sprintf(size, "%ld", e->length);
+			sprintf(size, "%ld",e->length);
 		}
 		sprintf(size, "%-14s", size); //this pads everythign nicely...
 	}

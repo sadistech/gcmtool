@@ -18,6 +18,8 @@
 #include <dirent.h>
 #include <sys/types.h>
 
+#include "FileFunctions.h"
+
 //some stuff for temp files... (string table and fstData...)
 static FILE *fstTempFile;
 static FILE *stringTableTempFile;
@@ -32,7 +34,6 @@ static void initRecursion();
 static int recurseDirectory(char *path, char *buf);
 
 static int getFileCount(char *path);
-static u32 getFilesize(char *path);
 
 //for string table stuff...
 static u32 writeStringToTempFile(char *string);
@@ -399,9 +400,9 @@ void GCMReplaceFilesystem(FILE *ifile, char *fsRootPath) {
 	rewind(fstTempFile);
 	rewind(stringTableTempFile);
 	
-	int stringTableSize = getFilesize(stringTableTempFilename);
-	u32 dataSize = getFilesize(fstTempFilename);
-	u32 offsetSize = stringTableSize + GCMGetFSTOffset(ifile) + (count * GCM_FST_ENTRY_LENGTH);
+	int stringTableSize = GetFilesizeFromPath(stringTableTempFilename);
+	u32 dataSize = GetFilesizeFromPath(fstTempFilename);
+	u32 offsetSize = stringTableSize + GCMGetFSTOffset(ifile) + ((count + 1) * GCM_FST_ENTRY_LENGTH);
 	
 	typedef struct raw_entry {
 		u32 a;
@@ -420,7 +421,7 @@ void GCMReplaceFilesystem(FILE *ifile, char *fsRootPath) {
 			memcpy(fst, re, sizeof(RawEntry));
 		}
 		
-		printf("%d\t%ld\t%ld\t%ld\n", i, re->a, re->b, re->c);
+//		printf("%d\t%ld\t%ld\t%ld\n", i, re->a, re->b, re->c);
 		
 		fst += GCM_FST_ENTRY_LENGTH;
 	}
@@ -437,10 +438,13 @@ void GCMReplaceFilesystem(FILE *ifile, char *fsRootPath) {
 	fwrite(stringTable, 1, stringTableSize, ifile);
 	
 	//write data
+	
+	CopyData(fstTempFile, ifile, dataSize);
+	/*
 	char *data = (char*)malloc(dataSize);
 	fread(data, 1, dataSize, fstTempFile);
 	fwrite(data, 1, dataSize, ifile);
-	
+	*/
 	int fd = fileno(ifile);
 	u32 finalFileSize = ftell(ifile);
 	ftruncate(fd, finalFileSize);
@@ -545,7 +549,7 @@ static int recurseDirectory(char *path, char *buf) {
 			e->isDir = 0;
 			e->filenameOffset = writeStringToTempFile(de->d_name);
 			e->offset = writeDataToTempFile(newPath); 
-			e->length = getFilesize(newPath); 
+			e->length = GetFilesizeFromPath(newPath); 
 			
 			//printf("%ld\t%ld\t%ld\n", e->filenameOffset, e->offset, e->length);
 						
@@ -630,10 +634,9 @@ static u32 writeDataToTempFile(char *path) {
 		exit(1);
 	}
 	
-	fseek(ifile, 0, SEEK_END);
-	u32 fsize = ftell(ifile);
-	rewind(ifile);
-	
+	u32 fsize = GetFilesizeFromStream(ifile);
+	CopyData(ifile, fstTempFile, fsize);
+	/*
 	char *buf = (char*)malloc(fsize);
 	
 	if (fread(buf, 1, fsize, ifile) != fsize) {
@@ -647,24 +650,8 @@ static u32 writeDataToTempFile(char *path) {
 	}
 	
 	free(buf);
-	
+	*/
 	fclose(ifile);
 	
 	return offset;
-}
-
-static u32 getFilesize(char *path) {
-	FILE *ifile = NULL;
-	
-	if (!(ifile = fopen(path, "r"))) {
-		perror(path);
-		exit(1);
-	}
-	
-	fseek(ifile, 0, SEEK_END);
-	u32 fsize = ftell(ifile);
-	
-	fclose(ifile);
-	return fsize;
-	
 }

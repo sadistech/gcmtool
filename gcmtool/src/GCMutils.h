@@ -70,9 +70,10 @@ extern "C" {
 #define GCM_APPLOADER_UNKNOWN_LENGTH	0x0004
 #define GCM_APPLOADER_CODE_OFFSET		0x0020
 
-
 //file entry constants
 #define GCM_FST_ENTRY_LENGTH			0x000c
+
+#define GCM_DVD_IMAGE_LENGTH			1459978240  /* the size of a FULL GCM */
 
 // getting disk sections
 void GCMGetDiskHeader(FILE *ifile, char *buf);
