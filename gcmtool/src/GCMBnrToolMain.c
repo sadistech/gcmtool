@@ -18,6 +18,11 @@
 void printUsage();
 
 int main(int argc, char **argv) {
+	if (argc == 1) {
+		printUsage();
+		exit(1);
+	}
+
 	FILE *ifile = NULL;
 
 	char *filename = argv[1];
@@ -74,7 +79,7 @@ int main(int argc, char **argv) {
 }
 
 void printUsage() {
-	printf("gcmbnrtool %s- Utility for working with .bnr files from GameCube DVD Images (GCMs).\n", VERSION);
+	printf("gcmbnrtool %s- Utility for working with .bnr files from GameCube DVD Images (GCMs)\n", VERSION);
 	printf("http://gcmtool.sourceforge.net\n\n");
 	printf("Usage:\t");
 	printf("gcmbnrtool <bnr_file>\n\n");
