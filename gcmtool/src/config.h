@@ -11,13 +11,13 @@
 #define PACKAGE_NAME "gcmtool"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "gcmtool 0.2.4"
+#define PACKAGE_STRING "gcmtool 0.3.0d"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "gcmtool"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.2.4"
+#define PACKAGE_VERSION "0.3.0d"
 
 /* Version number of package */
-#define VERSION "0.2.4"
+#define VERSION "0.3.0d"
