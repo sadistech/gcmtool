@@ -76,7 +76,7 @@ am__quote =
 install_sh = /home/spike/cvs/gcmtool/install-sh
 bin_PROGRAMS = gcmtool gcmbnrtool gcmdiskheadertool gcmdiskheaderinfotool gcmapploadertool
 gcmtool_SOURCES = GCMToolMain.c GCMApploader.h GCMApploader.c GCMDiskHeader.h GCMDiskHeader.c GCMDiskHeaderInfo.h GCMDiskHeaderInfo.c GCMDol.h GCMDol.c GCMextras.h GCMextras.c GCMutils.h GCMutils.c pathfunc.h pathfunc.c types.h GCMCommandline.h GCMFileEntry.h GCMFileEntry.c FileFunctions.h FileFunctions.c
-gcmbnrtool_SOURCES = GCMBnrToolMain.c GCMBnr.h GCMBnr.c types.h GCMCommandline.h FileFunctions.c FileFunctions.h
+gcmbnrtool_SOURCES = GCMBnrToolMain.c GCMBnr.h GCMBnr.c types.h GCMCommandline.h FileFunctions.c FileFunctions.h GCMBnrInfoRecord.h GCMBnrInfoRecord.c
 gcmdiskheadertool_SOURCES = GCMDiskHeaderToolMain.c GCMextras.h GCMextras.c GCMutils.h GCMutils.c GCMCommandline.h FileFunctions.h FileFunctions.c types.h pathfunc.h pathfunc.c GCMFileEntry.h GCMFileEntry.c GCMDol.h GCMDol.c GCMDiskHeader.h GCMDiskHeader.c
 gcmdiskheaderinfotool_SOURCES = GCMDiskHeaderInfoToolMain.c GCMDiskHeaderInfo.h GCMDiskHeaderInfo.c GCMutils.h GCMutils.c GCMextras.h GCMextras.c GCMCommandline.h FileFunctions.h FileFunctions.c types.h pathfunc.h pathfunc.c GCMFileEntry.h GCMFileEntry.c GCMDol.h GCMDol.c
 gcmapploadertool_SOURCES = GCMApploaderToolMain.c GCMApploader.h GCMApploader.c GCMutils.h GCMutils.c GCMextras.h GCMextras.c GCMCommandline.h FileFunctions.h FileFunctions.c types.h pathfunc.h pathfunc.c GCMFileEntry.h GCMFileEntry.c GCMDol.h GCMDol.c
@@ -98,7 +98,7 @@ gcmapploadertool_LDADD = $(LDADD)
 gcmapploadertool_DEPENDENCIES =
 gcmapploadertool_LDFLAGS =
 am_gcmbnrtool_OBJECTS = GCMBnrToolMain.$(OBJEXT) GCMBnr.$(OBJEXT) \
-	FileFunctions.$(OBJEXT)
+	FileFunctions.$(OBJEXT) GCMBnrInfoRecord.$(OBJEXT)
 gcmbnrtool_OBJECTS = $(am_gcmbnrtool_OBJECTS)
 gcmbnrtool_LDADD = $(LDADD)
 gcmbnrtool_DEPENDENCIES =
@@ -139,7 +139,9 @@ am__depfiles_maybe = depfiles
 DEP_FILES = ./$(DEPDIR)/FileFunctions.Po \
 	./$(DEPDIR)/GCMApploader.Po \
 	./$(DEPDIR)/GCMApploaderToolMain.Po \
-	./$(DEPDIR)/GCMBnr.Po ./$(DEPDIR)/GCMBnrToolMain.Po \
+	./$(DEPDIR)/GCMBnr.Po \
+	./$(DEPDIR)/GCMBnrInfoRecord.Po \
+	./$(DEPDIR)/GCMBnrToolMain.Po \
 	./$(DEPDIR)/GCMDiskHeader.Po \
 	./$(DEPDIR)/GCMDiskHeaderInfo.Po \
 	./$(DEPDIR)/GCMDiskHeaderInfoToolMain.Po \
@@ -235,6 +237,7 @@ include ./$(DEPDIR)/FileFunctions.Po
 include ./$(DEPDIR)/GCMApploader.Po
 include ./$(DEPDIR)/GCMApploaderToolMain.Po
 include ./$(DEPDIR)/GCMBnr.Po
+include ./$(DEPDIR)/GCMBnrInfoRecord.Po
 include ./$(DEPDIR)/GCMBnrToolMain.Po
 include ./$(DEPDIR)/GCMDiskHeader.Po
 include ./$(DEPDIR)/GCMDiskHeaderInfo.Po

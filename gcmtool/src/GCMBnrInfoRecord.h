@@ -11,6 +11,8 @@
 #ifndef _GCM_BNR_INFO_RECORD_H_
 #define _GCM_BNR_INFO_RECORD_H_
 
+#include "GCMBnr.h"
+
 #define GCM_BNR_INFO_GAME_NAME_OFFSET		0x0000
 #define GCM_BNR_INFO_DEVELOPER_OFFSET		0x0020
 #define GCM_BNR_INFO_FULL_TITLE_OFFSET		0x0040
@@ -25,7 +27,7 @@ typedef struct gcm_bnr_info_record_struct {
 	char			fullName[GCM_BNR_FULL_TITLE_LENGTH];
 	char			fullDeveloper[GCM_BNR_FULL_DEVELOPER_LENGTH];
 	char			description[GCM_BNR_DESCRIPTION_LENGTH];
-	GCMBnrInfoRecord	*next;
+	struct gcm_bnr_info_record_struct	*next;
 } GCMBnrInfoRecordStruct;
 
 void GCMFreeBnrInfoRecordStruct(GCMBnrInfoRecordStruct *r);
