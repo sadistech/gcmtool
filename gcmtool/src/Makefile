@@ -75,7 +75,7 @@ am__include = include
 am__quote = 
 install_sh = /Users/spike/gcmtool/cvs/gcmtool/install-sh
 bin_PROGRAMS = gcmtool gcmbnrtool
-gcmtool_SOURCES = main.c GCMApploader.h GCMApploader.c GCMDiskHeader.h GCMDiskHeader.c GCMDiskHeaderInfo.h GCMDiskHeaderInfo.c GCMDol.h GCMDol.c GCMextras.h GCMextras.c GCMutils.h GCMutils.c pathfunc.h pathfunc.c types.h GCMCommandline.h GCMFileEntry.h GCMFileEntry.c FileFunctions.h FileFunctions.c
+gcmtool_SOURCES = GCMToolMain.c GCMApploader.h GCMApploader.c GCMDiskHeader.h GCMDiskHeader.c GCMDiskHeaderInfo.h GCMDiskHeaderInfo.c GCMDol.h GCMDol.c GCMextras.h GCMextras.c GCMutils.h GCMutils.c pathfunc.h pathfunc.c types.h GCMCommandline.h GCMFileEntry.h GCMFileEntry.c FileFunctions.h FileFunctions.c
 gcmbnrtool_SOURCES = GCMBnrToolMain.c GCMBnr.h GCMBnr.c types.h GCMCommandline.h
 subdir = src
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -89,7 +89,7 @@ gcmbnrtool_OBJECTS = $(am_gcmbnrtool_OBJECTS)
 gcmbnrtool_LDADD = $(LDADD)
 gcmbnrtool_DEPENDENCIES =
 gcmbnrtool_LDFLAGS =
-am_gcmtool_OBJECTS = main.$(OBJEXT) GCMApploader.$(OBJEXT) \
+am_gcmtool_OBJECTS = GCMToolMain.$(OBJEXT) GCMApploader.$(OBJEXT) \
 	GCMDiskHeader.$(OBJEXT) GCMDiskHeaderInfo.$(OBJEXT) \
 	GCMDol.$(OBJEXT) GCMextras.$(OBJEXT) GCMutils.$(OBJEXT) \
 	pathfunc.$(OBJEXT) GCMFileEntry.$(OBJEXT) \
@@ -112,8 +112,8 @@ DEP_FILES = ./$(DEPDIR)/FileFunctions.Po \
 	./$(DEPDIR)/GCMDiskHeader.Po \
 	./$(DEPDIR)/GCMDiskHeaderInfo.Po \
 	./$(DEPDIR)/GCMDol.Po ./$(DEPDIR)/GCMFileEntry.Po \
-	./$(DEPDIR)/GCMextras.Po ./$(DEPDIR)/GCMutils.Po \
-	./$(DEPDIR)/main.Po ./$(DEPDIR)/pathfunc.Po
+	./$(DEPDIR)/GCMToolMain.Po ./$(DEPDIR)/GCMextras.Po \
+	./$(DEPDIR)/GCMutils.Po ./$(DEPDIR)/pathfunc.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -195,9 +195,9 @@ include ./$(DEPDIR)/GCMDiskHeader.Po
 include ./$(DEPDIR)/GCMDiskHeaderInfo.Po
 include ./$(DEPDIR)/GCMDol.Po
 include ./$(DEPDIR)/GCMFileEntry.Po
+include ./$(DEPDIR)/GCMToolMain.Po
 include ./$(DEPDIR)/GCMextras.Po
 include ./$(DEPDIR)/GCMutils.Po
-include ./$(DEPDIR)/main.Po
 include ./$(DEPDIR)/pathfunc.Po
 
 distclean-depend:
