@@ -123,7 +123,7 @@ GCMFileEntryStruct *GCMGetRootFileEntry(FILE *ifile) {
 	if (!entry) {
 		return NULL;
 	}
-	entry->filename = "";
+	//entry->filename = "";
 	return entry;
 }
 
