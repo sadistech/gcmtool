@@ -346,7 +346,7 @@ void printDirectory(GCMFileEntryStruct *e) {
 }
 
 void printUsage() {
-	printf("GCMTool - A utility for workign with Nintendo GameCube DVD images.\n\tgcmtool.sourceforge.net\n\n");
+	printf("GCMTool - A utility for working with Nintendo GameCube DVD images.\n\tgcmtool.sourceforge.net\n\n");
 	printf("Usage:");
 	printf("  gcmtool [ options ] <filename>\n\n");
 	printf("    Options:\n");
