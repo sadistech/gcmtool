@@ -101,6 +101,8 @@ u32 GCMGetFSTMaxSize(FILE *ifile);
 //file entry stuff
 void GCMGetNthRawFileEntry(FILE *ifile, int n, char *buf);
 
+void GCMReplaceFilesystem(FILE *ifile, char *fsRootPath);
+
 #ifdef __cplusplus
 };
 #endif

@@ -14,6 +14,13 @@
 #include <unistd.h>
 //#include <arpa/inet.h>
 
+//for directory enumeration...
+#include <dirent.h>
+#include <sys/types.h>
+
+static int recursiveCount;
+static int recurseDirectory(char *path, char *buf);
+
 void GCMGetDiskHeader(FILE *ifile, char *buf) {
 	/* 
 	**	sets buf to the diskheader (boot.bin)
@@ -343,4 +350,39 @@ void GCMGetNthRawFileEntry(FILE *ifile, int n, char *buf) {
 		free(buf);
 		return;
 	}
+}
+
+void GCMReplaceFilesystem(FILE *ifile, char *fsRootPath) {
+	recurseDirectory(fsRootPath, NULL);
+}
+
+static int recurseDirectory(char *path, char *buf) {
+	/*
+	**  returns the count of entries in buf...
+	*/
+	
+	DIR *d = NULL;
+	struct dirent *de = NULL;
+	
+	if (!(d = opendir(path))) {
+		printf("error opening directory! Doesn't exist?\n");
+		exit(1);
+	}
+	
+	int i = 0;
+	
+	for (i = 0; (de = readdir(d)) != NULL; i++) {
+		if (de->d_type == DT_DIR) {
+			printf("dir : %s\n", de->d_name);
+		} else if (de->d_type == DT_REG) {
+			printf("file: %s\n", de->d_name);
+		} else {
+			printf("unknown filetype! (%d)\n", de->d_type);
+			exit(1);
+		}
+	}
+	
+	closedir(d);
+	
+	return 0;
 }
