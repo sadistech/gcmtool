@@ -115,3 +115,4 @@ void GCMFreeDiskHeaderInfoStruct(GCMDiskHeaderInfoStruct *dhi) {
 	
 	free(dhi);
 }
+
