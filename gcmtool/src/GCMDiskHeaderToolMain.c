@@ -27,6 +27,8 @@
 void printUsage();
 void printExtendedUsage();
 
+void printDiskHeader(GCMDiskHeaderStruct *d);
+
 void openFile();
 void closeFile();
 
@@ -34,8 +36,12 @@ FILE *dhFile;
 char *filename;
 
 int main(int argc, char **argv) {
-	char *currentArg = NULL;
+	//commandline argument flags:
+	int fileChanged = 0;
+	
 
+	//start processing the arguments...
+	char *currentArg = NULL;
 	do {
 		currentArg = GET_NEXT_ARG;
 
@@ -59,6 +65,8 @@ int main(int argc, char **argv) {
 
 	u32 len = GetFilesizeFromStream(dhFile);
 
+	// Disk headers are supposed to be a specific size...
+	// If it's not the right size, then consider it to be invalid.
 	if (len != GCM_DISK_HEADER_LENGTH) {
 		printf("%s does not appear to be a GCM diskheader.\n");
 		closeFile();
@@ -73,7 +81,23 @@ int main(int argc, char **argv) {
 	}
 
 	GCMDiskHeaderStruct *d = GCMRawDiskHeaderToStruct(data);
+	
+	printDiskHeader(d); //print the diskheader...
 
+	//perform any operations on it...
+
+
+	// If any changes were made, print diskheader again...
+	if (fileChanged) {
+		printDiskHeader(d);
+	}
+
+	closeFile();
+
+	return 0;
+}
+
+void printDiskHeader(GCMDiskHeaderStruct *d) {
 	//display info...
 	printf("System ID:             %c (%s)\n", d->systemID, GCMSystemIDToStr(d->systemID));
 	printf("Game ID:               %s\n", d->gameID);
@@ -94,10 +118,6 @@ int main(int argc, char **argv) {
 	printf("User Position:         %08X\n", d->userPosition);
 	printf("User Length:           %08X\n", d->userLength);
 	printf("Unknown2:              %08X\n", d->unknown2);
-
-	closeFile();
-
-	return 0;
 }
 
 void openFile() {
