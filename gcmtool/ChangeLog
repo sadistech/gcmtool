@@ -4,6 +4,9 @@
 	on little endian systems.
 [gcmbnrtool] Fixed a bug where colors would get screwed up injecting icons
 	on little endian systems.
+[gcmdiskheadertool] new program: gcmdiskheadertool. Currently only dumps
+	information about the diskheader.
+
 
 2004/6/25
 0.2.4
