@@ -27,19 +27,19 @@
 #include "pathfunc.h"
 
 //commandline arguments
-#define GCM_TOOL_ARG_EXTRACT					"-e"
-#define GCM_TOOL_ARG_LIST						"-l"
-#define GCM_TOOL_ARG_INFO						"-i"
+#define ARG_EXTRACT					"-e"
+#define ARG_LIST						"-l"
+#define ARG_INFO						"-i"
 //extracting sections...
-#define GCM_TOOL_ARG_EXTRACT_DISK_HEADER		"-edh"
-#define GCM_TOOL_ARG_EXTRACT_DISK_HEADER_INFO   "-edhi"
-#define GCM_TOOL_ARG_EXTRACT_APPLOADER			"-eal"
-#define GCM_TOOL_ARG_EXTRACT_BOOT_DOL			"-ed"
+#define ARG_EXTRACT_DISK_HEADER		"-edh"
+#define ARG_EXTRACT_DISK_HEADER_INFO   "-edhi"
+#define ARG_EXTRACT_APPLOADER			"-eal"
+#define ARG_EXTRACT_BOOT_DOL			"-ed"
 //injecting sections
-#define GCM_TOOL_ARG_INJECT_DISK_HEADER			"-idh"
-#define GCM_TOOL_ARG_INJECT_DISK_HEADER_INFO	"-idhi"
-#define GCM_TOOL_ARG_INJECT_APPLOADER			"-ial"
-#define GCM_TOOL_ARG_INJECT_BOOT_DOL			"-ed"
+#define ARG_INJECT_DISK_HEADER			"-idh"
+#define ARG_INJECT_DISK_HEADER_INFO	"-idhi"
+#define ARG_INJECT_APPLOADER			"-ial"
+#define ARG_INJECT_BOOT_DOL			"-ed"
 
 //commandline options (modifiers to the arguments... hehe)
 #define GCM_TOOL_OPT_FILE						"-f"
@@ -130,12 +130,12 @@ int main (int argc, char * const argv[]) {
 			
 			printUsage();
 			exit(0);
-		} else if (CHECK_ARG(GCM_TOOL_ARG_INFO)) {
+		} else if (CHECK_ARG(ARG_INFO)) {
 			//they want to see info...
 			
 			showInfoFlag++;
 			
-		} else if (CHECK_ARG(GCM_TOOL_ARG_EXTRACT)) {
+		} else if (CHECK_ARG(ARG_EXTRACT)) {
 			// extract files...
 			// usage: -e <path> <destPath>
 			
@@ -149,7 +149,7 @@ int main (int argc, char * const argv[]) {
 				exit(1);
 			}
 			
-		} else if (CHECK_ARG(GCM_TOOL_ARG_EXTRACT_DISK_HEADER)) {
+		} else if (CHECK_ARG(ARG_EXTRACT_DISK_HEADER)) {
 			// extract disk header... (to a file called "boot.bin")
 			
 			extractDiskHeaderFlag++;
@@ -161,7 +161,7 @@ int main (int argc, char * const argv[]) {
 				extractDiskHeaderFile = GET_NEXT_ARG;
 			}
 			
-		} else if (CHECK_ARG(GCM_TOOL_ARG_EXTRACT_DISK_HEADER_INFO)) {
+		} else if (CHECK_ARG(ARG_EXTRACT_DISK_HEADER_INFO)) {
 			// extract disk header info... (to a file called "bi2.bin")
 			
 			extractDiskHeaderInfoFlag++;
@@ -173,7 +173,7 @@ int main (int argc, char * const argv[]) {
 				extractDiskHeaderInfoFile = GET_NEXT_ARG;
 			}
 			
-		} else if (CHECK_ARG(GCM_TOOL_ARG_EXTRACT_APPLOADER)) {
+		} else if (CHECK_ARG(ARG_EXTRACT_APPLOADER)) {
 			//extract apploader... (to a file called "appldr.bin")
 			
 			extractApploaderFlag++;
@@ -184,7 +184,7 @@ int main (int argc, char * const argv[]) {
 				SKIP_NARG(1); //skip that -f we just looked at...
 				extractApploaderFile = GET_NEXT_ARG;
 			}
-		} else if (CHECK_ARG(GCM_TOOL_ARG_EXTRACT_BOOT_DOL)) {
+		} else if (CHECK_ARG(ARG_EXTRACT_BOOT_DOL)) {
 			//extract the boot dol...
 			
 			extractBootDolFlag++;
@@ -195,7 +195,7 @@ int main (int argc, char * const argv[]) {
 				SKIP_NARG(1); //skip that -f
 				extractBootDolFile = GET_NEXT_ARG;
 			}
-		} else if (CHECK_ARG(GCM_TOOL_ARG_INJECT_DISK_HEADER)) {
+		} else if (CHECK_ARG(ARG_INJECT_DISK_HEADER)) {
 			//inject the diskheader
 			
 			injectDiskHeaderFlag++;
@@ -207,7 +207,7 @@ int main (int argc, char * const argv[]) {
 				injectDiskHeaderFile = GET_NEXT_ARG;
 			}
 			
-		} else if (CHECK_ARG(GCM_TOOL_ARG_INJECT_DISK_HEADER_INFO)) {
+		} else if (CHECK_ARG(ARG_INJECT_DISK_HEADER_INFO)) {
 			//inject the diskheaderinfo...
 			
 			injectDiskHeaderInfoFlag++;
@@ -218,7 +218,7 @@ int main (int argc, char * const argv[]) {
 				SKIP_NARG(1);
 				injectDiskHeaderInfoFile = GET_NEXT_ARG;
 			}
-		} else if (CHECK_ARG(GCM_TOOL_ARG_INJECT_APPLOADER)) {
+		} else if (CHECK_ARG(ARG_INJECT_APPLOADER)) {
 			//inject the apploader...
 			
 			injectApploaderFlag++;
@@ -229,7 +229,7 @@ int main (int argc, char * const argv[]) {
 				SKIP_NARG(1);
 				injectApploaderFile = GET_NEXT_ARG;
 			}
-		} else if (CHECK_ARG(GCM_TOOL_ARG_LIST)) {
+		} else if (CHECK_ARG(ARG_LIST)) {
 			// list filesystem
 			
 			listFilesFlag++; //turn the listFiles flag on.
