@@ -345,6 +345,10 @@ void GCMGetNthRawFileEntry(FILE *ifile, int n, char *buf) {
 }
 
 void GCMDeleteFileEntry(FILE *ifile, GCMFileEntryStruct *e, FILE *destFile) {
+	/*
+	**  destFile is a temp file used for storing entryData...
+	*/
+	
 	printf("GCMutils: \n");
 	
 	GCMFileEntryStruct *root = GCMGetRootFileEntry(ifile);
@@ -362,6 +366,9 @@ void GCMDeleteFileEntry(FILE *ifile, GCMFileEntryStruct *e, FILE *destFile) {
 	char *fstBuf = (char*)malloc(newEntryCount * GCM_FST_ENTRY_LENGTH);
 	char *fstBufStart = fstBuf; //a pointer to the beginning...
 	
+	u32 dataOffset = 0;
+	u32 nameOffset = 0;
+	
 	printf("Allocating 0x%08X for fstBuf\n", (newEntryCount * GCM_FST_ENTRY_LENGTH));
 	
 	int i = 0;
@@ -371,6 +378,20 @@ void GCMDeleteFileEntry(FILE *ifile, GCMFileEntryStruct *e, FILE *destFile) {
 			//printf("skipping entry %d (%d)\n", i, (int)e->length);
 			if (e->isDir) {
 				i = e->length - 1;
+				
+				for (i = i; i < e->length - 1; i++) {
+					GCMFileEntryStruct *t = GCMGetNthFileEntry(ifile, i);
+					GCMFetchFilenameForFileEntry(ifile, t);
+					if (!(t->isDir)) {
+						dataOffset += t->length;
+					}
+					
+					nameOffset += strlen(t->filename) + 1;
+				}
+			} else {
+				GCMFetchFilenameForFileEntry(ifile, e);
+				dataOffset += e->length;
+				nameOffset += strlen(e->filename) + 1;
 			}
 		} else {
 			//printf("copying entry %d\n", i);
@@ -378,14 +399,9 @@ void GCMDeleteFileEntry(FILE *ifile, GCMFileEntryStruct *e, FILE *destFile) {
 			char *rawEntry = (char*)malloc(GCM_FST_ENTRY_LENGTH);
 			GCMGetNthRawFileEntry(ifile, i, rawEntry);
 			
-			char *rawEntry2 = (char*)malloc(GCM_FST_ENTRY_LENGTH);
-			
 			GCMFileEntryStruct *tempEntry = GCMRawFileEntryToStruct(rawEntry, 0); //MUST FIX... CHANGE INDEX.
 			
-			
-			GCMFileEntryStructToRaw(tempEntry, rawEntry2);
-			
-			if (memcmp(rawEntry, rawEntry2, GCM_FST_ENTRY_LENGTH) != 0) {
+			/*if (memcmp(rawEntry, rawEntry2, GCM_FST_ENTRY_LENGTH) != 0) {
 				printf("conversion error with entries...(%d)\n", i);
 				
 				printf("isDir->%d\n", tempEntry->isDir);
@@ -400,7 +416,29 @@ void GCMDeleteFileEntry(FILE *ifile, GCMFileEntryStruct *e, FILE *destFile) {
 				printf("length->%ld\n", tempEntry->length);
 				
 				exit(1);
+			}*/
+			
+			//if we've gotten beyond the deleted entry, then we have to shift all the data...
+			if (i > e->index) {
+				tempEntry->filenameOffset += nameOffset;
+				if (!tempEntry->isDir) {
+					tempEntry->offset += dataOffset;
+				}
 			}
+			
+			GCMFetchFilenameForFileEntry(ifile, tempEntry);
+			
+			if (!tempEntry->isDir) {
+				printf("writing %s data\n", tempEntry->filename);
+				GCMFetchDataForFileEntry(ifile, tempEntry);
+				if (fwrite(tempEntry->data, 1, tempEntry->length, destFile) != tempEntry->length) {
+					printf("Error writing to temp file...\n");
+					exit(1);
+				}
+				free(tempEntry->data);
+			}
+			
+			GCMFileEntryStructToRaw(tempEntry, rawEntry);
 			
 			memcpy(fstBuf, rawEntry, GCM_FST_ENTRY_LENGTH);
 			*fstBuf += GCM_FST_ENTRY_LENGTH;

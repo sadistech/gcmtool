@@ -756,7 +756,7 @@ void deleteFile(char *path) {
 	
 	fclose(tmpFile);
 	
-	unlink(newName); //delete the file...
+	//unlink(newName); //delete the file...
 }
 
 #pragma mark -
