@@ -104,6 +104,11 @@
 #define ARG_INJECT_BOOT_DOL_OPT				"[ " OPT_FILE " " OPT_FILE_OPT " ]"
 #define ARG_INJECT_BOOT_DOL_HELP			"Inject the main executable DOL"
 
+#define ARG_REPLACE_FILE					"-rf"
+#define ARG_REPLACE_FILE_SYN				"--replace-file"
+#define ARG_REPLACE_FILE_OPT				"<gcm_path> <local_path>""
+#define ARG_REPLACE_FILE_HELP				"Replace a file at <gcm_path> with <local_path> (Files MUST be same size)"
+
 #define ARG_REPLACE_FILESYSTEM				"-rfs"
 #define ARG_REPLACE_FILESYSTEM_SYN			"--replace-file-system"
 #define ARG_REPLACE_FILESYSTEM_OPT			"<fs_root>"
@@ -150,6 +155,8 @@ void extractBootDol(char *path);
 void injectDiskHeader(char *sourcePath);
 void injectDiskHeaderInfo(char *sourcePath);
 void injectApploader(char *sourcePath);
+
+void replaceFile(char *gcmPath, char *localPath);
 
 //globals...
 int verboseFlag;	//it's gotta be global, so other functions can see it...
@@ -812,6 +819,17 @@ void injectApploader(char *sourcePath) {
 		free(data);
 		return;
 	}
+}
+
+void replaceFile(char *gcmPath, char *localPath) {
+	/*
+	**	replace the file at gcmPath with the file at localPath
+	**	file sizes must be the same...
+	*/
+
+	if (!gcmPath || !localPath) return;
+
+	
 }
 
 #pragma mark -
