@@ -401,7 +401,7 @@ void GCMReplaceFilesystem(FILE *ifile, char *fsRootPath) {
 	
 	int stringTableSize = getFilesize(stringTableTempFilename);
 	u32 dataSize = getFilesize(fstTempFilename);
-	u32 offsetSize = stringTableSize + GCMGetFSTOffset(ifile);
+	u32 offsetSize = stringTableSize + GCMGetFSTOffset(ifile) + (count * GCM_FST_ENTRY_LENGTH);
 	
 	typedef struct raw_entry {
 		u32 a;
@@ -413,10 +413,10 @@ void GCMReplaceFilesystem(FILE *ifile, char *fsRootPath) {
 	int i = 0;
 	for (i = 0; i < root->length; i++) {
 		re = (RawEntry*)fst;
-		/*if (!(re->a & 0x010000)) { //if it's a file...
-			re->c += offsetSize;
+		if (!(re->a & 0x01000000)) { //if it's a file...
+			re->b += offsetSize;
 			memcpy(fst, re, sizeof(RawEntry));
-		}*/
+		}
 		
 		printf("%d\t%ld\t%ld\t%ld\n", i, re->a, re->b, re->c);
 		
@@ -435,6 +435,13 @@ void GCMReplaceFilesystem(FILE *ifile, char *fsRootPath) {
 	fwrite(stringTable, 1, stringTableSize, ifile);
 	
 	//write data
+	char *data = (char*)malloc(dataSize);
+	fread(data, 1, dataSize, fstTempFile);
+	fwrite(data, 1, dataSize, ifile);
+	
+	int fd = fileno(ifile);
+	u32 finalFileSize = ftell(ifile);
+	ftruncate(fd, finalFileSize);
 	
 	//then close and delete the temp files...
 	
@@ -504,15 +511,15 @@ static int recurseDirectory(char *path, char *buf) {
 			
 			count = getFileCount(newPath);
 			
+			e->isDir = 1;
+			e->filenameOffset = writeStringToTempFile(de->d_name);
+			e->offset = (u32)lastDir;
+			e->length = (u32)(currentEntryIndex + count + 1);
+			
 			int oldLastDir = lastDir;
 			lastDir = currentEntryIndex;
 			
-			e->isDir = 1;
-			e->filenameOffset = writeStringToTempFile(de->d_name);
-			e->offset = lastDir;
-			e->length = currentEntryIndex + count + 1;
-			
-			printf("%ld\t%ld\t%ld\n", e->filenameOffset, e->offset, e->length);
+			printf("%d\t%ld\t%ld\t%ld\n", lastDir, e->filenameOffset, e->offset, e->length);
 			
 			char *rawEntry = (char*)malloc(GCM_FST_ENTRY_LENGTH);
 			GCMFileEntryStructToRaw(e, rawEntry);
