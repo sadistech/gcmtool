@@ -95,6 +95,27 @@ void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf) {
 	buf = start;
 }
 
+uchar GCMBnrReverseBits(uchar v, int bitCount) {
+	/*
+	**  functions SPECIFICALLY written for converting colors
+	**  treats v as a bitCount-bit whole numbers... so we could [theoretically] use this for RGB565 conversion, too
+	*/
+	
+	uchar t = 0;
+	int i = 0;
+
+	for (i = bitCount - 1; i; i--)
+	{
+		if (v % 2) 
+			t++;
+			
+		t <<= 1;
+		v >>= 1;
+	}
+
+//	t >>= 8 - bitCount - 1; //gotta shift it over, since this is for 5-bit integers
+	return t;
+}
 
 GCMRgbColor *GCMRGB5A1toColor(u16 s) {
 	/*
@@ -112,67 +133,42 @@ GCMRgbColor *GCMRGB5A1toColor(u16 s) {
 	uchar a = 0;
 	
 	for (i = 0; i < 5; i++) {
+		b = b << 1;
 		if (s % 2) {
 			b++;
 		}
 		
-		b = b << 1;
 		s = s >> 1;
 	}
+	b = GCMBnrReverseBits(b, 5);
 	
 	for (i = 0; i < 5; i++) {
+		g = g << 1;
 		if (s % 2) {
 			g++;
 		}
 		
-		g = g << 1;
 		s = s >> 1;
 	}
+	g = GCMBnrReverseBits(g, 5);
 	
 	for (i = 0; i < 5; i++) {
+		r = r << 1;
 		if (s % 2) {
 			r++;
 		}
 		
-		r = r << 1;
 		s = s >> 1;
 	}
+	r = GCMBnrReverseBits(r, 5);
 	
 	if (s % 2) {
 		a++;
 	}
 	
-	//I've gotta fix this function so you don't have to reverse the bits again...
-	
-	uchar r2 = 0;
-	uchar g2 = 0;
-	uchar b2 = 0;
-	
-	for (i = 0; i < 5; i++) {
-		if (r % 2) {
-			r2++;
-		}
-		r = r >> 1;
-		r2 = r2 << 1;
-	}
-	for (i = 0; i < 5; i++) {
-		if (g % 2) {
-			g2++;
-		}
-		g = g >> 1;
-		g2 = g2 << 1;
-	}
-	for (i = 0; i < 5; i++) {
-		if (b % 2) {
-			b2++;
-		}
-		b = b >> 1;
-		b2 = b2 << 1;
-	}
-	
-	r = ((255.0 / 31.0) * r2);
-	g = ((255.0 / 31.0) * g2);
-	b = ((255.0 / 31.0) * b2);
+	r = ((256.0 / 32.0) * r);
+	g = ((256.0 / 32.0) * g);
+	b = ((256.0 / 32.0) * b);
 	
 	GCMRgbColor *c = (GCMRgbColor*)malloc(sizeof(GCMRgbColor));
 	
@@ -182,6 +178,47 @@ GCMRgbColor *GCMRGB5A1toColor(u16 s) {
 	c->alpha = a;
 	
 	return c;
+}
+
+u16 GCMColorToRGB5A1(GCMRgbColor *c) {
+	/*
+	**  used for converting a GCMRgbColor back to a RGB5A1 short...
+	*/
+	
+	//first we reverse the bits...
+	uchar r = GCMBnrReverseBits(c->red / (255.0 / 31.0), 5);
+	uchar g = GCMBnrReverseBits(c->green / (255.0 / 31.0), 5);
+	uchar b = GCMBnrReverseBits(c->blue / (255.0 / 31.0), 5);
+	
+	u16 s = 0;
+	
+	if (c->alpha) {
+		s++;
+		s <<= 1;
+	}
+	
+	do {
+		if (r % 2) {
+			s++;
+		}
+		s <<= 1;
+	} while (r <<= 1);
+	
+	do {
+		if (g % 2) {
+			s++;
+		}
+		s <<= 1;
+	} while (g <<= 1);
+	
+	do {
+		if (b % 2) {
+			s++;
+		}
+		s <<= 1;
+	} while (b <<= 1);
+	
+	return s;
 }
 
 void GCMBnrGetImageRaw(GCMBnrStruct *b, char *buf) {
@@ -230,4 +267,8 @@ void GCMBnrGetImagePPM(GCMBnrStruct *b, char *buf) {
 	strcpy(buf, header);
 	buf += strlen(header);
 	GCMBnrGetImageRaw(b, buf);
+}
+
+void GCMBnrRawImageToGraphic(char *raw, char *buf) {
+
 }
