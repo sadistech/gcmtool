@@ -1,3 +1,5 @@
+2004/7/04
+0.3.0
 [gcmtool] Fixed a bug with getting filenames from directories on little endian
 	systems.
 [gcmbnrtool] Fixed a bug where colors would get screwed up extracting icons
@@ -6,7 +8,8 @@
 	on little endian systems.
 [gcmdiskheadertool] new program: gcmdiskheadertool. Currently only dumps
 	information about the diskheader.
-
+[gcmdiskheaderinfotool] new program: gcmdiskheaderinfotool.  Currently only
+	dumps information about diskheaderinfo.
 
 2004/6/25
 0.2.4
