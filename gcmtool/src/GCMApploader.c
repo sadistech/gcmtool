@@ -83,8 +83,6 @@ void GCMFreeApploaderStruct(GCMApploaderStruct *a) {
 
 	if (!a) return;
 	
-	if (a->date != NULL)
-		free(a->date);
 	if (a->code != NULL)
 		free(a->code);
 		
