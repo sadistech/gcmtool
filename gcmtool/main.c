@@ -31,8 +31,11 @@
 #define GCM_TOOL_ARG_EXTRACT_APPLOADER			"-eal"
 
 //macros... although they may be simple...
-#define GET_NEXT_ARG *argv++
-#define CHECK_ARG(ARG) strcmp(ARG, currentArg) == 0
+// these are for the argument parsing engine...
+#define GET_NEXT_ARG		*(++argv)
+#define CHECK_ARG(ARG)		strcmp(ARG, currentArg) == 0
+#define PEEK_ARG			*(argv + 1)
+#define PEEK_NARG(n)		*(argv + n)
 
 //some utility functions...
 void printEntry(GCMFileEntryStruct *e);
@@ -48,6 +51,8 @@ void extractFiles(char *source, char *dest);
 void extractDiskHeader(void);
 void extractDiskHeaderInfo(void);
 void extractApploader(void);
+
+void writeToFile(char *data, u32 length, char *path);
 
 char *filepath;
 char *filename;
@@ -73,7 +78,7 @@ int main (int argc, char * const argv[]) {
 	// end flag declarations
 	
 	//start argument parsing...
-	char *currentArg = GET_NEXT_ARG; //loads the first argument (the executable... don't do anything with this).
+	char *currentArg = NULL;
 
 	do {
 		currentArg = GET_NEXT_ARG;
@@ -176,6 +181,11 @@ void closeFile(void) {
 }
 
 void printGCMInfo(void) {
+	/*
+	**  This just prints all of the relevant info for the ROM
+	**  fun fun fun
+	*/
+
 	char systemID = GCMGetSystemID(ifile);
 	
 	char *gameID = (char*)malloc(GCM_GAME_ID_LENGTH + 1);
@@ -211,46 +221,31 @@ void extractFiles(char *source, char *dest) {
 	
 	GCMFileEntryStruct *e = GCMGetFileEntryAtPath(ifile, source);
 	
+	//check to see if the file was actually found...
 	if (!e) {
 		printf("File not found (%s)\n", source);
 		return;
 	}
 	
-	FILE *ofile = NULL;
-	
-	if (!(ofile = fopen(dest, "w"))) {
-		printf("An error occurred trying to open %s\n", dest);
-		return;
-	}
-	
+	//fetch the data
 	GCMFetchDataForFileEntry(ifile, e);
 	
-	if (fwrite(e->data, 1, e->length, ofile) != e->length) {
-		printf("An error occurred trying to write %s\n", dest);
-	}
+	writeToFile(e->data, e->length, dest);
 	
-	fclose(ofile);
+	free(e->data);
+	free(e);
 }
 
 void extractDiskHeader(void) {
 	/*
 	**  extracts the disk header to boot.bin
 	*/
-	
-	FILE *ofile = NULL;
-	
-	if (!(ofile = fopen(GCM_DISK_HEADER_FILENAME, "w"))) {
-		printf("An error occurred trying to open %s\n", GCM_DISK_HEADER_FILENAME);
-		return;
-	}
 		
 	//get the data...
 	char *buf = (char*)malloc(GCM_DISK_HEADER_LENGTH);
 	GCMGetDiskHeader(ifile, buf);
 		
-	if (fwrite(buf, 1, GCM_DISK_HEADER_LENGTH, ofile) != GCM_DISK_HEADER_LENGTH) {
-		printf("An error occurred trying to write to %s\n", GCM_DISK_HEADER_FILENAME);
-	}
+	writeToFile(buf, GCM_DISK_HEADER_LENGTH, GCM_DISK_HEADER_FILENAME);
 		
 	free(buf);
 }
@@ -260,20 +255,11 @@ void extractDiskHeaderInfo(void) {
 	**  extracts the diskheaderinfo to bi2.bin
 	*/
 	
-	FILE *ofile = NULL;
-	
-	if (!(ofile = fopen(GCM_DISK_HEADER_INFO_FILENAME, "w"))) {
-		printf("An error occurred trying to open %s\n", GCM_DISK_HEADER_INFO_FILENAME);
-		return;
-	}
-	
 	//get the data...
 	char *buf = (char*)malloc(GCM_DISK_HEADER_INFO_LENGTH);
 	GCMGetDiskHeaderInfo(ifile, buf);
 	
-	if (fwrite(buf, 1, GCM_DISK_HEADER_INFO_LENGTH, ofile) != GCM_DISK_HEADER_INFO_LENGTH) {
-		printf("An error occurred trying to write to %s\n", GCM_DISK_HEADER_INFO_FILENAME);
-	}
+	writeToFile(buf, GCM_DISK_HEADER_INFO_LENGTH, GCM_DISK_HEADER_INFO_FILENAME);
 	
 	free(buf);
 }
@@ -283,21 +269,12 @@ void extractApploader(void) {
 	**  extracts the apploader to appldr.bin
 	*/
 	
-	FILE *ofile = NULL;
-	
-	if (!(ofile = fopen(GCM_APPLOADER_FILENAME, "w"))) {
-		printf("An error occurred trying to open %s\n", GCM_APPLOADER_FILENAME);
-		return;
-	}
-	
 	//get the data...
 	u32 apploaderLength = GCMGetApploaderSize(ifile) + GCM_APPLOADER_CODE_OFFSET;
 	char *buf = (char*)malloc(apploaderLength);
 	GCMGetApploader(ifile, buf);
 	
-	if (fwrite(buf, 1, apploaderLength, ofile) != apploaderLength) {
-		printf("An error occurred trying to write to %s\n", GCM_APPLOADER_FILENAME);
-	}
+	writeToFile(buf, apploaderLength, GCM_APPLOADER_FILENAME);
 	
 	free(buf);
 }
@@ -342,6 +319,25 @@ void printDirectory(GCMFileEntryStruct *e) {
 		}
 		recursiveIndex--;
 		dirDepth--;
+	}
+}
+
+void writeToFile(char *data, u32 length, char *path) {
+	/*
+	**  Takes data of length and writes it to a file path. Displays errors when they happen...
+	*/
+	
+	if (!data || !length || !path) return;
+	
+	FILE *ofile = NULL;
+	
+	if (!(ofile = fopen(path, "w"))) {
+		printf("An error occurred trying to open %s\n", path);
+		return;
+	}
+	
+	if (fwrite(data, 1, length, ofile) != length) {
+		printf("An error occurred trying to write to %s\n", path);
 	}
 }
 
