@@ -26,3 +26,4 @@ int pathComponentCount(char *source);
 #endif
 
 #endif  /* _PATHFUNC_H_ */
+
