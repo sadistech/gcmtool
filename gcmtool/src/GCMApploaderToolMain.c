@@ -68,10 +68,10 @@ int main(int argc, char **argv) {
 	GCMApploaderStruct *a = GCMRawApploaderToStruct(data);
 
 	//display that info...
-	printf("Date: %s\n", a->date);
+	printf("Date:       %s\n", a->date);
 	printf("Entrypoint: %08X\n", a->entrypoint);
-	printf("Size: %08X\n", a->size);
-	printf("Unknown: %08X\n", a->unknown);
+	printf("Size:       %08X\n", a->size);
+	printf("Unknown:    %08X\n", a->unknown);
 	
 	closeFile();
 
