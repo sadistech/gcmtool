@@ -29,6 +29,7 @@ int GCMErrno;
 
 //GCMErrno codes:
 #define GCM_ERR_NO_ERROR		0
+#define GCM_ERR_NOT_IMPLEMENTED	-1
 #define GCM_ERR_NULL_ARG		100
 #define GCM_ERR_FILE			500
 
