@@ -33,6 +33,7 @@
 #include "GCMextras.h"
 #include "GCMCommandline.h"
 #include "pathfunc.h"
+#include "FileFunctions.h"
 
 //commandline arguments
 #define ARG_EXTRACT							"-e"
@@ -155,13 +156,7 @@ void injectDiskHeader(char *sourcePath);
 void injectDiskHeaderInfo(char *sourcePath);
 void injectApploader(char *sourcePath);
 
-// some file utility functions...
-void writeToFile(char *data, u32 length, char *path);
-u32 readFromFile(char *buf, char *path);
-u32 getFilesize(char *path);
-
 //globals...
-
 int verboseFlag;	//it's gotta be global, so other functions can see it...
 
 char *filepath;		//path to the file we're working with...
@@ -643,7 +638,7 @@ void extractFile(GCMFileEntryStruct *e, char *dest) {
 	//fetch the data
 	GCMFetchDataForFileEntry(gcmFile, e);
 	
-	writeToFile(e->data, e->length, dest);
+	WriteDataToFile(e->data, e->length, dest);
 	
 	free(e->data);
 	
@@ -674,7 +669,7 @@ void extractDiskHeader(char *path) {
 	char *buf = (char*)malloc(GCM_DISK_HEADER_LENGTH);
 	GCMGetDiskHeader(gcmFile, buf);
 		
-	writeToFile(buf, GCM_DISK_HEADER_LENGTH, path);
+	WriteDataToFile(buf, GCM_DISK_HEADER_LENGTH, path);
 		
 	free(buf);
 }
@@ -690,7 +685,7 @@ void extractDiskHeaderInfo(char *path) {
 	char *buf = (char*)malloc(GCM_DISK_HEADER_INFO_LENGTH);
 	GCMGetDiskHeaderInfo(gcmFile, buf);
 	
-	writeToFile(buf, GCM_DISK_HEADER_INFO_LENGTH, path);
+	WriteDataToFile(buf, GCM_DISK_HEADER_INFO_LENGTH, path);
 	
 	free(buf);
 }
@@ -707,7 +702,7 @@ void extractApploader(char *path) {
 	char *buf = (char*)malloc(apploaderLength);
 	GCMGetApploader(gcmFile, buf);
 	
-	writeToFile(buf, apploaderLength, path);
+	WriteDataToFile(buf, apploaderLength, path);
 	
 	free(buf);
 }
@@ -730,7 +725,7 @@ void extractBootDol(char *path) {
 		return;
 	}
 	
-	writeToFile(buf, length, path);
+	WriteDataToFile(buf, length, path);
 }
 
 #pragma mark -
@@ -742,9 +737,9 @@ void injectDiskHeader(char *sourcePath) {
 	
 	verbosePrint("Injecting the disk header...");
 	
-	char *buf = (char*)malloc(getFilesize(sourcePath));
+	char *buf = (char*)malloc(GetFilesizeFromPath(sourcePath));
 	
-	if (readFromFile(buf, sourcePath) != GCM_DISK_HEADER_LENGTH) {
+	if (ReadDataFromFile(buf, sourcePath) != GCM_DISK_HEADER_LENGTH) {
 		printf("This does not appear to be a diskheader (%s)\n", sourcePath);
 		free(buf);
 		return;
@@ -765,9 +760,9 @@ void injectDiskHeaderInfo(char *sourcePath) {
 	
 	verbosePrint("Injecting the disk header info...");
 	
-	char *buf = (char*)malloc(getFilesize(sourcePath));
+	char *buf = (char*)malloc(GetFilesizeFromPath(sourcePath));
 	
-	if (readFromFile(buf, sourcePath) != GCM_DISK_HEADER_INFO_LENGTH) {
+	if (ReadDataFromFile(buf, sourcePath) != GCM_DISK_HEADER_INFO_LENGTH) {
 		printf("This does not appear to be a diskheaderinfo (%s)\n", sourcePath);
 		free(buf);
 		return;
@@ -790,10 +785,10 @@ void injectApploader(char *sourcePath) {
 	
 	//first, load the file into memory...
 	
-	u32 length = getFilesize(sourcePath);
+	u32 length = GetFilesizeFromPath(sourcePath);
 	char *data = (char*)malloc(length);
 	
-	if (readFromFile(sourcePath, data) != length) {
+	if (ReadDataFromFile(sourcePath, data) != length) {
 		printf("An error occurred reading the file (%s)", sourcePath);
 		free(data);
 		return;
@@ -922,87 +917,6 @@ void recurseFileEntry(GCMFileEntryStruct *e, void (*func)(GCMFileEntryStruct *))
 		lastDir = GCMGetNthFileEntry(gcmFile, lastDir->offset); //set lastDir to the parent of lastDir...
 	}
 }*/
-
-void writeToFile(char *data, u32 length, char *path) {
-	/*
-	**  Takes data of length and writes it to a file path. Displays errors when they happen...
-	*/
-	
-	char msg[1024] = "Writing to file ";
-	strcat(msg, path);
-	verbosePrint(msg);
-	
-	if (!data || !length || !path) return;
-	
-	FILE *ofile = NULL;
-	
-	if (!(ofile = fopen(path, "w"))) {
-		perror(path);
-//		printf("An error occurred trying to open %s (%d)\n", path, errno);
-		return;
-	}
-	
-	if (fwrite(data, 1, length, ofile) != length) {
-		printf("An error occurred trying to write to %s\n", path);
-	}
-	
-	fclose(ofile);
-}
-
-u32 readFromFile(char *buf, char *path) {
-	/*
-	**  reads from the file at path, 
-	**  sets buf to the contents of said file...
-	**  and returns the length of data.
-	**
-	**  use getFilesize() when you allocate buf
-	**
-	**  returns 0 and displays messages on error;
-	*/
-	
-	char msg[1024] = "Reading file ";
-	strcat(msg, path);
-	verbosePrint(msg);
-	
-	if (!path || !buf) return 0;
-	
-	FILE *ifile = NULL;
-	
-	u32 length = getFilesize(path); //get how much to read...
-	
-	if (!length || !(ifile = fopen(path, "r"))) {
-		printf("An error occurred trying to open %s\n", path);
-		return 0;
-	}
-	
-	if (fread(buf, 1, length, ifile) != length) {
-		printf("An error occurred when trying to read %s\n", path);
-		fclose(ifile);
-		return 0;
-	}
-	
-	fclose(ifile);
-	return length;
-}
-
-u32 getFilesize(char *path) {
-	/*
-	**  returns the filesize of the file at *path
-	**  useful for when you read a file... gotta make sure you allocate enough memory for the file...
-	*/
-	
-	FILE *ifile = NULL;
-	
-	if (!(ifile = fopen(path, "r"))) {
-		return 0;
-	}
-	
-	fseek(ifile, 0, SEEK_END);
-	u32 len = ftell(ifile);
-	fclose(ifile);
-	
-	return len;
-}
 
 void printUsage() {
 	printf("GCMTool %s- A utility for working with Nintendo GameCube DVD images.\n\tgcmtool.sourceforge.net\n\n", VERSION);
