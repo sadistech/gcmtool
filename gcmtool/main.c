@@ -782,7 +782,7 @@ void printExtendedUsage() {
 	
 	printf("    Options:\n");
 	PRINT_HELP(ARG_EXTRACT);
-//	PRINT_HELP(ARG_VERBOSE);
+	PRINT_HELP(ARG_VERBOSE);
 	PRINT_HELP(ARG_INFO);
 	PRINT_HELP(ARG_LIST);
 	PRINT_HELP(ARG_HELP);
