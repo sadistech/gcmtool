@@ -1,0 +1,15 @@
+gcmtool
+http://gcmtool.sourceforge.net
+
+gcmtool is a tool for auditing and editing Nintendo GameCube DVD images 
+(.iso or .gcm). Currently (5/26/2004), most of the code is there to do 
+whatever the hell you want, but the commandline implementation has yet 
+to be written.
+
+Thanks to gc-linux.org's YAGCD for all of the information it contained. 
+I wouldn't have been able to do this project without it.
+
+Also Mr. Spiv for porting doltool to OSX so I could check my work in my 
+own code against something.
+
+Documentation must be put together as well.
