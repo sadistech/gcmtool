@@ -33,7 +33,7 @@ GCMFileEntryStruct *GCMRawFileEntryToStruct(char *rawEntry, int index) {
 	u32 *l;
 	l = (u32*)rawEntry;
 	if (rawEntry[0] != 0)
-		fe->filenameOffset = ntohl(*l - 0x01000000);
+		fe->filenameOffset = ntohl(*l) - 0x01000000;
 	else 
 		fe->filenameOffset = ntohl(*l);
 	
