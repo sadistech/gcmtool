@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "GCMBnr.h"
+#include "GCMBnrInfoRecord.h"
 #include "GCMCommandline.h" /* for commandline macros */
 #include "FileFunctions.h"  /* for reading, writing, and getting the filesize of files */
 
@@ -197,14 +198,18 @@ int main(int argc, char **argv) {
 	
 	//display bnr...
 	printf("Version:       \t%c\n", b->version);
-	printf("Name:          \t%s\n", b->name);
-	printf("Developer:     \t%s\n", b->developer);
-	printf("Full Name:     \t%s\n", b->fullName);
-	printf("Full Developer:\t%s\n", b->fullDeveloper);
-	printf("Description:   \t%s\n", b->description);
-
+	
+	GCMBnrInfoRecordStruct *info = b->info;
+	do {
+		printf("Name:          \t%s\n", info->name);
+		printf("Developer:     \t%s\n", info->developer);
+		printf("Full Name:     \t%s\n", info->fullName);
+		printf("Full Developer:\t%s\n", info->fullDeveloper);
+		printf("Description:   \t%s\n", info->description);
+	} while (info = info->next);
+	
 	int fileChanged = 0;
-
+/*
 	if (newName != NULL) {
 		//let's set the name...
 		bzero(b->name, GCM_BNR_GAME_NAME_LENGTH);
@@ -294,7 +299,7 @@ int main(int argc, char **argv) {
 			exit(1);
 		}
 	}
-	
+*/	
 	closeBnr();
 	
 	return 0;
