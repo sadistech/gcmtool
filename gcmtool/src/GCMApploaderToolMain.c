@@ -38,7 +38,7 @@
 #define ARG_UNKNOWN		"-u"
 
 
-void openFile();
+void openFile(char *mode);
 void closeFile();
 char *filename; //the filename/path we are working with...
 FILE *appldrFile; //the file that we're working with
@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
 		}
 	} while(*argv);
 
-	openFile();
+	openFile("r");
 
 	u32 len = GetFilesizeFromStream(appldrFile);
 
@@ -98,8 +98,8 @@ void printApploader(GCMApploaderStruct *a) {
 	printf("Unknown:    %08X\n", a->unknown);
 }
 
-void openFile() {
-	if (!(appldrFile = fopen(filename, "r+"))) {
+void openFile(char *mode) {
+	if (!(appldrFile = fopen(filename, mode))) {
 		perror(filename);
 		exit(1);
 	}

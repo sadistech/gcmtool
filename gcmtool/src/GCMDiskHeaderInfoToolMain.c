@@ -69,7 +69,7 @@
 #define ARG_UNKNOWN2_OPT		"<value>"
 #define ARG_UNKNOWN2_HELP		"Set unknown2 to " ARG_UNKNOWN2_OPT " (unsigned 32-bit int)"
 
-void openFile();
+void openFile(char *mode);
 void closeFile();
 char *filename; //the filename/path we are working with...
 FILE *dhiFile; //the file that we're working with
@@ -184,7 +184,7 @@ int main(int argc, char **argv) {
 		}
 	} while(*argv);
 
-	openFile();
+	openFile("r");
 
 	u32 len = GetFilesizeFromStream(dhiFile);
 
@@ -204,6 +204,8 @@ int main(int argc, char **argv) {
 	GCMDiskHeaderInfoStruct *d = GCMRawDiskHeaderInfoToStruct(data);
 
 	printDiskHeaderInfoStruct(d);
+
+	closeFile();
 
 	if (modDebugMonitorSize) {
 		d->debugMonitorSize = newDebugMonitorSize;
@@ -251,6 +253,8 @@ int main(int argc, char **argv) {
 	}
 
 	if (fileChanged) {
+		openFile("r+");
+		
 		printDiskHeaderInfoStruct(d);
 
 		char *data = (char*)malloc(GCM_DISK_HEADER_INFO_LENGTH);
@@ -263,10 +267,8 @@ int main(int argc, char **argv) {
 		}
 		
 		free(data);
+		closeFile();
 	}
-
-	
-	closeFile();
 
 	return 0;
 }
@@ -284,8 +286,8 @@ void printDiskHeaderInfoStruct(GCMDiskHeaderInfoStruct *d) {
 	printf("Unknown 2:             %08X\n", d->unknown2);
 }
 
-void openFile() {
-	if (!(dhiFile = fopen(filename, "r+"))) {
+void openFile(char *mode) {
+	if (!(dhiFile = fopen(filename, mode))) {
 		perror(filename);
 		exit(1);
 	}
