@@ -18,8 +18,17 @@
 #include <dirent.h>
 #include <sys/types.h>
 
-static int recursiveCount;
+//some stuff for temp files... (string table and fstData...)
+static FILE *fstTempFile;
+static FILE *stringTableTempFile;
+static int fst_fd;
+static int stringTable_fd;
+
+static void initRecursion();
 static int recurseDirectory(char *path, char *buf);
+
+//for string table stuff...
+static int writeStringToTempFile(char *string);
 
 void GCMGetDiskHeader(FILE *ifile, char *buf) {
 	/* 
@@ -353,7 +362,57 @@ void GCMGetNthRawFileEntry(FILE *ifile, int n, char *buf) {
 }
 
 void GCMReplaceFilesystem(FILE *ifile, char *fsRootPath) {
-	recurseDirectory(fsRootPath, NULL);
+	initRecursion(); //gotta set up some temp vars...
+
+	int count =	recurseDirectory(fsRootPath, NULL);
+	
+	//allocated enough memory for all of the entries + 1 (for the root entry)
+	char *fst = (char*)malloc((count + 1) * GCM_FST_ENTRY_LENGTH);
+	char *fstStart = fst;
+	
+	GCMFileEntryStruct *root= (GCMFileEntryStruct*)malloc(sizeof(GCMFileEntryStruct));
+	
+	//initialize the entry...
+	root->isDir = 1;
+	root->filename = ""; //because it's root, it don't mattah!
+	root->filenameOffset = 0; //no filename, damnit!
+	root->offset = 0; //root has no parent offset...
+	root->length = (u32)(count + 1); //file count + 1
+	
+	char *rawRoot = (char*)malloc(GCM_FST_ENTRY_LENGTH);
+	GCMFileEntryStructToRaw(root, rawRoot); //convert the struct into something that can be written to a file
+	memcpy(fst, rawRoot, GCM_FST_ENTRY_LENGTH);
+
+	//we don't need these anymore...
+	free(root);
+	free(rawRoot);
+	
+	fst += GCM_FST_ENTRY_LENGTH; //move the thing so we can write after it when we recurse!
+	
+	recurseDirectory(fsRootPath, fst);
+	
+	fst = fstStart; //reset fst
+	
+	fclose(fstTempFile);
+	fclose(stringTableTempFile);
+}
+
+static void initRecursion() {
+	fst_fd = -1;
+	stringTable_fd = -1;
+	
+	//init the temp file...
+	char fstTempFilename[] = "fstData.tmp.XXXXXX";
+	if ((fst_fd = mkstemp(fstTempFilename) == -1) || !(fstTempFile = fdopen(fst_fd, "w+"))) {
+		perror("ERROR OPENING TEMP FILE");
+		exit(1);
+	}
+	
+	char stringTableTempFilename[] = "stringtable.tmp.XXXXXX";
+	if ((stringTable_fd = mkstemp(stringTableTempFilename) == -1) || !(stringTableTempFile = fdopen(stringTable_fd, "w+"))) {
+		perror("ERROR OPENING TEMP FILE!");
+		exit(1);
+	}
 }
 
 static int recurseDirectory(char *path, char *buf) {
@@ -361,8 +420,12 @@ static int recurseDirectory(char *path, char *buf) {
 	**  returns the count of entries in buf...
 	*/
 	
+	if (!path) return 0;
+	
 	DIR *d = NULL;
 	struct dirent *de = NULL;
+	
+	int count = 0;
 	
 	if (!(d = opendir(path))) {
 		printf("error opening directory! Doesn't exist?\n");
@@ -372,9 +435,35 @@ static int recurseDirectory(char *path, char *buf) {
 	int i = 0;
 	
 	for (i = 0; (de = readdir(d)) != NULL; i++) {
+		if (de->d_name[0] == '.') { //skip invisible files and . and ..
+			i--;
+			continue; 
+		}
+		
+		GCMFileEntryStruct *e = (GCMFileEntryStruct*)malloc(sizeof(GCMFileEntryStruct));
+		
 		if (de->d_type == DT_DIR) {
+			e->isDir = 1;
+			e->filenameOffset = writeStringToTempFile(de->d_name);
+			e->offset = 0; //FIX THIS!
+			e->length = 0; //FIX THIS!
+			
 			printf("dir : %s\n", de->d_name);
+		
+			char newPath[255] = "";
+			strcpy(newPath, path);
+			strcat(newPath, "/");
+			strcat(newPath, de->d_name);
+			
+			count = recurseDirectory(newPath, NULL);
+		//	printf("%d (%s)\n", count, de->d_name);
+			i += count;
 		} else if (de->d_type == DT_REG) {
+			e->isDir = 0;
+			e->filenameOffset = writeStringToTempFile(de->d_name);
+			e->offset = 0; //FIX THIS!
+			e->length = 0; //FIX THIS!
+			
 			printf("file: %s\n", de->d_name);
 		} else {
 			printf("unknown filetype! (%d)\n", de->d_type);
@@ -384,5 +473,18 @@ static int recurseDirectory(char *path, char *buf) {
 	
 	closedir(d);
 	
-	return 0;
+	return i;
+}
+
+static int writeStringToTempFile(char *string) {
+	int len = strlen(string) + 1;
+	
+	printf("%d\t%s\n", len, string);
+
+	if (fwrite(string, 1, len, stringTableTempFile) != len) {
+		perror("Error writing to string table!\n");
+		exit(1);
+	}
+	
+	return (int)ftell(stringTableTempFile);
 }
