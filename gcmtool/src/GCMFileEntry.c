@@ -112,6 +112,7 @@ void GCMFetchFilenameForFileEntry(FILE *ifile, GCMFileEntryStruct *entry) {
 	
 	if (entry->index == 0) { //it's the root entry...
 		entry->filename = "/";
+		return;
 	}
 	
 	fseek(ifile, GCMGetStringTableOffset(ifile) + entry->filenameOffset, SEEK_SET);
@@ -174,6 +175,11 @@ void GCMGetFullPathForFileEntry(FILE *ifile, GCMFileEntryStruct *entry, char *bu
 	GCMFetchFilenameForFileEntry(ifile, entry);
 
 	//printf("%d %s\n", entry->index, entry->filename);
+	
+	if (entry->index == 0) {
+		strcpy(buf, "/");
+		return;
+	}
 	
 	char fullPath[1024] = ""; //allocate 1024, just to be safe...
 		
