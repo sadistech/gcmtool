@@ -10,10 +10,11 @@
 #include "FileFunctions.h"
 #include <stdlib.h>
 
-int CopyData(FILE *source, FILE *dest, u32 length) {
+u32 CopyData(FILE *source, FILE *dest, u32 length) {
 	/*
 	**  copies data from source to dest
 	**  does it in FF_BUFFER_SIZE chunks to keep it fast and from using up too much memory...
+	**  returns the amount of data copied...
 	*/
 	
 	if (!source || !dest || !length) return 0;
