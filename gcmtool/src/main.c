@@ -133,7 +133,7 @@
 
 //some utility functions...
 void printEntry(GCMFileEntryStruct *e);
-void printDirectory(GCMFileEntryStruct *e);
+//void printDirectory(GCMFileEntryStruct *e);
 
 void recurseFileEntry(GCMFileEntryStruct *e, void (*func)(GCMFileEntryStruct *));
 
@@ -841,7 +841,7 @@ void recurseFileEntry(GCMFileEntryStruct *e, void (*func)(GCMFileEntryStruct *))
 	}
 }
 
-void printDirectory(GCMFileEntryStruct *e) {
+/*void printDirectory(GCMFileEntryStruct *e) {
 	if (!e) {
 		return;
 	}
@@ -866,7 +866,7 @@ void printDirectory(GCMFileEntryStruct *e) {
 		dirDepth--;
 		lastDir = GCMGetNthFileEntry(gcmFile, lastDir->offset); //set lastDir to the parent of lastDir...
 	}
-}
+}*/
 
 void writeToFile(char *data, u32 length, char *path) {
 	/*
