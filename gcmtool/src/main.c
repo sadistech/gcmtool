@@ -545,7 +545,7 @@ void extractFileEntry(GCMFileEntryStruct *e) {
 	
 	//for building the path for where we're making dirs and extracting...
 	char s[1024];
-	char fp[256];
+	char fp[256] = "";
 	
 	//now do the actual work...
 	if (e->isDir) {
@@ -559,11 +559,12 @@ void extractFileEntry(GCMFileEntryStruct *e) {
 		//printf("mkdir %s\n", s);
 		
 		if (e->index == 0) {
+			//if it's the root directory, we're gonna create a directory to extract into named filename.FILES
 			strcat(extractRootPath, "/");
 			strcat(extractRootPath, filename);
 			strcat(extractRootPath, ".FILES");
 			
-			printf("MAKING NEW DIR! %s\n", extractRootPath);
+		//	printf("MAKING NEW DIR! %s\n", extractRootPath);
 			
 			mkdir(extractRootPath, S_IRWXU);
 		} else {

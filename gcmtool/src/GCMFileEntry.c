@@ -104,10 +104,19 @@ void GCMGetFullPathForFileEntry(FILE *ifile, GCMFileEntryStruct *entry, char *bu
 	
 	if (!ifile || !entry || !entry->isDir || !buf) return;
 	
-	char fullPath[1024] = ""; //allocate 1024, just to be safe...
+	//if it's the root entry (entry[0]), just set buf to ""
+	//this prevents breaking if you want the full path of a file in the root directory...
+	//if (entry->index == 0){
+	//	strcpy(buf, "");
+	//	return;
+	//}
 	
 	GCMFetchFilenameForFileEntry(ifile, entry);
+
+	printf("%d %s\n", entry->index, entry->filename);
 	
+	char fullPath[1024] = ""; //allocate 1024, just to be safe...
+		
 	strcpy(fullPath, entry->filename);
 	
 	GCMFileEntryStruct *e = entry; // = GCMGetNthFileEntry(ifile, entry->offset);
