@@ -25,6 +25,9 @@ static FILE *stringTableTempFile;
 static int lastDir;
 static int currentEntryIndex;
 
+static char fstTempFilename[64];
+static char stringTableTempFilename[64];
+
 static void initRecursion();
 static int recurseDirectory(char *path, char *buf);
 
@@ -384,7 +387,7 @@ void GCMReplaceFilesystem(FILE *ifile, char *fsRootPath) {
 	memcpy(fst, rawRoot, GCM_FST_ENTRY_LENGTH);
 
 	//we don't need these anymore...
-	free(root);
+	//free(root);
 	free(rawRoot);
 	
 	fst += GCM_FST_ENTRY_LENGTH; //move the thing so we can write after it when we recurse!
@@ -393,8 +396,53 @@ void GCMReplaceFilesystem(FILE *ifile, char *fsRootPath) {
 	
 	fst = fstStart; //reset fst
 	
+	rewind(fstTempFile);
+	rewind(stringTableTempFile);
+	
+	int stringTableSize = getFilesize(stringTableTempFilename);
+	u32 dataSize = getFilesize(fstTempFilename);
+	u32 offsetSize = stringTableSize + GCMGetFSTOffset(ifile);
+	
+	typedef struct raw_entry {
+		u32 a;
+		u32 b;
+		u32 c;
+	}RawEntry;
+	
+	RawEntry *re = NULL;
+	int i = 0;
+	for (i = 0; i < root->length; i++) {
+		re = (RawEntry*)fst;
+		/*if (!(re->a & 0x010000)) { //if it's a file...
+			re->c += offsetSize;
+			memcpy(fst, re, sizeof(RawEntry));
+		}*/
+		
+		printf("%d\t%ld\t%ld\t%ld\n", i, re->a, re->b, re->c);
+		
+		fst += GCM_FST_ENTRY_LENGTH;
+	}
+	
+	fst = fstStart;
+	
+	//write fst...
+	fseek(ifile, GCMGetFSTOffset(ifile), SEEK_SET);
+	fwrite(fst, 1, (root->length * GCM_FST_ENTRY_LENGTH), ifile);
+	
+	//write string table...
+	char *stringTable = (char*)malloc(stringTableSize);
+	fread(stringTable, 1, stringTableSize, stringTableTempFile);
+	fwrite(stringTable, 1, stringTableSize, ifile);
+	
+	//write data
+	
+	//then close and delete the temp files...
+	
 	fclose(fstTempFile);
 	fclose(stringTableTempFile);
+	
+	unlink(fstTempFilename);
+	unlink(stringTableTempFilename);
 }
 
 static void initRecursion() {
@@ -402,13 +450,13 @@ static void initRecursion() {
 	int stringTable_fd = -1;
 	
 	//init the temp file...
-	char fstTempFilename[] = "fstData.tmp.XXXXXX";
+	strcpy(fstTempFilename, "fstData.tmp.XXXXXX");
 	if (((fst_fd = mkstemp(fstTempFilename)) == -1) || !(fstTempFile = fdopen(fst_fd, "w+"))) {
 		perror("ERROR OPENING TEMP FILE");
 		exit(1);
 	}
 	
-	char stringTableTempFilename[] = "stringtable.tmp.XXXXXX";
+	strcpy(stringTableTempFilename, "stringtable.tmp.XXXXXX");
 	if (((stringTable_fd = mkstemp(stringTableTempFilename)) == -1) || !(stringTableTempFile = fdopen(stringTable_fd, "w+"))) {
 		perror("ERROR OPENING TEMP FILE!");
 		exit(1);
@@ -456,18 +504,32 @@ static int recurseDirectory(char *path, char *buf) {
 			
 			count = getFileCount(newPath);
 			
+			int oldLastDir = lastDir;
+			lastDir = currentEntryIndex;
+			
 			e->isDir = 1;
 			e->filenameOffset = writeStringToTempFile(de->d_name);
 			e->offset = lastDir;
 			e->length = currentEntryIndex + count + 1;
 			
+			printf("%ld\t%ld\t%ld\n", e->filenameOffset, e->offset, e->length);
+			
+			char *rawEntry = (char*)malloc(GCM_FST_ENTRY_LENGTH);
+			GCMFileEntryStructToRaw(e, rawEntry);
+			
+			memcpy(buf, rawEntry, GCM_FST_ENTRY_LENGTH);
+			buf += GCM_FST_ENTRY_LENGTH;
+			
 			char *fstBuf = (char*)malloc(count * GCM_FST_ENTRY_LENGTH);
 			
 			recurseDirectory(newPath, fstBuf);
 			
+			lastDir = oldLastDir;
+			
 			memcpy(buf, fstBuf, count * GCM_FST_ENTRY_LENGTH);
 
 			i += count;
+			buf += (GCM_FST_ENTRY_LENGTH * count);
 		} else if (de->d_type == DT_REG) {
 			printf("file: %s\n", de->d_name);
 			
@@ -476,12 +538,15 @@ static int recurseDirectory(char *path, char *buf) {
 			e->offset = writeDataToTempFile(newPath); 
 			e->length = getFilesize(newPath); 
 			
+			printf("%ld\t%ld\t%ld\n", e->filenameOffset, e->offset, e->length);
+			
 		//	printf("%d\n", e->filenameOffset);
 			
 			char *rawEntry = (char*)malloc(GCM_FST_ENTRY_LENGTH);
 			GCMFileEntryStructToRaw(e, rawEntry);
 			
 			memcpy(buf, rawEntry, GCM_FST_ENTRY_LENGTH);
+			buf += GCM_FST_ENTRY_LENGTH;
 		} else {
 			printf("unknown filetype! (%d)\n", de->d_type);
 			exit(1);
