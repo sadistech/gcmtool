@@ -88,8 +88,10 @@ int main(int argc, char **argv) {
 	for (i = 0; i < root->length; i++) {
 		GCMFileEntryStruct *e = GCMGetNthFileEntry(gcmFile, i);
 
-		if (e->filenameOffset > highestStringTableOffset) {
-			GCMFetchFilenameForFileEntry(gcmFile, e);
+		GCMFetchFilenameForFileEntry(gcmFile, e);
+		printf("%s\n", e->filename);
+		
+		if (e->filenameOffset >= highestStringTableOffset) {
 			highestStringTableOffset = e->filenameOffset + strlen(e->filename) + 1; // +1 for \0
 		}
 
@@ -108,7 +110,21 @@ int main(int argc, char **argv) {
 	printf("endOfFileList: %ld\n", endOfFileList);
 
 	printf("\n");
-	printf("Savings: %ld\n", firstFileOffset - (stringTableOffset + highestStringTableOffset) + (filesize - endOfFileList));
+	printf("Savings: %ld\n", firstFileOffset - (stringTableOffset + highestStringTableOffset));
+
+	printf("Verifying...\n");
+
+	fseek(gcmFile, stringTableOffset + highestStringTableOffset, SEEK_SET);
+
+	while (!fgetc(gcmFile));
+
+	printf("currentOffset: %ld\n", ftell(gcmFile));
+
+	if (ftell(gcmFile) >= firstFileOffset) {
+		printf("Everything seems ok... YAY!\n");
+	} else {
+		printf("EEK! no good! something's wrong.\n");
+	}
 
 	fclose(gcmFile);
 }
