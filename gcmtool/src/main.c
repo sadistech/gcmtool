@@ -146,7 +146,7 @@ FILE *gcmFile;		//the file we're working with
 int dirDepth;
 int recursiveIndex; //for the recursive printing...
 
-int main (int argc, char * const argv[]) {
+int main (int argc, char **argv) {
 	// start flags declarations...
 	
 	int hexFlag = 0;
