@@ -1,6 +1,9 @@
 [all] fixed a bug where the file would be opened as read/write even if we
 	were only going to be reading (which would lead to permission denied errors
 	on read-only files)
+[all] improved hexadecimal value output
+[all] for all unsigned 32-bit int commandline input, if you precede the value
+	with "0x" the value will be interpreted as hex. (ie 0x0100 for 256)
 
 2004/7/14
 0.3.1
