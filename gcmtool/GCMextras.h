@@ -12,7 +12,7 @@
 #define _GCM_EXTRAS_H_
 
 #include <stdio.h>
-#include "GCMUtils.h"
+#include "GCMutils.h"
 #include "GCMDol.h"
 #include "types.h"
 
