@@ -6,6 +6,8 @@ gcmtool is a tool for auditing and editing Nintendo GameCube DVD images
 whatever the hell you want, but the commandline implementation has yet 
 to be written.
 
+WHEN MODIFYING YOUR GCM, ALWAYS WORK ON A BACKUP COPY!
+
 Thanks to gc-linux.org's YAGCD for all of the information it contained. 
 I wouldn't have been able to do this project without it.
 
