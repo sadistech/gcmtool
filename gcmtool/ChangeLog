@@ -3,6 +3,7 @@
 [gcmdiskheaderinfotool] implemented editing of diskheaders. see usage (-?)
 	for help.
 [gcmbnrtool] added support for reading v2 BNRs
+[all] fixed a bug with path parsing paths that would cause a segfault in special cases on x86 (and potentially other systems).
 
 2004/7/04
 0.3.0
