@@ -75,7 +75,7 @@ am__include = include
 am__quote = 
 install_sh = /Users/spike/gcmtool/cvs/gcmtool/install-sh
 bin_PROGRAMS = gcmtool gcmbnrtool
-gcmtool_SOURCES = main.c GCMApploader.h GCMApploader.c GCMDiskHeader.h GCMDiskHeader.c GCMDiskHeaderInfo.h GCMDiskHeaderInfo.c GCMDol.h GCMDol.c GCMextras.h GCMextras.c GCMutils.h GCMutils.c pathfunc.h pathfunc.c types.h GCMCommandline.h GCMFileEntry.h GCMFileEntry.c
+gcmtool_SOURCES = main.c GCMApploader.h GCMApploader.c GCMDiskHeader.h GCMDiskHeader.c GCMDiskHeaderInfo.h GCMDiskHeaderInfo.c GCMDol.h GCMDol.c GCMextras.h GCMextras.c GCMutils.h GCMutils.c pathfunc.h pathfunc.c types.h GCMCommandline.h GCMFileEntry.h GCMFileEntry.c FileFunctions.h FileFunctions.c
 gcmbnrtool_SOURCES = GCMBnrToolMain.c GCMBnr.h GCMBnr.c types.h GCMCommandline.h
 subdir = src
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -92,7 +92,8 @@ gcmbnrtool_LDFLAGS =
 am_gcmtool_OBJECTS = main.$(OBJEXT) GCMApploader.$(OBJEXT) \
 	GCMDiskHeader.$(OBJEXT) GCMDiskHeaderInfo.$(OBJEXT) \
 	GCMDol.$(OBJEXT) GCMextras.$(OBJEXT) GCMutils.$(OBJEXT) \
-	pathfunc.$(OBJEXT) GCMFileEntry.$(OBJEXT)
+	pathfunc.$(OBJEXT) GCMFileEntry.$(OBJEXT) \
+	FileFunctions.$(OBJEXT)
 gcmtool_OBJECTS = $(am_gcmtool_OBJECTS)
 gcmtool_LDADD = $(LDADD)
 gcmtool_DEPENDENCIES =
@@ -105,8 +106,9 @@ LDFLAGS =
 LIBS = 
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-DEP_FILES = ./$(DEPDIR)/GCMApploader.Po \
-	./$(DEPDIR)/GCMBnr.Po ./$(DEPDIR)/GCMBnrToolMain.Po \
+DEP_FILES = ./$(DEPDIR)/FileFunctions.Po \
+	./$(DEPDIR)/GCMApploader.Po ./$(DEPDIR)/GCMBnr.Po \
+	./$(DEPDIR)/GCMBnrToolMain.Po \
 	./$(DEPDIR)/GCMDiskHeader.Po \
 	./$(DEPDIR)/GCMDiskHeaderInfo.Po \
 	./$(DEPDIR)/GCMDol.Po ./$(DEPDIR)/GCMFileEntry.Po \
@@ -185,6 +187,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+include ./$(DEPDIR)/FileFunctions.Po
 include ./$(DEPDIR)/GCMApploader.Po
 include ./$(DEPDIR)/GCMBnr.Po
 include ./$(DEPDIR)/GCMBnrToolMain.Po
