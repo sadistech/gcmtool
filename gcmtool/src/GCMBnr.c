@@ -2,6 +2,9 @@
 #include <string.h>
 #include <stdlib.h>
 
+static uchar GCMBnrReverseBits(uchar v, int bitCount);
+
+
 GCMBnrStruct *GCMRawBnrToStruct(char *raw) {
 	/*
 	**  take a raw bnr (ie- from an opening.bnr file) and return a struct object...
@@ -9,6 +12,7 @@ GCMBnrStruct *GCMRawBnrToStruct(char *raw) {
 	**  correctly load version 2 BNRs, the information will be incomplete.
 	*/
 	
+	if (!raw) printf("wtf?! NULL BNR!\n");
 	if (!raw) return NULL;
 	
 	//check the magic word... (BNR)
@@ -69,7 +73,7 @@ void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf) {
 	buf += GCM_BNR_MAGIC_WORD_PREFIX_LENGTH;
 	
 	char versionStr[2] = "";
-	sprintf(versionStr, "%d", b->version);
+	sprintf(versionStr, "%c", b->version);
 	memcpy(buf, versionStr, GCM_BNR_MAGIC_WORD_SUFFIX_LENGTH);
 	buf += GCM_BNR_MAGIC_WORD_SUFFIX_LENGTH;
 	
@@ -258,6 +262,7 @@ void GCMBnrGetImageRaw(GCMBnrStruct *b, char *buf) {
 		
 		//convert the pixel into an RgbColor
 		//printf("%d ", i);
+		
 		GCMRgbColor *c = GCMRGB5A1toColor(curPixel[j]);
 		
 		//put the data into buf

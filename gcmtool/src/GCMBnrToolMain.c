@@ -13,6 +13,8 @@
 #endif 
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "GCMBnr.h"
 #include "GCMCommandline.h" /* for commandline macros */
 
@@ -197,7 +199,12 @@ int main(int argc, char **argv) {
 	}
 
 	GCMBnrStruct *b = GCMRawBnrToStruct(data);
-
+	
+	if (!b) {
+		printf("error opening banner!\n");
+		exit(1);
+	}
+	
 	//display bnr...
 	printf("Version:       \t%c\n", b->version);
 	printf("Name:          \t%s\n", b->name);
@@ -322,6 +329,8 @@ int main(int argc, char **argv) {
 	}
 
 	fclose(ofile);*/
+	
+	return 0;
 }
 
 void openBnr() {
