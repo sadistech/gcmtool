@@ -54,7 +54,7 @@
 #define ARG_LIST							"-l"
 #define ARG_LIST_SYN						"--list"
 #define ARG_LIST_OPT						"[ " OPT_FILE_INFO " " OPT_FULL_PATH " ]"
-#define ARG_LIST_HELP						"Lists the filesystem of the GCM. If " OPT_FILE_INFO " is included, it will show the filesizes or filecount (for directories). If " OPT_FULL_PATH " is included, it will print the full paths of each file (for easy grepping)."
+#define ARG_LIST_HELP						"Lists the filesystem of the GCM. If " OPT_FILE_INFO " is included, it will show the filesizes or filecount (for directories). If " OPT_FILE_INFO " is included twice, it will print additional offset info for the files. If " OPT_FULL_PATH " is included, it will print the full paths of each file (for easy grepping)."
 
 #define ARG_HEX								"-h"
 #define ARG_HEX_SYN							"--hex"
