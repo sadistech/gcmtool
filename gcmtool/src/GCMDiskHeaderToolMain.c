@@ -86,10 +86,10 @@ int main(int argc, char **argv) {
 	char *newGameID = NULL;
 	char *newRegionCode = NULL;
 	char *newMakerCode = NULL;
-	int newDiskID = 0;
-	int newVersion = 0;
-	int newStreaming = 0;
-	int newStreamBufSize = 0;
+	int newDiskID = -1;
+	int newVersion = -1;
+	int newStreaming = -1;
+	int newStreamBufSize = -1;
 	
 
 	//start processing the arguments...
@@ -200,10 +200,49 @@ int main(int argc, char **argv) {
 	printDiskHeader(d); //print the diskheader...
 
 	//perform any operations on it...
+	if (newSystemID != NULL) {
+		d->systemID = newSystemID[0];
+		fileChanged++;
+	}
 
+	if (newGameID != NULL) {
+		strcpy(d->gameID, newGameID);
+		fileChanged++;
+	}
+
+	if (newRegionCode != NULL) {
+		d->regionCode = newRegionCode[0];
+		fileChanged++;
+	}
+
+	if (newMakerCode != NULL) {
+		strcpy(d->makerCode, newMakerCode);
+		fileChanged++;
+	}
+
+	if (newDiskID >= 0) {
+		d->diskID = (char)newDiskID;
+		fileChanged++;
+	}
+
+	if (newVersion >= 0) {
+		d->version = (char)newVersion;
+		fileChanged++;
+	}
+
+	if (newStreaming >= 0) {
+		d->streaming = (char)newStreaming;
+		fileChanged++;
+	}
+
+	if (newStreamBufSize >= 0) {
+		d->streamBufSize = (char)newStreamBufSize;
+		fileChanged++;
+	}
 
 	// If any changes were made, print diskheader again...
 	if (fileChanged) {
+		printf("modifications made... no changes made to file.\n");
 		printDiskHeader(d);
 	}
 
