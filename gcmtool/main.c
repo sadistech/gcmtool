@@ -37,7 +37,11 @@ void printEntry(GCMFileEntryStruct *e);
 void printDirectory(GCMFileEntryStruct *e);
 
 //regular functions...
-void printUsage();
+void openFile(void);
+void closeFile(void);
+
+void printGCMInfo(void);
+void printUsage(void);
 
 char *filepath;
 char *filename;
@@ -70,6 +74,13 @@ int main (int argc, char * const argv[]) {
 			
 			extractFrom = GET_NEXT_ARG;
 			extractTo = GET_NEXT_ARG;
+			
+			if (!extractFrom || !extractTo) {
+				//argument error... something was omitted...
+				printf("Argument error.\n");
+				printUsage();
+				exit(1);
+			}
 		} else if (CHECK_ARG(GCM_TOOL_ARG_LIST)) {
 			// list filesystem
 			
@@ -84,10 +95,26 @@ int main (int argc, char * const argv[]) {
 		}
 	} while(*argv);
 	
-	dirDepth = 0;
+	//open the file... and start processing!
 	
-	//filepath = "/Users/spike/Downloads/True.Crime.Streets.of.LA.USA.NGC-STARCUBE/s3-tcsla.iso";
+	openFile();
+
+	printGCMInfo();
+
+	if (listFiles) {
+		dirDepth = 0;
+		recursiveIndex = 0;
+		GCMFileEntryStruct *r = GCMGetRootFileEntry(ifile);
+		printDirectory(r);
+		GCMFreeFileEntryStruct(r);
+	}
 	
+	closeFile();
+	
+	return 0;
+}
+
+void openFile(void) {
 	if (!filepath) {
 		printUsage();
 		exit(1);
@@ -97,7 +124,13 @@ int main (int argc, char * const argv[]) {
 		printf("error opening file... (%s)\n", filepath);
 		exit(1);
 	}
-	
+}
+
+void closeFile(void) {
+	fclose(ifile);
+}
+
+void printGCMInfo(void) {
 	char systemID = GCMGetSystemID(ifile);
 	
 	char *gameID = (char*)malloc(GCM_GAME_ID_LENGTH + 1);
@@ -111,72 +144,19 @@ int main (int argc, char * const argv[]) {
 	char *gameName = (char*)malloc(256);
 	GCMGetGameName(ifile, gameName);
 	
-//	u32 fst_offset	= GCMGetFSTOffset(ifile);
-//	u32 fst_size	= GCMGetFSTSize(ifile);
-	
 	printf("Filename:\t%s\n", filename);
 	printf("System ID:\t%c (%s)\n", systemID, GCMSystemIDToStr(systemID));
 	printf("Game ID:\t%s\n", gameID);
 	printf("Region:  \t%c (%s)\n", regionCode, GCMRegionCodeToStr(regionCode));
 	printf("Maker Code:\t%s (%s)\n", makerCode, GCMMakerCodeToStr(makerCode));
 	printf("Game Name:\t%s\n", gameName);
-	//printf("\n");
-//	printf("Diskheader Offset: %ld\n", 0);
-//	printf("DiskHeaderInfo Offset: %ld\n", GCM_DISK_HEADER_INFO_OFFSET);
-//	printf("Apploader Offset: %ld\n", GCM_APPLOADER_OFFSET);
-//	printf("FST Offset:\t%ld\n", fst_offset);
-//	printf("FST Size:\t%ld\n", fst_size);
 	
-	printf("DOL offset: %ld\n", GCMGetDolOffset(ifile));
-	
-	//let's try to extract bi2.bin //testing purposes...
-	/*
-	FILE *biFile;
-	
-	if (!(biFile = fopen("bi2.bin", "w"))) {
-		printf("ERROR OPENING bi2.bin\n");
-		exit(1);
-	}
-	
-	char *biData = (char*)malloc(GCM_DISK_HEADER_INFO_LENGTH);
-	
-	GCMGetDiskHeaderInfo(ifile, biData);
-	
-	if (fwrite(biData, 1, GCM_DISK_HEADER_INFO_LENGTH, biFile) != GCM_DISK_HEADER_INFO_LENGTH) {
-		printf("ERROR WRITING DATA!\n");
-		exit(1);
-	}
-	
-	free(biData);
-	fclose(biFile);*/
+	printf("DOL offset:\t%ld\n", GCMGetDolOffset(ifile));
 	
 	GCMFileEntryStruct *r = GCMGetRootFileEntry(ifile);
 	u32 entryCount = r->length;
 	printf("File count:\t%ld\n", entryCount);
-	
-	/*
-	GCMDiskHeaderStruct *dh = GCMGetDiskHeaderStruct(ifile);
-	printf("SystemID:\t%c\n", dh->systemID);
-	printf("GameID:  \t%s\n", dh->gameID);
-	printf("Region:  \t%c\n", dh->regionCode);
-	printf("Maker:   \t%s\n", dh->makercode);
-	printf("DiskID:  \t%d\n", dh->diskID);
-	printf("Version: \t%d\n", dh->version);
-	printf("Streaming:\t%c\n", dh->streaming);
-	printf("StreamBuf:\t%ld\n", dh->streamBufSize);
-	printf("Game Name:\t%s\n", dh->gameName);
-	printf("DOL Offset:\t%ld\n", dh->dolOffset);
-	printf("FSTOffset:\t%ld\n", dh->fstOffset);
-	printf("FSTSize: \t%ld\n", dh->fstSize);
-	printf("FSTSizeMax:\t%ld\n", dh->fstMaxSize);
-	*/
-	recursiveIndex = 0;
-	if (listFiles) {
-		printDirectory(r);
-	}
-	
-	fclose(ifile);
-	return 0;
+	GCMFreeFileEntryStruct(r);
 }
 
 void printEntry(GCMFileEntryStruct *e) {
