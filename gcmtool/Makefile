@@ -38,10 +38,10 @@ pkglibdir = $(libdir)/gcmtool
 pkgincludedir = $(includedir)/gcmtool
 top_builddir = .
 
-ACLOCAL = ${SHELL} /Users/spike/gcmtool/gcmtool/missing --run aclocal-1.6
-AUTOCONF = ${SHELL} /Users/spike/gcmtool/gcmtool/missing --run autoconf
-AUTOMAKE = ${SHELL} /Users/spike/gcmtool/gcmtool/missing --run automake-1.6
-AUTOHEADER = ${SHELL} /Users/spike/gcmtool/gcmtool/missing --run autoheader
+ACLOCAL = ${SHELL} /Users/spike/gcmtool/cvs/gcmtool/missing --run aclocal-1.6
+AUTOCONF = ${SHELL} /Users/spike/gcmtool/cvs/gcmtool/missing --run autoconf
+AUTOMAKE = ${SHELL} /Users/spike/gcmtool/cvs/gcmtool/missing --run automake-1.6
+AUTOHEADER = ${SHELL} /Users/spike/gcmtool/cvs/gcmtool/missing --run autoheader
 
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = /usr/bin/install -c
@@ -63,7 +63,7 @@ POST_UNINSTALL = :
 EXEEXT = 
 OBJEXT = o
 PATH_SEPARATOR = :
-AMTAR = ${SHELL} /Users/spike/gcmtool/gcmtool/missing --run tar
+AMTAR = ${SHELL} /Users/spike/gcmtool/cvs/gcmtool/missing --run tar
 AWK = awk
 CC = gcc
 CXX = g++
@@ -74,12 +74,13 @@ STRIP =
 VERSION = 0.1
 am__include = include
 am__quote = 
-install_sh = /Users/spike/gcmtool/gcmtool/install-sh
+install_sh = /Users/spike/gcmtool/cvs/gcmtool/install-sh
 bin_PROGRAMS = gcmtool
 gcmtool_SOURCES = main.cpp GCMApploader.h GCMApploader.c GCMDiskHeader.h GCMDiskHeader.c GCMDiskHeaderInfo.h GCMDiskHeaderInfo.c GCMDol.h GCMDol.c GCMextras.h GCMextras.c GCMutils.h GCMutils.c pathfunc.h pathfunc.c types.h
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =
 bin_PROGRAMS = gcmtool$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
@@ -93,8 +94,8 @@ gcmtool_LDADD = $(LDADD)
 gcmtool_DEPENDENCIES =
 gcmtool_LDFLAGS =
 
-DEFS = -DPACKAGE_NAME=\"\" -DPACKAGE_TARNAME=\"\" -DPACKAGE_VERSION=\"\" -DPACKAGE_STRING=\"\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE=\"gcmtool\" -DVERSION=\"0.1\" 
-DEFAULT_INCLUDES =  -I. -I$(srcdir)
+DEFS = -DHAVE_CONFIG_H
+DEFAULT_INCLUDES =  -I. -I$(srcdir) -I.
 CPPFLAGS = 
 LDFLAGS = 
 LIBS = 
@@ -119,11 +120,12 @@ CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 CXXFLAGS = -g -O2
 DIST_SOURCES = $(gcmtool_SOURCES)
 DIST_COMMON = README AUTHORS COPYING ChangeLog INSTALL Makefile.am \
-	Makefile.in NEWS aclocal.m4 configure configure.in depcomp \
-	install-sh missing mkinstalldirs
+	Makefile.in NEWS aclocal.m4 config.h.in configure configure.in \
+	depcomp install-sh missing mkinstalldirs
 SOURCES = $(gcmtool_SOURCES)
 
-all: all-am
+all: config.h
+	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .cpp .o .obj
@@ -143,6 +145,23 @@ $(srcdir)/configure:  $(srcdir)/configure.in $(ACLOCAL_M4) $(CONFIGURE_DEPENDENC
 
 $(ACLOCAL_M4):  configure.in 
 	cd $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
+
+config.h: stamp-h1
+	@if test ! -f $@; then \
+	  rm -f stamp-h1; \
+	  $(MAKE) stamp-h1; \
+	else :; fi
+
+stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
+	@rm -f stamp-h1
+	cd $(top_builddir) && $(SHELL) ./config.status config.h
+
+$(srcdir)/config.h.in:  $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	cd $(top_srcdir) && $(AUTOHEADER)
+	touch $(srcdir)/config.h.in
+
+distclean-hdr:
+	-rm -f config.h stamp-h1
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
@@ -230,11 +249,11 @@ ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	       END { for (i in files) print i; }'`; \
 	mkid -fID $$unique
 
-TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+TAGS:  $(HEADERS) $(SOURCES) config.h.in $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
-	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
+	list='$(SOURCES) $(HEADERS) config.h.in $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
 	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
 	  done | \
@@ -341,7 +360,7 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS)
+all-am: Makefile $(PROGRAMS) config.h
 
 installdirs:
 	$(mkinstalldirs) $(DESTDIR)$(bindir)
@@ -377,7 +396,7 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 distclean-am: clean-am distclean-compile distclean-depend \
-	distclean-generic distclean-tags
+	distclean-generic distclean-hdr distclean-tags
 
 dvi: dvi-am
 
@@ -411,11 +430,11 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am
 .PHONY: GTAGS all all-am check check-am clean clean-binPROGRAMS \
 	clean-generic dist dist-all dist-gzip distcheck distclean \
 	distclean-compile distclean-depend distclean-generic \
-	distclean-tags distcleancheck distdir dvi dvi-am info info-am \
-	install install-am install-binPROGRAMS install-data \
-	install-data-am install-exec install-exec-am install-info \
-	install-info-am install-man install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+	distclean-hdr distclean-tags distcleancheck distdir dvi dvi-am \
+	info info-am install install-am install-binPROGRAMS \
+	install-data install-data-am install-exec install-exec-am \
+	install-info install-info-am install-man install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic tags uninstall uninstall-am \
 	uninstall-binPROGRAMS uninstall-info-am
