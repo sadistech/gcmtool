@@ -15,7 +15,7 @@
 
 #define FF_BUFFER_SIZE  (8 * 1024 * 1024)   /* 8MB */
 
-int CopyData(FILE *source, FILE *dest, u32 length);
+u32 CopyData(FILE *source, FILE *dest, u32 length);
 
 void WriteDataToFile(char *data, u32 length, char *path);
 u32 ReadDataFromFile(char *buf, char *path);
