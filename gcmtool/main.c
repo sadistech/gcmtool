@@ -12,6 +12,9 @@
 //for the autoheader stuff... (grrr, I hate this thing...)
 #if HAVE_CONFIG_H
 #include <config.h>
+#else
+//if you're not configuring from the commandline...
+#define VERSION ""
 #endif
 
 #include <stdio.h>
@@ -377,7 +380,7 @@ void writeToFile(char *data, u32 length, char *path) {
 }
 
 void printUsage() {
-	printf("GCMTool - A utility for working with Nintendo GameCube DVD images.\n\tgcmtool.sourceforge.net\n\n");
+	printf("GCMTool %s- A utility for working with Nintendo GameCube DVD images.\n\tgcmtool.sourceforge.net\n\n", VERSION);
 	printf("Usage:");
 	printf("  gcmtool [ options ] <filename>\n\n");
 	printf("    Options:\n");
