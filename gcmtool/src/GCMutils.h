@@ -100,7 +100,6 @@ u32 GCMGetFSTMaxSize(FILE *ifile);
 
 //file entry stuff
 void GCMGetNthRawFileEntry(FILE *ifile, int n, char *buf);
-void GCMDeleteFileEntry(FILE *ifile, GCMFileEntryStruct *e, FILE *destFile);
 
 #ifdef __cplusplus
 };
