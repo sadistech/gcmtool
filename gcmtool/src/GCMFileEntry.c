@@ -111,7 +111,8 @@ void GCMFetchFilenameForFileEntry(FILE *ifile, GCMFileEntryStruct *entry) {
 	}
 	
 	if (entry->index == 0) { //it's the root entry...
-		entry->filename = "/";
+		entry->filename = (char*)malloc(2);
+		strcpy(entry->filename, "/");
 		return;
 	}
 	
@@ -208,10 +209,10 @@ void GCMFreeFileEntryStruct(GCMFileEntryStruct *fe) {
 
 	if (!fe) return;
 	
-//	if (fe->data != NULL)
-//		free(fe->data);
-//	if (fe->filename != NULL)
-//		free(fe->filename);
+	if (fe->data != NULL)
+		free(fe->data);
+	if (fe->filename != NULL)
+		free(fe->filename);
 		
 	free(fe);
 }

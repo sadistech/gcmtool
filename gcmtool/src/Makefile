@@ -152,7 +152,7 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-CFLAGS = -g
+CFLAGS = -g -O2
 DIST_SOURCES = $(gcmapploadertool_SOURCES) $(gcmbnrtool_SOURCES) \
 	$(gcmdiskheaderinfotool_SOURCES) $(gcmdiskheadertool_SOURCES) \
 	$(gcmtool_SOURCES)
