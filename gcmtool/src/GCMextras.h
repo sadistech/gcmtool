@@ -16,6 +16,7 @@
 #include "GCMFileEntry.h"
 #include "GCMDol.h"
 #include "types.h"
+#include "GCMErrors.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -66,6 +67,8 @@ GCMFileEntryStruct *GCMGetRootFileEntry(FILE *ifile);
 GCMFileEntryStruct *GCMGetNthFileEntry(FILE *ifile, int n);
 GCMFileEntryStruct *GCMGetFileEntryByName(FILE *ifile, char *name);
 GCMFileEntryStruct *GCMGetFileEntryAtPath(FILE *ifile, char *path);
+
+GCMError GCMReplaceNthFileEntry(FILE *ifile, GCMFileEntryStruct *e, int n);
 
 u32 GCMGetStringTableOffset(FILE *ifile);
 
