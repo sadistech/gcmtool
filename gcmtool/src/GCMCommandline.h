@@ -37,7 +37,7 @@
 //macros... although they may be simple...
 //these are for getting help and synonyms and stuff
 #define ARG_SYN(ARG)		ARG ## _SYN
-#define PRINT_HELP(ARG)		printf("\t" ARG "%s" ARG ## _SYN " " ARG ## _OPT "\n\t\t" ARG ## _HELP "\n\n", strcmp("", ARG ## _SYN) == 0 ? "" : ", ");
+#define PRINT_HELP(ARG)		printf("\t\033[1m" ARG "%s" ARG ## _SYN " " ARG ## _OPT "\033[m\n\t\t" ARG ## _HELP "\n\n", strcmp("", ARG ## _SYN) == 0 ? "" : ", ");
 
 // these are for the argument parsing engine...
 #define GET_NEXT_ARG		*(++argv)
