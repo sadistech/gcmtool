@@ -131,6 +131,8 @@
 void printEntry(GCMFileEntryStruct *e);
 void printDirectory(GCMFileEntryStruct *e);
 
+void recurseFileEntry(GCMFileEntryStruct *e, void (*func)(GCMFileEntryStruct *));
+
 //regular function prototypes...
 void openFile(void);
 void closeFile(void);
@@ -417,7 +419,7 @@ int main (int argc, char **argv) {
 		dirDepth = 0;
 		recursiveIndex = 0;
 		GCMFileEntryStruct *r = GCMGetRootFileEntry(gcmFile);
-		printDirectory(r);
+		recurseFileEntry(r, printEntry);
 		GCMFreeFileEntryStruct(r);
 	}
 	
@@ -734,6 +736,33 @@ void printEntry(GCMFileEntryStruct *e) {
 	}
 	
 	//free(e->filename);
+}
+
+void recurseFileEntry(GCMFileEntryStruct *e, void (*func)(GCMFileEntryStruct *)) {
+	if (!e) {
+		return;
+	}
+	
+	(func)(e);
+	
+	if (e->isDir) {
+		dirDepth++;
+		GCMFileEntryStruct *next;
+		lastDir = e;
+		
+		//printf("for(%d++; %d < %ld; i++)\n", i, i, e->length);
+		
+		for(recursiveIndex++; (unsigned long)recursiveIndex < e->length; recursiveIndex++) {
+			next = GCMGetNthFileEntry(gcmFile, recursiveIndex);
+			if (next) {
+				printDirectory(next);
+				free(next);
+			}
+		}
+		recursiveIndex--;
+		dirDepth--;
+		lastDir = GCMGetNthFileEntry(gcmFile, lastDir->offset); //set lastDir to the parent of lastDir...
+	}
 }
 
 void printDirectory(GCMFileEntryStruct *e) {
