@@ -555,39 +555,39 @@ void printGCMInfo(int hexFlag) {
 	char *gameName = (char*)malloc(256);
 	GCMGetGameName(gcmFile, gameName);
 	
-	printf("Filename:\t%s\n", filename);
-	printf("System ID:\t%c (%s)\n", systemID, GCMSystemIDToStr(systemID));
-	printf("Game ID:\t%s\n", gameID);
-	printf("Region:  \t%c (%s)\n", regionCode, GCMRegionCodeToStr(regionCode));
-	printf("Maker Code:\t%s (%s)\n", makerCode, GCMMakerCodeToStr(makerCode));
-	printf("Game Name:\t%s\n", gameName);
+	printf("Filename:        %s\n", filename);
+	printf("System ID:       %c (%s)\n", systemID, GCMSystemIDToStr(systemID));
+	printf("Game ID:         %s\n", gameID);
+	printf("Region:          %c (%s)\n", regionCode, GCMRegionCodeToStr(regionCode));
+	printf("Maker Code:      %s (%s)\n", makerCode, GCMMakerCodeToStr(makerCode));
+	printf("Game Name:       %s\n", gameName);
 	
 	char format[256]; //this is for the hexFlag stuff...
 	
 	//this has to be cleaned up and simplified with a macro or something...
-	strcpy(format, "DOL offset:\t");
-	strcat(format, (hexFlag) ? "%08X" : "%ld");
+	strcpy(format, "DOL offset:      ");
+	strcat(format, (hexFlag) ? "0x%08X" : "%lu");
 	strcat(format, "\n");
 	printf(format, GCMGetDolOffset(gcmFile));
 	
-	strcpy(format, "Apploader:\t");
-	strcat(format, (hexFlag) ? "%08X" : "%ld");
+	strcpy(format, "Apploader:       ");
+	strcat(format, (hexFlag) ? "0x%08X" : "%lu");
 	strcat(format, "\n");
 	printf(format, GCM_APPLOADER_OFFSET);
 	
-	strcpy(format,"ApploaderSize:\t");
-	strcat(format, (hexFlag) ? "%08X" : "%ld");
+	strcpy(format,"ApploaderSize:    ");
+	strcat(format, (hexFlag) ? "0x%08X" : "%lu");
 	strcat(format, "\n");
 	printf(format, GCMGetApploaderSize(gcmFile));
 	
-	strcpy(format, "FST:      \t");
-	strcat(format, (hexFlag) ? "%08X" : "%ld");
+	strcpy(format, "FST:             ");
+	strcat(format, (hexFlag) ? "0x%08X" : "%lu");
 	strcat(format, "\n");
 	printf(format, GCMGetFSTOffset(gcmFile));
 	
 	GCMFileEntryStruct *r = GCMGetRootFileEntry(gcmFile);
 	u32 entryCount = r->length;
-	printf("File count:\t%ld\n", entryCount);
+	printf("File count:      %lu\n", entryCount);
 	GCMFreeFileEntryStruct(r);
 }
 
