@@ -45,8 +45,7 @@ FILE *ifile;
 
 //for working with printing directories
 int dirDepth;
-
-int i; //for the recursive printing... (must change the name of this var soon)
+int recursiveIndex; //for the recursive printing...
 
 int main (int argc, char * const argv[]) {
 	//for extracting:
@@ -62,6 +61,7 @@ int main (int argc, char * const argv[]) {
 		currentArg = GET_NEXT_ARG;
 		if (!currentArg) {
 			//there's no args! uh oh!
+			
 			printUsage();
 			exit(0);
 		} else if (CHECK_ARG(GCM_TOOL_ARG_EXTRACT)) {
@@ -170,7 +170,7 @@ int main (int argc, char * const argv[]) {
 	printf("FSTSize: \t%ld\n", dh->fstSize);
 	printf("FSTSizeMax:\t%ld\n", dh->fstMaxSize);
 	*/
-	i = 0;
+	recursiveIndex = 0;
 	if (listFiles) {
 		printDirectory(r);
 	}
@@ -210,14 +210,14 @@ void printDirectory(GCMFileEntryStruct *e) {
 		
 		//printf("for(%d++; %d < %ld; i++)\n", i, i, e->length);
 		
-		for(i++; (unsigned long)i < e->length; i++) {
-			next = GCMGetNthFileEntry(ifile, i);
+		for(recursiveIndex++; (unsigned long)recursiveIndex < e->length; recursiveIndex++) {
+			next = GCMGetNthFileEntry(ifile, recursiveIndex);
 			if (next) {
 				printDirectory(next);
 				free(next);
 			}
 		}
-		i--;
+		recursiveIndex--;
 		dirDepth--;
 	}
 }
