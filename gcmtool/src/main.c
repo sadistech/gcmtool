@@ -847,9 +847,9 @@ void printEntry(GCMFileEntryStruct *e) {
 	
 	if (listInfoFlag) {
 		if (e->isDir) {
-			sprintf(size, "%d:\t(%ld)", e->index, (e->length - recursiveIndex - 1));
+			sprintf(size, "(%ld)", (e->length - recursiveIndex - 1));
 		} else {
-			sprintf(size, "%d:\t%ld", e->index, e->length);
+			sprintf(size, "%ld", e->length);
 		}
 		sprintf(size, "%-14s", size); //this pads everythign nicely...
 	}
