@@ -4,7 +4,7 @@
 **  www.sadistech.com
 **  gcmtool.sourceforge.net
 **  
-**  part of the gcmtool projectgcmFile
+**  part of the gcmtool project
 **  commandline wrappers for some of the standard functions of GCMutils.h and GCMExtras.h
 **
 */
