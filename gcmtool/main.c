@@ -24,9 +24,11 @@
 #include "pathfunc.h"
 
 //commandline arguments
-#define GCM_TOOL_ARG_EXTRACT	"-e"
-#define GCM_TOOL_ARG_LIST		"-l"
-
+#define GCM_TOOL_ARG_EXTRACT					"-e"
+#define GCM_TOOL_ARG_LIST						"-l"
+#define GCM_TOOL_ARG_EXTRACT_DISK_HEADER		"-edh"
+#define GCM_TOOL_ARG_EXTRACT_DISK_HEADER_INFO   "-edhi"
+#define GCM_TOOL_ARG_EXTRACT_APPLOADER			"-eal"
 
 //macros... although they may be simple...
 #define GET_NEXT_ARG *argv++
@@ -43,6 +45,9 @@ void closeFile(void);
 void printGCMInfo(void);
 void printUsage(void);
 void extractFiles(char *source, char *dest);
+void extractDiskHeader(void);
+void extractDiskHeaderInfo(void);
+void extractApploader(void);
 
 char *filepath;
 char *filename;
@@ -55,10 +60,16 @@ int recursiveIndex; //for the recursive printing...
 int main (int argc, char * const argv[]) {
 	// start flags declarations...
 	//for extracting:
-	char *extractFrom;
-	char *extractTo;
+	char *extractFileFrom;
+	char *extractFileTo;
 
-	int listFiles = 0;
+	int extractDiskHeaderFlag = 0;
+	
+	int extractDiskHeaderInfoFlag = 0;
+
+	int extractApploaderFlag = 0;
+
+	int listFilesFlag = 0;
 	// end flag declarations
 	
 	//start argument parsing...
@@ -75,19 +86,31 @@ int main (int argc, char * const argv[]) {
 			// extract files...
 			// usage: -e <path> <destPath>
 			
-			extractFrom		= GET_NEXT_ARG;
-			extractTo		= GET_NEXT_ARG;
+			extractFileFrom		= GET_NEXT_ARG;
+			extractFileTo		= GET_NEXT_ARG;
 			
-			if (!extractFrom || !extractTo) {
+			if (!extractFileFrom || !extractFileTo) {
 				//argument error... something was omitted...
 				printf("Argument error.\n");
 				printUsage();
 				exit(1);
 			}
+		} else if (CHECK_ARG(GCM_TOOL_ARG_EXTRACT_DISK_HEADER)) {
+			// extract disk header... (to a file called "boot.bin")
+			
+			extractDiskHeaderFlag++;
+		} else if (CHECK_ARG(GCM_TOOL_ARG_EXTRACT_DISK_HEADER_INFO)) {
+			// extract disk header info... (to a file called "bi2.bin")
+			
+			extractDiskHeaderInfoFlag++;
+		} else if (CHECK_ARG(GCM_TOOL_ARG_EXTRACT_APPLOADER)) {
+			//extract apploader... (to a file called "appldr.bin")
+			
+			extractApploaderFlag++;
 		} else if (CHECK_ARG(GCM_TOOL_ARG_LIST)) {
 			// list filesystem
 			
-			listFiles++; //turn the listFiles flag on.
+			listFilesFlag++; //turn the listFiles flag on.
 		} else {
 			// do it to this file... this is the last argument... just ignore the rest...
 			
@@ -106,12 +129,24 @@ int main (int argc, char * const argv[]) {
 	printGCMInfo();
 	
 	// extract files...
-	if (extractFrom && extractTo) {
-		extractFiles(extractFrom, extractTo);
+	if (*extractFileFrom && *extractFileTo) {
+		extractFiles(extractFileFrom, extractFileTo);
+	}
+	
+	if (extractDiskHeaderFlag) {
+		extractDiskHeader();
+	}
+	
+	if (extractDiskHeaderInfoFlag) {
+		extractDiskHeaderInfo();
+	}
+	
+	if (extractApploaderFlag) {
+		extractApploader();
 	}
 
 	// list the files, if necesary...
-	if (listFiles) {
+	if (listFilesFlag) {
 		dirDepth = 0;
 		recursiveIndex = 0;
 		GCMFileEntryStruct *r = GCMGetRootFileEntry(ifile);
@@ -197,6 +232,76 @@ void extractFiles(char *source, char *dest) {
 	fclose(ofile);
 }
 
+void extractDiskHeader(void) {
+	/*
+	**  extracts the disk header to boot.bin
+	*/
+	
+	FILE *ofile = NULL;
+	
+	if (!(ofile = fopen(GCM_DISK_HEADER_FILENAME, "w"))) {
+		printf("An error occurred trying to open %s\n", GCM_DISK_HEADER_FILENAME);
+		return;
+	}
+		
+	//get the data...
+	char *buf = (char*)malloc(GCM_DISK_HEADER_LENGTH);
+	GCMGetDiskHeader(ifile, buf);
+		
+	if (fwrite(buf, 1, GCM_DISK_HEADER_LENGTH, ofile) != GCM_DISK_HEADER_LENGTH) {
+		printf("An error occurred trying to write to %s\n", GCM_DISK_HEADER_FILENAME);
+	}
+		
+	free(buf);
+}
+
+void extractDiskHeaderInfo(void) {
+	/*
+	**  extracts the diskheaderinfo to bi2.bin
+	*/
+	
+	FILE *ofile = NULL;
+	
+	if (!(ofile = fopen(GCM_DISK_HEADER_INFO_FILENAME, "w"))) {
+		printf("An error occurred trying to open %s\n", GCM_DISK_HEADER_INFO_FILENAME);
+		return;
+	}
+	
+	//get the data...
+	char *buf = (char*)malloc(GCM_DISK_HEADER_INFO_LENGTH);
+	GCMGetDiskHeaderInfo(ifile, buf);
+	
+	if (fwrite(buf, 1, GCM_DISK_HEADER_INFO_LENGTH, ofile) != GCM_DISK_HEADER_INFO_LENGTH) {
+		printf("An error occurred trying to write to %s\n", GCM_DISK_HEADER_INFO_FILENAME);
+	}
+	
+	free(buf);
+}
+
+void extractApploader(void) {
+	/*
+	**  extracts the apploader to appldr.bin
+	*/
+	
+	FILE *ofile = NULL;
+	
+	if (!(ofile = fopen(GCM_APPLOADER_FILENAME, "w"))) {
+		printf("An error occurred trying to open %s\n", GCM_APPLOADER_FILENAME);
+		return;
+	}
+	
+	//get the data...
+	u32 apploaderLength = GCMGetApploaderSize(ifile) + GCM_APPLOADER_CODE_OFFSET;
+	char *buf = (char*)malloc(apploaderLength);
+	GCMGetApploader(ifile, buf);
+	
+	if (fwrite(buf, 1, apploaderLength, ofile) != apploaderLength) {
+		printf("An error occurred trying to write to %s\n", GCM_APPLOADER_FILENAME);
+	}
+	
+	free(buf);
+}
+
 void printEntry(GCMFileEntryStruct *e) {
 	printf("\t%s\n", e->filename);
 	printf("size:\t%ld\n\n", e->length);
@@ -247,4 +352,7 @@ void printUsage() {
 	printf("    Options:\n");
 	printf("    -l\tList files\n");
 	printf("    -e <gcm_source> <dest>\tExtract a file from a GCM\n");
+	printf("    -edh\tExtract the Disk Header (boot.bin)\n");
+	printf("    -edhi\tExtract the Disk Header Info (bi2.bin)\n");
+	printf("    -eal\tExtract the Apploader (appldr.bin)\n");
 }
