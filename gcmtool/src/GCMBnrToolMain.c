@@ -42,20 +42,25 @@
 #define ARG_SET_DEVELOPER_OPT		"<developer>"
 #define ARG_SET_DEVELOPER_HELP		"Sets the developer field to <developer>"
 
-#define ARG_SET_FULL_NAME			"-fn"
+#define ARG_SET_FULL_NAME			"-N"
 #define ARG_SET_FULL_NAME_SYN		"--full-name"
 #define ARG_SET_FULL_NAME_OPT		"<full_name>"
 #define ARG_SET_FULL_NAME_HELP		"Sets the full name field to <full_name>"
 
-#define ARG_SET_FULL_DEVELOPER		"-fd"
+#define ARG_SET_FULL_DEVELOPER		"-D"
 #define ARG_SET_FULL_DEVELOPER_SYN  "--full-developer"
 #define ARG_SET_FULL_DEVELOPER_OPT  "<full_developer>"
 #define ARG_SET_FULL_DEVELOPER_HELP "Sets the full developer field to <full_developer>"
 
-#define ARG_SET_DESCRIPTION			"-d"
+#define ARG_SET_DESCRIPTION			"-s"
 #define ARG_SET_DESCRIPTION_SYN		"--description"
-#define ARG_SET_DESCRIPTION_OPT		"<description>"
+#define ARG_SET_DESCRIPTION_OPT		"<full_description>"
 #define ARG_SET_DESCRIPTION_HELP	"Sets the description field to <full_description>"
+
+#define ARG_OUTPUT_FILE				"-f"
+#define ARG_OUTPUT_FILE_SYN			"--file"
+#define ARG_OUTPUT_FILE_OPT			"<path>"
+#define ARG_OUTPUT_FILE_HELP		"Write out to a file at <path> instead of the file we read from."
 
 //additional options...
 #define OPT_FORMAT_RAW				"-raw"
