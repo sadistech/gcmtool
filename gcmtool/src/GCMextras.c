@@ -219,7 +219,14 @@ GCMFileEntryStruct *GCMGetFileEntryAtPath(FILE *ifile, char *path) {
 	return NULL;
 }
 
-
+GCMError GCMReplaceNthFileEntry(FILE *ifile, GCMFileEntryStruct *e, int n) {
+	/*
+	**	used for updating file entries (ie- changing an offset)
+	**	returns a GCMError and sets GCMErrno
+	*/
+	
+	GCM_RETURN_ERROR(GCM_ERR_NOT_IMPLEMENTED);
+}
 
 u32 GCMGetStringTableOffset(FILE *ifile) {
 	/*
