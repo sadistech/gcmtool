@@ -378,13 +378,15 @@ void GCMDeleteFileEntry(FILE *ifile, GCMFileEntryStruct *e, FILE *destFile) {
 	
 	int entryCount = root->length;
 	int newEntryCount = entryCount;
-	
+	int deletedEntryCount = 0;
 	
 	if (e->isDir) {
 		newEntryCount -= (e->index - e->length);
 	} else {
 		newEntryCount--;
 	}
+	
+	deletedEntryCount = entryCount - newEntryCount;
 	
 	char *fstBuf = (char*)malloc(newEntryCount * GCM_FST_ENTRY_LENGTH);
 	char *fstBufStart = fstBuf; //a pointer to the beginning...
@@ -424,27 +426,12 @@ void GCMDeleteFileEntry(FILE *ifile, GCMFileEntryStruct *e, FILE *destFile) {
 			
 			GCMFileEntryStruct *tempEntry = GCMRawFileEntryToStruct(rawEntry, 0); //MUST FIX... CHANGE INDEX.
 			
-			/*if (memcmp(rawEntry, rawEntry2, GCM_FST_ENTRY_LENGTH) != 0) {
-				printf("conversion error with entries...(%d)\n", i);
-				
-				printf("isDir->%d\n", tempEntry->isDir);
-				printf("filename->%ld\n", tempEntry->filenameOffset);
-				printf("offset->%ld\n", tempEntry->offset);
-				printf("length->%ld\n", tempEntry->length);
-				
-				tempEntry = GCMRawFileEntryToStruct(rawEntry2, 0);
-				printf("isDir->%d\n", tempEntry->isDir);
-				printf("filename->%ld\n", tempEntry->filenameOffset);
-				printf("offset->%ld\n", tempEntry->offset);
-				printf("length->%ld\n", tempEntry->length);
-				
-				exit(1);
-			}*/
-			
-			//if we've gotten beyond the deleted entry, then we have to shift all the data...
-			//since the data offsets are stored as absolute offsets in GCM and
-			//the filename offsets are stored as the offset relative to the start of the string table...
-			//the data offset is compounded with the name offset
+			/*  
+			**	if we've gotten beyond the deleted entry, then we have to shift all the data...
+			**  since the data offsets are stored as absolute offsets in GCM and
+			**  the filename offsets are stored as the offset relative to the start of the string table...
+			**  the data offset is compounded with the name offset
+			*/
 			if (i > e->index) {
 				tempEntry->filenameOffset += nameOffset;
 				if (!tempEntry->isDir) {
@@ -452,9 +439,23 @@ void GCMDeleteFileEntry(FILE *ifile, GCMFileEntryStruct *e, FILE *destFile) {
 				}
 			}
 			
+			//fix the next-entry field for directories since it is almost guaranteed to change
+			if (tempEntry->isDir) {
+				if (i == 0) { //we're on the root...
+					tempEntry->length = newEntryCount;
+				} else if (i < e->index) { //an entry before deletion...
+					if (tempEntry->length > e->index) { //that contains the deleted entry...
+						tempEntry->length -= deletedEntryCount;
+					}
+				} else { //an entry after the deletion...
+					tempEntry->length -= deletedEntryCount;
+				}
+			}
+			
 			//get the filename...
 			GCMFetchFilenameForFileEntry(ifile, tempEntry);
 			
+			//write the file data to the temp file...
 			if (!tempEntry->isDir) {
 				printf("writing %s data\n", tempEntry->filename);
 				GCMFetchDataForFileEntry(ifile, tempEntry);
@@ -465,7 +466,7 @@ void GCMDeleteFileEntry(FILE *ifile, GCMFileEntryStruct *e, FILE *destFile) {
 				free(tempEntry->data);
 			}
 			
-			//write string table...
+			//write string table to the temp file...
 			if (i != 0) { //don't write it if we're on the root node!
 				if (fwrite(tempEntry->filename, 1, strlen(tempEntry->filename) + 1, stFile) != strlen(tempEntry->filename) + 1) {
 					printf("Error writing filename to string table...\n");
