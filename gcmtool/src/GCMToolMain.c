@@ -878,7 +878,7 @@ void injectApploader(char *sourcePath) {
 
 void replaceFile(char *gcmPath, char *localPath) {
 	/*
-	**	replace the file at gcmPath with the file at localPath
+	**	replace the file at gcmPath (in GCM FileSystem) with the file at localPath
 	**	file sizes must be the same...
 	*/
 
@@ -886,17 +886,20 @@ void replaceFile(char *gcmPath, char *localPath) {
 
 	u32 filesize = GetFilesizeFromPath(localPath);
 	GCMFileEntryStruct *e = GCMGetFileEntryAtPath(gcmFile, gcmPath);
-	
+
+	// check to make sure the fileentry is NOT a directory
 	if (e->isDir) {
 		printf("GCM file path MUST be a file!\n");
 		exit(1);
 	}
 	
+	// check to make sure the fileentry's file and the file are the same size
 	if (filesize != e->length) {
 		printf("File sizes of %s and %s do not match!\n", gcmPath, localPath);
 		exit(1);
 	}
 	
+	// input file
 	FILE *ifile = NULL;
 	
 	if (!(ifile = fopen(localPath, "r"))) {
@@ -904,6 +907,7 @@ void replaceFile(char *gcmPath, char *localPath) {
 		exit(1);
 	}
 	
+	// seek to the offset in the GCM and copy data from file to GCM
 	fseek(gcmFile, e->offset, SEEK_SET);
 	CopyData(ifile, gcmFile, filesize);
 	
