@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include "types.h"
+#include "GCMBnrInfoRecord.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -48,11 +49,12 @@ extern "C" {
 typedef struct gcm_bnr_struct {
 	char		version;										// the BNR version (1 or 2)
 	char		graphic[GCM_BNR_GRAPHIC_DATA_LENGTH];			// graphical data
-	char		name[GCM_BNR_GAME_NAME_LENGTH];					// game's name
-	char		developer[GCM_BNR_DEVELOPER_LENGTH];			// company/developer
-	char		fullName[GCM_BNR_FULL_TITLE_LENGTH];			// full game title
-	char		fullDeveloper[GCM_BNR_FULL_DEVELOPER_LENGTH];   // full company/developer name
-	char		description[GCM_BNR_DESCRIPTION_LENGTH];		// game description
+//	char		name[GCM_BNR_GAME_NAME_LENGTH];					// game's name
+//	char		developer[GCM_BNR_DEVELOPER_LENGTH];			// company/developer
+//	char		fullName[GCM_BNR_FULL_TITLE_LENGTH];			// full game title
+//	char		fullDeveloper[GCM_BNR_FULL_DEVELOPER_LENGTH];   // full company/developer name
+//	char		description[GCM_BNR_DESCRIPTION_LENGTH];		// game description
+	GCMBnrInfoRecordStruct *info;
 } GCMBnrStruct;
 
 //struct that stores an RGB value (0-255 for RGB and 0 or 1 for alpha)
@@ -66,6 +68,8 @@ typedef struct gcm_rgb_color {
 //converting between raw Bnr and the struct...
 GCMBnrStruct *GCMRawBnrToStruct(char *raw);
 void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf);
+
+GCMBnrAppendInfoRecord(GCMBnrStruct *b, GCMBnrInfoRecordStruct *r);
 
 //color conversion
 GCMRgbColor *GCMRGB5A1toColor(u16 s);
