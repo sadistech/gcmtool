@@ -10,6 +10,37 @@
 
 #include <stdlib.h>
 #include "GCMDiskHeader.h"
+#include <strings.h>
+
+GCMDiskHeaderStruct *GCMNewDiskHeaderStruct() {
+	/*
+	**  creates a new diskheader struct and initializes it...
+	*/
+	
+	GCMDiskHeaderStruct *d = (GCMDiskHeaderStruct*)malloc(sizeof(GCMDiskHeaderStruct));
+	
+	d->systemID = 0;
+	bzero(d->gameID, GCM_GAME_ID_LENGTH + 1);
+	d->regionCode = 0;
+	bzero(d->makerCode, GCM_MAKER_CODE_LENGTH + 1);
+	d->diskID = 0;
+	d->version = 0;
+	d->streaming = 0;
+	d->streamBufSize = 0;
+	d->unknown1 = 0;
+	bzero(d->gameName, GCM_GAME_NAME_LENGTH + 1);
+	d->debugMonitorOffset = 0;
+	d->debugMonitorAddress = 0;
+	d->dolOffset = 0;
+	d->fstOffset = 0;
+	d->fstSize = 0;
+	d->fstSizeMax = 0;
+	d->userPosition = 0;
+	d->userLength = 0;
+	d->unknown2 = 0;
+	
+	return d;
+}
 
 void GCMDiskHeaderStructToRaw(GCMDiskHeaderStruct *dh, char *buf) {
 	/*
@@ -127,7 +158,7 @@ GCMDiskHeaderStruct *GCMRawDiskHeaderToStruct(char *rawHeader) {
 	**  experimental method for loading the diskheader into a struct
 	*/
 
-	GCMDiskHeaderStruct *h = (GCMDiskHeaderStruct*)malloc(sizeof(GCMDiskHeaderStruct));
+	GCMDiskHeaderStruct *h = GCMNewDiskHeaderStruct();
 	
 	h->systemID = rawHeader[0];
 	*rawHeader++;
@@ -203,6 +234,6 @@ void GCMFreeDiskHeaderStruct(GCMDiskHeaderStruct *dh) {
 	*/
 
 	if (!dh) return;
-	
+		
 	free(dh);
 }

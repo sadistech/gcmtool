@@ -32,6 +32,7 @@ typedef struct gcm_disk_header_info_struct {
 
 //functions and stuff
 
+GCMDiskHeaderInfoStruct *GCMNewDiskHeaderInfoStruct();
 void GCMDiskHeaderInfoStructToRaw(GCMDiskHeaderInfoStruct *d, char *buf);
 GCMDiskHeaderInfoStruct *GCMRawDiskHeaderInfoToStruct(char *rawInfo);
 
