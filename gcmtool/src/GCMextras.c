@@ -307,6 +307,41 @@ void GCMFetchDataForFileEntry(FILE *ifile, GCMFileEntryStruct *entry) {
 	entry->data = buf;
 }
 
+void GCMGetFullPathForFileEntry(FILE *ifile, GCMFileEntryStruct *entry, char *buf) {
+	/*
+	**  set buf to the full path of file entry
+	**  since each directory entry has the fileEntryOffset of its parent (stored in offset)
+	**  you can just recursively jump up the tree until you get to an entry whose parent_offset is 0.
+	**
+	**  The only gotcha is that if you want to get the full path of an actual file, you have to 
+	**  remember what its parent is... ug...
+	**
+	**  buf should be allocaed with enough space to store the full path. 512 should be more than enough...
+	*/
+	
+	if (!ifile || !entry || !entry->isDir || !buf) return;
+	
+	char fullPath[1024] = ""; //allocate 1024, just to be safe...
+	
+	GCMFetchFilenameForFileEntry(ifile, entry);
+	
+	strcpy(fullPath, entry->filename);
+	
+	GCMFileEntryStruct *e = entry; // = GCMGetNthFileEntry(ifile, entry->offset);
+	
+	while (e->offset) {
+		e = GCMGetNthFileEntry(ifile, e->offset);
+		GCMFetchFilenameForFileEntry(ifile, e);
+		
+		char s[1024] = "";
+		strcpy(s, fullPath);
+		sprintf(fullPath, "%s/%s", e->filename, s);
+	}
+	
+	strcpy(buf, "/"); //leading / on absolute path...
+	strcat(buf, fullPath); //append the fullPath...
+}
+
 u32 GCMGetBootDolLength(FILE *ifile) {
 	/*
 	**  returns the size of the entire bootfile DOL from the GCM ifile
@@ -360,6 +395,7 @@ u32 GCMGetBootDol(FILE *ifile, char *buf) {
 void GCMFreeFileEntryStruct(GCMFileEntryStruct *fe) {
 	/*
 	**  convenience method for freeing a fileEntryStruct
+	**  not really implemented too well...
 	*/
 
 	if (!fe) return;

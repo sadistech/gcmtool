@@ -81,12 +81,10 @@ GCMFileEntryStruct *GCMGetFileEntryByName(FILE *ifile, char *name);
 GCMFileEntryStruct *GCMGetFileEntryAtPath(FILE *ifile, char *path);
 GCMFileEntryStruct *GCMRawFileEntryToStruct(char *rawEntry);
 
-//working with sections... as structs (EXPERIMENTAL)
-
-
 u32 GCMGetStringTableOffset(FILE *ifile);
 void GCMFetchFilenameForFileEntry(FILE *ifile, GCMFileEntryStruct *entry);
 void GCMFetchDataForFileEntry(FILE *ifile, GCMFileEntryStruct *entry);
+void GCMGetFullPathForFileEntry(FILE *ifile, GCMFileEntryStruct *entry, char *buf);
 
 //working with bootfile.dol from a .gcm file
 u32 GCMGetBootDolLength(FILE *ifile);
