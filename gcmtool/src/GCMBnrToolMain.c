@@ -260,12 +260,16 @@ int main(int argc, char **argv) {
 	}
 	
 	if (injectIconPath != NULL) {
-		char *imageData = NULL;
+		printf("going to inject...\n");
 		u32 len = getFilesize(injectIconPath);
+		char *imageData = (char*)malloc(len);
 		
 		if (injectFormat == RAW_FORMAT) {
 			//if the file we're injecting is in raw format (default)
-			readFromFile(injectIconPath, imageData);
+			if (readFromFile(imageData, injectIconPath) == 0) {
+				printf("Icon file not found! (%s)\n", injectIconPath);
+				exit(1);
+			}
 		} else {
 			//if the file we're injecting is in ppm format...
 			
@@ -277,7 +281,7 @@ int main(int argc, char **argv) {
 		memcpy(b->graphic, iconData, GCM_BNR_GRAPHIC_DATA_LENGTH);
 		
 		free(iconData);
-		
+		fileChanged = 1;
 	}
 	
 	if (fileChanged) {

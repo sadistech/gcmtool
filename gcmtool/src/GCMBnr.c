@@ -277,7 +277,10 @@ void GCMBnrRawImageToGraphic(char *raw, char *buf) {
 	**  NOTE: this completely ignores any alpha... beware.
 	*/
 	
-	if (!raw || !buf) return;
+	if (!raw || !buf) {
+		printf("OH NO!\n");
+		return;
+	}
 	
 	int i = 0;
 	for (i = 0; i < (GCM_BNR_GRAPHIC_WIDTH * GCM_BNR_GRAPHIC_HEIGHT); i++) {
