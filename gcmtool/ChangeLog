@@ -1,4 +1,4 @@
-[gcmtool] fixed a bug where the file would be opened as read/write even if we
+[all] fixed a bug where the file would be opened as read/write even if we
 	were only going to be reading (which would lead to permission denied errors
 	on read-only files)
 
