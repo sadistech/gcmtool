@@ -218,6 +218,15 @@ int main(int argc, char **argv) {
 				printf("Region MUST be 1 character. (%s is invalid)\n", newRegionCode);
 				exit(1);
 			}
+		} else if (CHECK_ARG(ARG_MAKER)) {
+			// change the maker code...
+
+			newMakerCode = GET_NEXT_ARG;
+
+			if (strlen(newMakerCode) != GCM_MAKER_CODE_LENGTH) {
+				printf("Maker code MUST be 2 characters, a-z, A-Z, 0-9. (%s is invalid)\n", newMakerCode);
+				exit(1);
+			}
 		} else if (CHECK_ARG(ARG_DISKID)) {
 			// they want to change the diskid
 
