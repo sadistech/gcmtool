@@ -1,3 +1,8 @@
+
+0.2.4
+[gcmtool] Added info output to file listing (shows file sizes, or 
+	directory contents file-count)
+
 2004/6/13
 0.2.3
 Added a new program: gcmbnrtool for working with banners. See its help 
