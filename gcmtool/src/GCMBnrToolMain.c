@@ -15,6 +15,54 @@
 #include <stdio.h>
 #include "GCMBnr.h"
 
+//commandline params...
+#define ARG_SET_ICON				"-i"
+#define ARG_SET_ICON_SYN			"--icon"
+#define ARG_SET_ICON_OPT			"[ " OPT_FORMAT_RAW " | " OPT_FORMAT_PPM " ] <pathname>"
+#define ARG_SET_ICON_HELP			"Grabs the icon from <pathname>. " OPT_FORMAT_RAW " is the default."
+
+#define ARG_SET_NAME				"-n"
+#define ARG_SET_NAME_SYN			"--name"
+#define ARG_SET_NAME_OPT			"<name>"
+#define ARG_SET_NAME_HELP			"Sets the name field to <name>"
+
+#define ARG_SET_DEVELOPER			"-d"
+#define ARG_SET_DEVELOPER_SYN		"--developer"
+#define ARG_SET_DEVELOPER_OPT		"<developer>"
+#define ARG_SET_DEVELOPER_HELP		"Sets the developer field to <developer>"
+
+#define ARG_SET_FULL_NAME			"-fn"
+#define ARG_SET_FULL_NAME_SYN		"--full-name"
+#define ARG_SET_FULL_NAME_OPT		"<full_name>"
+#define ARG_SET_FULL_NAME_HELP		"Sets the full name field to <full_name>"
+
+#define ARG_SET_FULL_DEVELOPER		"-fd"
+#define ARG_SET_FULL_DEVELOPER_SYN  "--full-deveoper"
+#define ARG_SET_FULL_DEVELOPER_OPT  "<full_developer>"
+#define ARG_SET_FULL_DEVELOPER_HELP "Sets the full developer field to <full_developer>"
+
+#define ARG_SET_DESCRIPTION			"-d"
+#define ARG_SET_DESCRIPTION_SYN		"--description"
+#define ARG_SET_DESCRIPTION_OPT		"<description>"
+#define ARG_SET_DESCRIPTION_HELP	"Sets the description field to <full_description>"
+
+//additional options...
+#define OPT_FORMAT_RAW				"-raw"
+#define OPT_FORMAT_PPM				"-ppm"
+
+//macros... although they may be simple...
+//these are for getting help and synonyms and stuff
+#define ARG_SYN(ARG)		ARG ## _SYN
+#define PRINT_HELP(ARG)		printf("\t" ARG "%s" ARG ## _SYN " " ARG ## _OPT "\n\t\t" ARG ## _HELP "\n\n", strcmp("", ARG ## _SYN) == 0 ? "" : ", ");
+
+// these are for the argument parsing engine...
+#define GET_NEXT_ARG		*(++argv)
+#define SKIP_NARG(n)		*(argv += n)	
+#define CHECK_ARG(ARG)		strcmp(ARG, currentArg) == 0 || strcmp(ARG ## _SYN, currentArg) == 0
+#define PEEK_ARG			*(argv + 1)
+#define PEEK_NARG(n)		*(argv + n)
+
+
 void printUsage();
 
 int main(int argc, char **argv) {
