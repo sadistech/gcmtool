@@ -6,6 +6,8 @@
 	with "0x" the value will be interpreted as hex. (ie 0x0100 for 256)
 [gcmbnrtool] fixed a bug where a bnr was incorrectly always identified as being
 	v2 when deciding how to read the info.
+[gcmtool] added a way to replace files. Greatly helps if you just want to modify
+	one file, and not the whole system.
 
 2004/7/14
 0.3.1
