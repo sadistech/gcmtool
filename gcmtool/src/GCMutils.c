@@ -485,8 +485,12 @@ static void initRecursion() {
 
 #else	// check entry type using stat call and use path parameter instead
 
+#ifndef DT_DIR
 #define DT_DIR	4
+#endif
+#ifndef DT_REG
 #define DT_REG	8
+#endif
 
 static int D_TYPE(const char *path, struct dirent *de)
 {
