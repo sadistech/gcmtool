@@ -28,7 +28,7 @@ typedef struct gcm_disk_header_struct {
 	char	streaming;
 	char	streamBufSize;
 	u32		unknown1;				// ? seems to be (c2 33 9f 3d) in all files
-	char	gameName[GCM_GAME_NAME_LENGTH];
+	char	gameName[GCM_GAME_NAME_LENGTH + 1];
 	u32		debugMonitorOffset;		// ?
 	u32		debugMonitorAddress;	// ?
 	u32		dolOffset;
@@ -41,6 +41,7 @@ typedef struct gcm_disk_header_struct {
 }GCMDiskHeaderStruct;
 
 //functions...
+GCMDiskHeaderStruct *GCMNewDiskHeaderStruct();
 void GCMDiskHeaderStructToRaw(GCMDiskHeaderStruct *dh, char *buf);
 GCMDiskHeaderStruct *GCMRawDiskHeaderToStruct(char *rawHeader);
 void GCMFreeDiskHeaderStruct(GCMDiskHeaderStruct *dh);

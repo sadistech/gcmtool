@@ -27,6 +27,7 @@ typedef struct gcm_apploader_struct {
 	char			*code;
 }GCMApploaderStruct;
 
+GCMApploaderStruct *GCMNewApploaderStruct();
 GCMApploaderStruct *GCMRawApploaderToStruct(char *rawApploader);
 void GCMApploaderStructToRaw(GCMApploaderStruct *a, char *buf);
 void GCMFreeApploaderStruct(GCMApploaderStruct *a);

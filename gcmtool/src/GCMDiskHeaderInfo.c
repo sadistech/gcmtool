@@ -11,7 +11,28 @@
 #include "GCMDiskHeaderInfo.h"
 #include "GCMutils.h"
 #include <string.h>
+#include <strings.h>
 #include <stdlib.h>
+
+GCMDiskHeaderInfoStruct *GCMNewDiskHeaderInfoStruct() {
+	/*
+	**  allocates, initializes and returns a new diskheaderinfostruct
+	*/
+	
+	GCMDiskHeaderInfoStruct *d = (GCMDiskHeaderInfoStruct*)malloc(sizeof(GCMDiskHeaderInfoStruct));
+	
+	d->debugMonitorSize = 0;
+	d->simulatedMemorySize = 0;
+	d->argumentOffset = 0;
+	d->debugFlag = 0;
+	d->trackLocation = 0;
+	d->trackSize = 0;
+	d->countryCode = 0;
+	d->unknown1 = 0;
+	d->unknown2 = 0;
+	
+	return d;
+}
 
 void GCMDiskHeaderInfoStructToRaw(GCMDiskHeaderInfoStruct *d, char *buf) {
 	/*
@@ -91,7 +112,7 @@ GCMDiskHeaderInfoStruct *GCMRawDiskHeaderInfoToStruct(char *rawInfo) {
 	**  
 	*/
 
-	GCMDiskHeaderInfoStruct *d = (GCMDiskHeaderInfoStruct*)malloc(sizeof(GCMDiskHeaderInfoStruct));
+	GCMDiskHeaderInfoStruct *d = GCMNewDiskHeaderInfoStruct();
 
 	d->debugMonitorSize	= *((u32*)rawInfo)++;
 	d->debugMonitorSize	= ntohl(d->debugMonitorSize);

@@ -11,13 +11,30 @@
 #include "GCMApploader.h"
 #include "GCMutils.h"
 #include <stdlib.h>
+#include <strings.h>
+
+GCMApploaderStruct *GCMNewApploaderStruct() {
+	/*
+	**  Creates a new apploader struct and initializes it
+	*/
+	
+	GCMApploaderStruct *a = (GCMApploaderStruct*)malloc(sizeof(GCMApploaderStruct));
+	
+	bzero(a->date, GCM_APPLOADER_DATE_LENGTH);
+	a->entrypoint = 0;
+	a->size = 0;
+	a->unknown = 0;
+	a->code = NULL;
+	
+	return a;
+}
 
 GCMApploaderStruct *GCMRawApploaderToStruct(char *rawApploader) {
 	/*
 	**  experimental function for creating a struct out of the apploader
 	*/
 	
-	GCMApploaderStruct *a = (GCMApploaderStruct*)malloc(sizeof(GCMApploaderStruct));
+	GCMApploaderStruct *a = GCMNewApploaderStruct();
 	
 	memcpy(a->date, rawApploader, GCM_APPLOADER_DATE_LENGTH);
 	rawApploader += GCM_APPLOADER_DATE_LENGTH;
@@ -82,7 +99,7 @@ void GCMFreeApploaderStruct(GCMApploaderStruct *a) {
 	*/
 
 	if (!a) return;
-	
+
 	if (a->code != NULL)
 		free(a->code);
 		
