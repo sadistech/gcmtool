@@ -510,20 +510,37 @@ void printDiskHeader(GCMDiskHeaderStruct *d) {
 	printf("Stream Buffer Size:    %d\n", d->streamBufSize);
 	
 	char format[255] = "";
-	sprintf(format, "Unknown1:              %s\n", hexFlag ? "%08X" : "%ld");
+	sprintf(format, "Unknown1:              %s\n", hexFlag ? "0x%08lX" : "%lu");
 	printf(format, d->unknown1);
 
 	printf("Name:                  %s\n", d->gameName);
 
-	printf("Debug Monitor Offset:  %08X\n", d->debugMonitorOffset);
-	printf("Debug Monitor Address: %08X\n", d->debugMonitorAddress);
-	printf("DOL Offset:            %08X\n", d->dolOffset);
-	printf("FST Offset:            %08X\n", d->fstOffset);
-	printf("FST Size:              %08X\n", d->fstSize);
-	printf("FST Size-Max:          %08X\n", d->fstSizeMax);
-	printf("User Position:         %08X\n", d->userPosition);
-	printf("User Length:           %08X\n", d->userLength);
-	printf("Unknown2:              %08X\n", d->unknown2);
+	sprintf(format, "Debug Monitor Offset:  %s\n", hexFlag ? "0x%08lX" : "%lu");
+	printf(format, d->debugMonitorOffset);
+	
+	sprintf(format, "Debug Monitor Address: %s\n", hexFlag ? "0x%08lX" : "%lu");
+	printf(format, d->debugMonitorAddress);
+	
+	sprintf(format, "DOL Offset:            %s\n", hexFlag ? "0x%08lX" : "%lu");
+	printf(format, d->dolOffset);
+	
+	sprintf(format, "FST Offset:            %s\n", hexFlag ? "0x%08lX" : "%lu");
+	printf(format, d->fstOffset);
+	
+	sprintf(format, "FST Size:              %s\n", hexFlag ? "0x%08lX" : "%lu");
+	printf(format, d->fstSize);
+	
+	sprintf(format, "FST Size-Max:          %s\n", hexFlag ? "0x%08lX" : "%lu");
+	printf(format, d->fstSizeMax);
+	
+	sprintf(format, "User Position:         %s\n", hexFlag ? "0x%08lX" : "%lu");
+	printf(format, d->userPosition);
+	
+	sprintf(format, "User Length:           %s\n", hexFlag ? "0x%08lX" : "%lu");
+	printf(format, d->userLength);
+	
+	sprintf(format, "Unknown2:              %s\n", hexFlag ? "0x%08lX" : "%lu");
+	printf(format, d->unknown2);
 }
 
 void openFile(char *mode) {
