@@ -74,16 +74,17 @@ VERSION = 0.3.0d
 am__include = include
 am__quote = 
 install_sh = /home/spike/cvs/gcmtool/install-sh
-bin_PROGRAMS = gcmtool gcmbnrtool gcmdiskheadertool
+bin_PROGRAMS = gcmtool gcmbnrtool gcmdiskheadertool gcmdiskheaderinfotool
 gcmtool_SOURCES = GCMToolMain.c GCMApploader.h GCMApploader.c GCMDiskHeader.h GCMDiskHeader.c GCMDiskHeaderInfo.h GCMDiskHeaderInfo.c GCMDol.h GCMDol.c GCMextras.h GCMextras.c GCMutils.h GCMutils.c pathfunc.h pathfunc.c types.h GCMCommandline.h GCMFileEntry.h GCMFileEntry.c FileFunctions.h FileFunctions.c
 gcmbnrtool_SOURCES = GCMBnrToolMain.c GCMBnr.h GCMBnr.c types.h GCMCommandline.h FileFunctions.c FileFunctions.h
-gcmdiskheadertool_SOURCES = GCMDiskHeaderToolMain.c GCMextras.h GCMextras.c GCMutils.h GCMutils.c GCMCommandline.h FileFunctions.h FileFunctions.c types.h pathfunc.h pathfunc.c GCMFileEntry.h GCMFileEntry.c GCMDol.h GCMDol.c GCMDiskHeader.h GCMDiskHeader.c 
+gcmdiskheadertool_SOURCES = GCMDiskHeaderToolMain.c GCMextras.h GCMextras.c GCMutils.h GCMutils.c GCMCommandline.h FileFunctions.h FileFunctions.c types.h pathfunc.h pathfunc.c GCMFileEntry.h GCMFileEntry.c GCMDol.h GCMDol.c GCMDiskHeader.h GCMDiskHeader.c
+gcmdiskheaderinfotool_SOURCES = GCMDiskHeaderInfoToolMain.c GCMDiskHeaderInfo.h GCMDiskHeaderInfo.c GCMutils.h GCMutils.c GCMextras.h GCMextras.c GCMCommandline.h FileFunctions.h FileFunctions.c types.h pathfunc.h pathfunc.c GCMFileEntry.h GCMFileEntry.c GCMDol.h GCMDol.c
 subdir = src
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =
 bin_PROGRAMS = gcmtool$(EXEEXT) gcmbnrtool$(EXEEXT) \
-	gcmdiskheadertool$(EXEEXT)
+	gcmdiskheadertool$(EXEEXT) gcmdiskheaderinfotool$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
 am_gcmbnrtool_OBJECTS = GCMBnrToolMain.$(OBJEXT) GCMBnr.$(OBJEXT) \
@@ -92,6 +93,14 @@ gcmbnrtool_OBJECTS = $(am_gcmbnrtool_OBJECTS)
 gcmbnrtool_LDADD = $(LDADD)
 gcmbnrtool_DEPENDENCIES =
 gcmbnrtool_LDFLAGS =
+am_gcmdiskheaderinfotool_OBJECTS = GCMDiskHeaderInfoToolMain.$(OBJEXT) \
+	GCMDiskHeaderInfo.$(OBJEXT) GCMutils.$(OBJEXT) \
+	GCMextras.$(OBJEXT) FileFunctions.$(OBJEXT) pathfunc.$(OBJEXT) \
+	GCMFileEntry.$(OBJEXT) GCMDol.$(OBJEXT)
+gcmdiskheaderinfotool_OBJECTS = $(am_gcmdiskheaderinfotool_OBJECTS)
+gcmdiskheaderinfotool_LDADD = $(LDADD)
+gcmdiskheaderinfotool_DEPENDENCIES =
+gcmdiskheaderinfotool_LDFLAGS =
 am_gcmdiskheadertool_OBJECTS = GCMDiskHeaderToolMain.$(OBJEXT) \
 	GCMextras.$(OBJEXT) GCMutils.$(OBJEXT) FileFunctions.$(OBJEXT) \
 	pathfunc.$(OBJEXT) GCMFileEntry.$(OBJEXT) GCMDol.$(OBJEXT) \
@@ -122,6 +131,7 @@ DEP_FILES = ./$(DEPDIR)/FileFunctions.Po \
 	./$(DEPDIR)/GCMBnrToolMain.Po \
 	./$(DEPDIR)/GCMDiskHeader.Po \
 	./$(DEPDIR)/GCMDiskHeaderInfo.Po \
+	./$(DEPDIR)/GCMDiskHeaderInfoToolMain.Po \
 	./$(DEPDIR)/GCMDiskHeaderToolMain.Po \
 	./$(DEPDIR)/GCMDol.Po ./$(DEPDIR)/GCMFileEntry.Po \
 	./$(DEPDIR)/GCMToolMain.Po ./$(DEPDIR)/GCMextras.Po \
@@ -131,10 +141,10 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 CFLAGS = -g -O2
-DIST_SOURCES = $(gcmbnrtool_SOURCES) $(gcmdiskheadertool_SOURCES) \
-	$(gcmtool_SOURCES)
+DIST_SOURCES = $(gcmbnrtool_SOURCES) $(gcmdiskheaderinfotool_SOURCES) \
+	$(gcmdiskheadertool_SOURCES) $(gcmtool_SOURCES)
 DIST_COMMON = Makefile.am Makefile.in config.h.in
-SOURCES = $(gcmbnrtool_SOURCES) $(gcmdiskheadertool_SOURCES) $(gcmtool_SOURCES)
+SOURCES = $(gcmbnrtool_SOURCES) $(gcmdiskheaderinfotool_SOURCES) $(gcmdiskheadertool_SOURCES) $(gcmtool_SOURCES)
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -190,6 +200,9 @@ clean-binPROGRAMS:
 gcmbnrtool$(EXEEXT): $(gcmbnrtool_OBJECTS) $(gcmbnrtool_DEPENDENCIES) 
 	@rm -f gcmbnrtool$(EXEEXT)
 	$(LINK) $(gcmbnrtool_LDFLAGS) $(gcmbnrtool_OBJECTS) $(gcmbnrtool_LDADD) $(LIBS)
+gcmdiskheaderinfotool$(EXEEXT): $(gcmdiskheaderinfotool_OBJECTS) $(gcmdiskheaderinfotool_DEPENDENCIES) 
+	@rm -f gcmdiskheaderinfotool$(EXEEXT)
+	$(LINK) $(gcmdiskheaderinfotool_LDFLAGS) $(gcmdiskheaderinfotool_OBJECTS) $(gcmdiskheaderinfotool_LDADD) $(LIBS)
 gcmdiskheadertool$(EXEEXT): $(gcmdiskheadertool_OBJECTS) $(gcmdiskheadertool_DEPENDENCIES) 
 	@rm -f gcmdiskheadertool$(EXEEXT)
 	$(LINK) $(gcmdiskheadertool_LDFLAGS) $(gcmdiskheadertool_OBJECTS) $(gcmdiskheadertool_LDADD) $(LIBS)
@@ -209,6 +222,7 @@ include ./$(DEPDIR)/GCMBnr.Po
 include ./$(DEPDIR)/GCMBnrToolMain.Po
 include ./$(DEPDIR)/GCMDiskHeader.Po
 include ./$(DEPDIR)/GCMDiskHeaderInfo.Po
+include ./$(DEPDIR)/GCMDiskHeaderInfoToolMain.Po
 include ./$(DEPDIR)/GCMDiskHeaderToolMain.Po
 include ./$(DEPDIR)/GCMDol.Po
 include ./$(DEPDIR)/GCMFileEntry.Po
