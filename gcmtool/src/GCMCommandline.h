@@ -10,6 +10,9 @@
 #ifndef _GCM_COMMANDLINE_H_
 #define _GCM_COMMANDLINE_H_
 
+// utility macros:
+#define QQ(s) #s
+
 //standard arguments:
 #define ARG_HELP					"-?"
 #define ARG_HELP_SYN				"--help"
