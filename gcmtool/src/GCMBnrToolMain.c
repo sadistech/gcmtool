@@ -19,11 +19,6 @@
 #include "GCMCommandline.h" /* for commandline macros */
 
 //commandline params...
-#define ARG_HELP					"-?"
-#define ARG_HELP_SYN				"--help"
-#define ARG_HELP_OPT				""
-#define ARG_HELP_HELP				"Displays this help."
-
 #define ARG_SET_ICON				"-i"
 #define ARG_SET_ICON_SYN			"--icon"
 #define ARG_SET_ICON_OPT			"[ " OPT_FORMAT_RAW " | " OPT_FORMAT_PPM " ] <pathname>"
@@ -422,7 +417,7 @@ void printUsage() {
 	printf("gcmbnrtool %s- Utility for working with .bnr files from GameCube DVD Images (GCMs)\n", VERSION);
 	printf("http://gcmtool.sourceforge.net\n\n");
 	printf("Usage:\t");
-	printf("gcmbnrtool <bnr_file>\n\n");
+	printf("gcmbnrtool [options] <bnr_file>\n\n");
 	printf("Use -? to view extended usage.\n\n");
 }
 
