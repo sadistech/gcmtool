@@ -10,7 +10,6 @@
 #include "GCMApploader.h"
 #include "GCMutils.h"
 #include <stdlib.h>
-#include <arpa/inet.h>
 
 GCMApploaderStruct *GCMRawApploaderToStruct(char *rawApploader) {
 	/*
