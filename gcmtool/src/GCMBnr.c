@@ -126,6 +126,8 @@ GCMRgbColor *GCMRGB5A1toColor(u16 s) {
 	**  basically, RGB5A1 is 5-bit color with 1-bit alpha... (16 bits or 2 bytes per pixel)
 	**  arranged like: ARRRRRGG GGGBBBBB
 	*/
+
+	s = ntohs(s);
 	
 	int i = 0;
 	
@@ -182,7 +184,7 @@ GCMRgbColor *GCMRGB5A1toColor(u16 s) {
 	c->blue = b;
 	c->alpha = a;
 
-	printf("converted: %03d, %03d, %03d\n", c->red, c->green, c->blue);
+	//printf("converted: %03d, %03d, %03d\n", c->red, c->green, c->blue);
 
 	return c;
 }
@@ -255,6 +257,7 @@ void GCMBnrGetImageRaw(GCMBnrStruct *b, char *buf) {
 		j = j + (i / 96 % 4 * 4) + (i / 384 % 8 * 384);
 		
 		//convert the pixel into an RgbColor
+		//printf("%d ", i);
 		GCMRgbColor *c = GCMRGB5A1toColor(curPixel[j]);
 		
 		//put the data into buf
