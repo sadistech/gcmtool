@@ -681,7 +681,7 @@ void printEntry(GCMFileEntryStruct *e) {
 		if (e->isDir) {
 			sprintf(size, "(%ld)", (e->length - recursiveIndex - 1));
 		} else {
-			sprintf(size, "%ldb", e->length);
+			sprintf(size, "%ld", e->length);
 		}
 		sprintf(size, "%-12s", size); //this pads everythign nicely...
 	}
