@@ -24,6 +24,11 @@
 #include "GCMextras.h"
 #include "GCMDiskHeaderInfo.h"
 
+#define ARG_HEX						"-h"
+#define ARG_HEX_SYN					"--hex"
+#define ARG_HEX_OPT					""
+#define ARG_HEX_HELP				"Display 32bit int values as hex"
+
 #define ARG_DEBUG_MON_SIZE			"-dms"
 #define ARG_DEBUG_MON_SIZE_SYN		"--debug-monitor-size"
 #define ARG_DEBUG_MON_SIZE_OPT		"<size>"
@@ -74,6 +79,8 @@ void closeFile();
 char *filename; //the filename/path we are working with...
 FILE *dhiFile; //the file that we're working with
 
+int hexFlag;
+
 void printUsage();
 void printExtendedUsage();
 
@@ -81,6 +88,8 @@ void printDiskHeaderInfoStruct(GCMDiskHeaderInfoStruct *d);
 
 int main(int argc, char **argv) {
 	int fileChanged = 0;
+
+	hexFlag = 0;
 
 	int modDebugMonitorSize = 0;
 	u32 newDebugMonitorSize = 0;
@@ -122,6 +131,11 @@ int main(int argc, char **argv) {
 
 			printExtendedUsage();
 			exit(0);
+		} else if (CHECK_ARG(ARG_HEX)) {
+			//hex output!
+
+			hexFlag = 1;
+			
 		} else if (CHECK_ARG(ARG_DEBUG_MON_SIZE)) {
 			// set the debug monitor size
 
@@ -275,15 +289,46 @@ int main(int argc, char **argv) {
 
 void printDiskHeaderInfoStruct(GCMDiskHeaderInfoStruct *d) {	
 	//display that info...
-	printf("Debug Monitor Size:    %08X\n", d->debugMonitorSize);
-	printf("Simulated Memory Size: %08X\n", d->simulatedMemorySize);
-	printf("Argument Offset:       %08X\n", d->argumentOffset);
-	printf("Debug Flag:            %08X\n", d->debugFlag);
-	printf("Track Location:        %08X\n", d->trackLocation);
-	printf("Track Size:            %08X\n", d->trackSize);
-	printf("Country Code:          %08X\n", d->countryCode);
-	printf("Unknown 1:             %08X\n", d->unknown1);
-	printf("Unknown 2:             %08X\n", d->unknown2);
+
+	char format[255] = "";
+
+	
+	sprintf(format, "Debug Monitor Size:    %s\n", hexFlag ? "0x%08X" : "%lu");
+	printf(format, d->debugMonitorSize);
+	
+	
+	sprintf(format, "Simulated Memory Size: %s\n", hexFlag ? "0x%08X" : "%lu");
+	printf(format, d->simulatedMemorySize);
+	
+	
+	sprintf(format, "Argument Offset:       %s\n", hexFlag ? "0x%08X" : "%lu");
+	printf(format, d->argumentOffset);
+	
+	
+	sprintf(format, "Debug Flag:            %s\n", hexFlag ? "0x%08X" : "%lu");
+	printf(format, d->debugFlag);
+	
+	
+	sprintf(format, "Track Location:        %s\n", hexFlag ? "0x%08X" : "%lu");
+	printf(format, d->trackLocation);
+	
+	
+	sprintf(format, "Track Size:            %s\n", hexFlag ? "0x%08X" : "%lu");
+	printf(format, d->trackSize);
+	
+	
+	sprintf(format, "Country Code:          %s\n", hexFlag ? "0x%08X" : "%lu");
+	printf(format, d->countryCode);
+	
+	
+	sprintf(format, "Unknown 1:             %s\n", hexFlag ? "0x%08X" : "%lu");
+	printf(format, d->unknown1);
+	
+	
+	sprintf(format, "Unknown 2:             %s\n", hexFlag ? "0x%08X" : "%lu");
+	printf(format, d->unknown2);
+
+
 }
 
 void openFile(char *mode) {
@@ -309,6 +354,7 @@ void printExtendedUsage() {
 	printUsage();
 	
 	PRINT_HELP(ARG_HELP);
+	PRINT_HELP(ARG_HEX);
 	PRINT_HELP(ARG_DEBUG_MON_SIZE);
 	PRINT_HELP(ARG_SIM_MEM_SIZE);
 	PRINT_HELP(ARG_ARGUMENT_OFFSET);
