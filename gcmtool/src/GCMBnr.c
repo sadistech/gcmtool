@@ -95,7 +95,7 @@ void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf) {
 	buf = start;
 }
 
-uchar GCMBnrReverseBits(uchar v, int bitCount) {
+static uchar GCMBnrReverseBits(uchar v, int bitCount) {
 	/*
 	**  functions SPECIFICALLY written for converting colors
 	**  treats v as a bitCount-bit whole numbers... so we could [theoretically] use this for RGB565 conversion, too

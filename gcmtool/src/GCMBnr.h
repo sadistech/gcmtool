@@ -68,7 +68,7 @@ GCMBnrStruct *GCMRawBnrToStruct(char *raw);
 void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf);
 
 //color conversion
-uchar GCMBnrReverseBits(uchar v, int bitCount);
+static uchar GCMBnrReverseBits(uchar v, int bitCount);
 GCMRgbColor *GCMRGB5A1toColor(u16 s);
 u16 GCMColorToRGB5A1(GCMRgbColor *c);
 
