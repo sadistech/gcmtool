@@ -364,10 +364,10 @@ void GCMFreeFileEntryStruct(GCMFileEntryStruct *fe) {
 
 	if (!fe) return;
 	
-	if (fe->data != NULL)
-		free(fe->data);
-	if (fe->filename != NULL)
-		free(fe->filename);
+//	if (fe->data != NULL)
+//		free(fe->data);
+//	if (fe->filename != NULL)
+//		free(fe->filename);
 		
 	free(fe);
 }
