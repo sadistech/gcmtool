@@ -151,9 +151,10 @@ FILE *gcmFile;		//the file we're working with
 
 //for working with printing directories
 int dirDepth;
-int recursiveIndex; //for the recursive printing...
-int listInfoFlag;   //for listing filesize, directory content count, and filetype (d or f)
-int listPathFlag;   //for listing full file paths...
+GCMFileEntryStruct *lastDir;	//remember the last directory (for absolute paths of files)
+int recursiveIndex;				//for the recursive printing...
+int listInfoFlag;				//for listing filesize, directory content count, and filetype (d or f)
+int listPathFlag;				//for listing full file paths...
 
 int main (int argc, char **argv) {
 	// start flags declarations...
@@ -668,8 +669,13 @@ void printEntry(GCMFileEntryStruct *e) {
 	int j = 0;
 	
 	char size[10] = "";
-	char path[1024] = "";
+	char *path = (char*)malloc(1024);
 	char padding[128] = " ";
+	
+	//get the filename...
+	GCMFetchFilenameForFileEntry(gcmFile, e);
+	
+	strcpy(path, e->filename);
 	
 	if (listInfoFlag) {
 		if (e->isDir) {
@@ -680,21 +686,39 @@ void printEntry(GCMFileEntryStruct *e) {
 		sprintf(size, "%-12s", size); //this pads everythign nicely...
 	}
 
-	//space out the next entry...
-	if (!listPathFlag) {
+	
+	if (listPathFlag) {
+		if (e->isDir) {
+			GCMGetFullPathForFileEntry(gcmFile, e, path);
+		} else {
+			if(dirDepth > 1) { //if we're not at the root-level, show the full path...
+				GCMGetFullPathForFileEntry(gcmFile, lastDir, path);
+				strcat(path, "/");
+			} else {
+				strcpy(path, "/");
+			}
+			
+			strcat(path, e->filename);
+		}
+	} else { //space out the next entry...
 		for (j = 0; j < dirDepth; j++) {
 			strcat(padding, " ");
 		}
 	}
 	
 	if (dirDepth == 0) {
+		// if dirDepth == 0, then that means this is the root entry.
+		// there's no way of telling that an entry is the root because it 
+		// looks a lot like the first entry... if not identical...
 		printf("%s /\n", size);
 	} else {
 		if (e->isDir)
-			printf("%s%s%s/\n", size, padding, e->filename);
+			printf("%s%s%s/\n", size, padding, path);
 		else
-			printf("%s%s%s\n", size, padding, e->filename);
+			printf("%s%s%s\n", size, padding, path);
 	}
+	
+	//free(e->filename);
 }
 
 void printDirectory(GCMFileEntryStruct *e) {
@@ -702,13 +726,12 @@ void printDirectory(GCMFileEntryStruct *e) {
 		return;
 	}
 	
-	GCMFetchFilenameForFileEntry(gcmFile, e);
-	
 	printEntry(e);
 	
 	if (e->isDir) {
 		dirDepth++;
 		GCMFileEntryStruct *next;
+		lastDir = e;
 		
 		//printf("for(%d++; %d < %ld; i++)\n", i, i, e->length);
 		
@@ -721,6 +744,7 @@ void printDirectory(GCMFileEntryStruct *e) {
 		}
 		recursiveIndex--;
 		dirDepth--;
+		lastDir = GCMGetNthFileEntry(gcmFile, lastDir->offset); //set lastDir to the parent of lastDir...
 	}
 }
 
