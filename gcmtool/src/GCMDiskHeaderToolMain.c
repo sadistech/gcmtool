@@ -75,7 +75,7 @@
 #define ARG_GAME_NAME		"-n"
 #define ARG_GAME_NAME_SYN	"--game-name"
 #define ARG_GAME_NAME_OPT	"<name>"
-#define ARG_GAME_NAME_HELP	"Set game's name to " ARG_GAME_NAME_OPT " (string, max-chars: " QQ(GCM_GAME_NAME_LENGTH) ")"
+#define ARG_GAME_NAME_HELP	"Set game's name to " ARG_GAME_NAME_OPT " (string, max-chars: \" GCM_GAME_NAME_LENGTH \")"
 
 #define ARG_DEBUG_OFFSET	"-dmo"
 #define ARG_DEBUG_OFFSET_SYN	"--debug-monitor-offset"
@@ -461,6 +461,8 @@ int main(int argc, char **argv) {
 
 	// If any changes were made, print diskheader again...
 	if (fileChanged) {
+		printf("\nWRITING TO FILE:\n");
+		
 		printDiskHeader(d);
 		char *data = (char*)malloc(GCM_DISK_HEADER_LENGTH);
 
