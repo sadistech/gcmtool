@@ -34,10 +34,12 @@
 #define GCM_TOOL_ARG_EXTRACT_DISK_HEADER		"-edh"
 #define GCM_TOOL_ARG_EXTRACT_DISK_HEADER_INFO   "-edhi"
 #define GCM_TOOL_ARG_EXTRACT_APPLOADER			"-eal"
+#define GCM_TOOL_ARG_EXTRACT_BOOT_DOL			"-ed"
 //injecting sections
 #define GCM_TOOL_ARG_INJECT_DISK_HEADER			"-idh"
 #define GCM_TOOL_ARG_INJECT_DISK_HEADER_INFO	"-idhi"
 #define GCM_TOOL_ARG_INJECT_APPLOADER			"-ial"
+#define GCM_TOOL_ARG_INJECT_BOOT_DOL			"-ed"
 
 //commandline options (modifiers to the arguments... hehe)
 #define GCM_TOOL_OPT_FILE						"-f"
@@ -65,6 +67,7 @@ void extractFiles(char *source, char *dest);
 void extractDiskHeader(char *path);
 void extractDiskHeaderInfo(char *path);
 void extractApploader(char *path);
+void extractBootDol(char *path);
 
 void injectDiskHeader(char *sourcePath);
 void injectDiskHeaderInfo(char *sourcePath);
@@ -91,7 +94,7 @@ int main (int argc, char * const argv[]) {
 	char *extractFileFrom = NULL;
 	char *extractFileTo = NULL;
 	
-	int showInfoFlag = 0;
+	int showInfoFlag = 1;
 
 	int extractDiskHeaderFlag = 0;
 	char *extractDiskHeaderFile = GCM_DISK_HEADER_FILENAME;
@@ -101,6 +104,9 @@ int main (int argc, char * const argv[]) {
 
 	int extractApploaderFlag = 0;
 	char *extractApploaderFile = GCM_APPLOADER_FILENAME;
+	
+	int extractBootDolFlag = 0;
+	char *extractBootDolFile = GCM_BOOT_DOL_FILENAME;
 	
 	int injectDiskHeaderFlag = 0;
 	char *injectDiskHeaderFile = GCM_DISK_HEADER_FILENAME;
@@ -178,7 +184,17 @@ int main (int argc, char * const argv[]) {
 				SKIP_NARG(1); //skip that -f we just looked at...
 				extractApploaderFile = GET_NEXT_ARG;
 			}
+		} else if (CHECK_ARG(GCM_TOOL_ARG_EXTRACT_BOOT_DOL)) {
+			//extract the boot dol...
 			
+			extractBootDolFlag++;
+			
+			if (PEEK_ARG && strcmp(PEEK_ARG, GCM_TOOL_OPT_FILE) == 0) {
+				//if they specify a file...
+				
+				SKIP_NARG(1); //skip that -f
+				extractBootDolFile = GET_NEXT_ARG;
+			}
 		} else if (CHECK_ARG(GCM_TOOL_ARG_INJECT_DISK_HEADER)) {
 			//inject the diskheader
 			
@@ -232,7 +248,9 @@ int main (int argc, char * const argv[]) {
 	openFile();
 
 	// print the info...
-	printGCMInfo();
+	if (showInfoFlag) {
+		printGCMInfo();
+	}
 	
 	// extract files...
 	if (extractFileFrom && extractFileTo) {
@@ -252,6 +270,10 @@ int main (int argc, char * const argv[]) {
 	//extract apploader
 	if (extractApploaderFlag) {
 		extractApploader(extractApploaderFile);
+	}
+	
+	if (extractBootDolFlag) {
+		extractBootDol(extractBootDolFile);
 	}
 	
 	//inject the diskheader
@@ -400,6 +422,25 @@ void extractApploader(char *path) {
 	writeToFile(buf, apploaderLength, path);
 	
 	free(buf);
+}
+
+void extractBootDol(char *path) {
+	/*
+	**  extracts the boot DOL from the GCM and saves it to path...
+	*/
+	
+	if (!path) return;
+	
+	u32 length = GCMGetBootDolLength(gcmFile);
+	char *buf = (char*)malloc(length);
+	
+	if (GCMGetBootDol(gcmFile, buf) != length) {
+		printf("An error occurred when getting the DOL.\n");
+		free(buf);
+		return;
+	}
+	
+	writeToFile(buf, length, path);
 }
 
 void injectDiskHeader(char *sourcePath) {
@@ -574,7 +615,9 @@ void printUsage() {
 	printf("    -edh  [ -f <filename> ]\tExtract the Disk Header (boot.bin)\n");
 	printf("    -edhi [ -f <filename> ]\tExtract the Disk Header Info (bi2.bin)\n");
 	printf("    -eal  [ -f <filename> ]\tExtract the Apploader (appldr.bin)\n");
+	printf("    -ed   [ -f <filename> ]\tExtract the main executable DOL (boot.dol)\n");
 	printf("    -idh  [ -f <filename> ]\tInject the Disk Header\n");
 	printf("    -idhi [ -f <filename> ]\tInject the Disk Header Info\n");
-	printf("    -ial  [ -f <filename> ]\tInject the Apploader\n");
+	printf("    -ial  [ -f <filename> ]\tInject the Apploader (NOT IMPLEMENTED)\n");
+	printf("    -id   [ -f <filename> ]\tInject the main executable DOL (NOT IMPLEMENTED)\n");
 }
