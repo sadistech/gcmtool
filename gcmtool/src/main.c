@@ -385,7 +385,15 @@ int main (int argc, char **argv) {
 	// extract files...
 	if (extractFileFrom && extractFileTo) {
 		//testing recursive extraction...
-		GCMFileEntryStruct *e = GCMGetFileEntryAtPath(gcmFile, extractFileFrom);
+		
+		GCMFileEntryStruct *e = NULL;
+		
+		if (strcmp(extractFileFrom, "/") == 0) { //if you wanna extract everything, getting the file entry at path "/" doesn't work... FIX THIS.
+			e = GCMGetRootFileEntry(gcmFile);
+		} else {
+			e = GCMGetFileEntryAtPath(gcmFile, extractFileFrom);
+		}
+		
 		strcpy(extractWorkingPath, extractFileTo);
 		strcpy(extractRootPath, extractFileTo);
 		
