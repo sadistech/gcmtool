@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "types.h"
+#include "GCMFileEntry.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -99,6 +100,7 @@ u32 GCMGetFSTMaxSize(FILE *ifile);
 
 //file entry stuff
 void GCMGetNthRawFileEntry(FILE *ifile, int n, char *buf);
+void GCMDeleteFileEntry(FILE *ifile, GCMFileEntryStruct *e, FILE *destFile);
 
 #ifdef __cplusplus
 };

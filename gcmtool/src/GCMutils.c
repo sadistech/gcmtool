@@ -8,6 +8,7 @@
  */
 
 #include "GCMutils.h"
+#include "GCMextras.h"
 #include <stdio.h>
 #include <stdlib.h>
 //#include <arpa/inet.h>
@@ -340,5 +341,52 @@ void GCMGetNthRawFileEntry(FILE *ifile, int n, char *buf) {
 	if (fread(buf, 1, GCM_FST_ENTRY_LENGTH, ifile) != GCM_FST_ENTRY_LENGTH) {
 		free(buf);
 		return;
+	}
+}
+
+void GCMDeleteFileEntry(FILE *ifile, GCMFileEntryStruct *e, FILE *destFile) {
+	printf("GCMutils: \n");
+	
+	GCMFileEntryStruct *root = GCMGetRootFileEntry(ifile);
+	
+	int entryCount = root->length;
+	int newEntryCount = entryCount;
+	
+	
+	if (e->isDir) {
+		newEntryCount -= (e->index - e->length);
+	} else {
+		newEntryCount--;
+	}
+	
+	char *fstBuf = (char*)malloc(newEntryCount * GCM_FST_ENTRY_LENGTH);
+	char *fstBufStart = fstBuf; //a pointer to the beginning...
+	
+	printf("Allocating 0x%08X for fstBuf\n", (newEntryCount * GCM_FST_ENTRY_LENGTH));
+	
+	int i = 0;
+	
+	for (i = 0; i < entryCount; i++) {
+		if (i == e->index) {
+			//printf("skipping entry %d (%d)\n", i, (int)e->length);
+			if (e->isDir) {
+				i = e->length - 1;
+			}
+		} else {
+			//printf("copying entry %d\n", i);
+			//move the entry to the new FST...
+			char *rawEntry = (char*)malloc(GCM_FST_ENTRY_LENGTH);
+			GCMGetNthRawFileEntry(ifile, i, rawEntry);
+			
+			GCMFileEntryStruct *tempEntry = GCMRawFileEntryToStruct(rawEntry, 0); //MUST FIX... CHANGE INDEX.
+			
+			
+			GCMFileEntryStructToRaw(tempEntry, rawEntry);
+			
+			memcpy(fstBuf, rawEntry, GCM_FST_ENTRY_LENGTH);
+			*fstBuf += GCM_FST_ENTRY_LENGTH;
+			
+			free(rawEntry);
+		}
 	}
 }
