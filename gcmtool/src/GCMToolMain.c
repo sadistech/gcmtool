@@ -463,7 +463,7 @@ void openFile(void) {
 	}
 	
 	if (!(gcmFile = fopen(filepath, "r+"))) { //open as r+ so we can inject data, too...
-		printf("error opening file... (%s)\n", filepath);
+		perror(filepath);
 		exit(1);
 	}
 	
