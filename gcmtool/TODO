@@ -1,0 +1,6 @@
+GCMTool TODO:
+---------------------
+Add GCMstrip utility for stripping padding zeros from GCM.
+Add GCMexpand utility for adding padding zeros to GCM (to make it a format-legal GCM)
+Add filesize checking to GCMTool's replace-file-system function so it doesn't go over 1.35GB
+
