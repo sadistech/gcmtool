@@ -38,10 +38,10 @@ pkglibdir = $(libdir)/gcmtool
 pkgincludedir = $(includedir)/gcmtool
 top_builddir = ..
 
-ACLOCAL = ${SHELL} /Users/spike/gcmtool/cvs/gcmtool/missing --run aclocal-1.6
-AUTOCONF = ${SHELL} /Users/spike/gcmtool/cvs/gcmtool/missing --run autoconf
-AUTOMAKE = ${SHELL} /Users/spike/gcmtool/cvs/gcmtool/missing --run automake-1.6
-AUTOHEADER = ${SHELL} /Users/spike/gcmtool/cvs/gcmtool/missing --run autoheader
+ACLOCAL = ${SHELL} /Users/spike/cvs/gcmtool/missing --run aclocal-1.6
+AUTOCONF = ${SHELL} /Users/spike/cvs/gcmtool/missing --run autoconf
+AUTOMAKE = ${SHELL} /Users/spike/cvs/gcmtool/missing --run automake-1.6
+AUTOHEADER = ${SHELL} /Users/spike/cvs/gcmtool/missing --run autoheader
 
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = /usr/bin/install -c
@@ -63,7 +63,7 @@ POST_UNINSTALL = :
 EXEEXT = 
 OBJEXT = o
 PATH_SEPARATOR = :
-AMTAR = ${SHELL} /Users/spike/gcmtool/cvs/gcmtool/missing --run tar
+AMTAR = ${SHELL} /Users/spike/cvs/gcmtool/missing --run tar
 AWK = awk
 CC = gcc
 DEPDIR = .deps
@@ -73,10 +73,10 @@ STRIP =
 VERSION = 0.3.0d
 am__include = include
 am__quote = 
-install_sh = /Users/spike/gcmtool/cvs/gcmtool/install-sh
+install_sh = /Users/spike/cvs/gcmtool/install-sh
 bin_PROGRAMS = gcmtool gcmbnrtool
 gcmtool_SOURCES = GCMToolMain.c GCMApploader.h GCMApploader.c GCMDiskHeader.h GCMDiskHeader.c GCMDiskHeaderInfo.h GCMDiskHeaderInfo.c GCMDol.h GCMDol.c GCMextras.h GCMextras.c GCMutils.h GCMutils.c pathfunc.h pathfunc.c types.h GCMCommandline.h GCMFileEntry.h GCMFileEntry.c FileFunctions.h FileFunctions.c
-gcmbnrtool_SOURCES = GCMBnrToolMain.c GCMBnr.h GCMBnr.c types.h GCMCommandline.h
+gcmbnrtool_SOURCES = GCMBnrToolMain.c GCMBnr.h GCMBnr.c types.h GCMCommandline.h FileFunctions.c FileFunctions.h
 subdir = src
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
@@ -84,7 +84,8 @@ CONFIG_CLEAN_FILES =
 bin_PROGRAMS = gcmtool$(EXEEXT) gcmbnrtool$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
-am_gcmbnrtool_OBJECTS = GCMBnrToolMain.$(OBJEXT) GCMBnr.$(OBJEXT)
+am_gcmbnrtool_OBJECTS = GCMBnrToolMain.$(OBJEXT) GCMBnr.$(OBJEXT) \
+	FileFunctions.$(OBJEXT)
 gcmbnrtool_OBJECTS = $(am_gcmbnrtool_OBJECTS)
 gcmbnrtool_LDADD = $(LDADD)
 gcmbnrtool_DEPENDENCIES =
