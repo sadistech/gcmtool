@@ -21,6 +21,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+//for mkdir:
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include "GCMutils.h"
 #include "GCMextras.h"
 #include "GCMCommandline.h"
@@ -144,7 +148,7 @@ void printUsage(void);
 void printExtendedUsage();
 
 void extractFileEntry(GCMFileEntryStruct *e);
-void extractFile(char *source, char *dest);
+void extractFile(GCMFileEntryStruct *e, char *dest);
 void extractDiskHeader(char *path);
 void extractDiskHeaderInfo(char *path);
 void extractApploader(char *path);
@@ -173,6 +177,8 @@ GCMFileEntryStruct *lastDir;	//remember the last directory (for absolute paths o
 int recursiveIndex;				//for the recursive printing...
 int listInfoFlag;				//for listing filesize, directory content count, and filetype (d or f)
 int listPathFlag;				//for listing full file paths...
+char extractRootPath[1024];		//where we're starting to extract from... (directory or file)
+char extractWorkingPath[1024];  //where we're currently extracting to... (directory)
 
 int main (int argc, char **argv) {
 	// start flags declarations...
@@ -380,6 +386,9 @@ int main (int argc, char **argv) {
 	if (extractFileFrom && extractFileTo) {
 		//testing recursive extraction...
 		GCMFileEntryStruct *e = GCMGetFileEntryAtPath(gcmFile, extractFileFrom);
+		strcpy(extractWorkingPath, extractFileTo);
+		strcpy(extractRootPath, extractFileTo);
+		
 		recurseFileEntry(e, extractFileEntry);
 		//extractFile(extractFileFrom, extractFileTo);
 	}
@@ -526,32 +535,53 @@ void extractFileEntry(GCMFileEntryStruct *e) {
 	
 	GCMFetchFilenameForFileEntry(gcmFile, e);
 	
-	printf("extracting %s\n", e->filename);
+	//for building the path for where we're making dirs and extracting...
+	char s[1024];
+	char fp[256];
+	
+	//now do the actual work...
+	if (e->isDir) {
+		GCMGetFullPathForFileEntry(gcmFile, e, fp);
+	
+		strcpy(s, extractRootPath);
+		strcat(s, fp);
+	
+		lastDir = e;
+		
+		//printf("mkdir %s\n", s);
+		mkdir(s, S_IRWXU);
+	} else {
+		GCMGetFullPathForFileEntry(gcmFile, lastDir, fp);
+		strcpy(s, extractRootPath);
+		strcat(s, fp);
+		strcat(s, "/");
+		strcat(s, e->filename);
+		
+		printf("extracting %s\n", s);
+		
+		extractFile(e, s);
+	}
 	//GCMFetchDataForFileEntry(gcmFile, e);
 	//DOESN'T WORK!!!!!!!
 	return;
 }
 
-void extractFile(char *source, char *dest) {
+void extractFile(GCMFileEntryStruct *e, char *dest) {
 	/*
 	**  extract files from source (in GCM) to dest (in the local filesystem)
 	*/
 	
 	char vstring[1024] = "Extracting ";
-	strcat(vstring, source);
+	strcat(vstring, e->filename);
 	strcat(vstring, " from GCM to ");
 	strcat(vstring, dest);
 	verbosePrint(vstring);
 	
-	GCMFileEntryStruct *e = GCMGetFileEntryAtPath(gcmFile, source);
-	
 	//check to see if the file was actually found...
 	if (!e) {
-		printf("File not found (%s)\n", source);
+		printf("File not found (%s)\n", e->filename);
 		return;
 	}
-	
-	if (e->isDir)
 	
 	//fetch the data
 	GCMFetchDataForFileEntry(gcmFile, e);
@@ -559,7 +589,7 @@ void extractFile(char *source, char *dest) {
 	writeToFile(e->data, e->length, dest);
 	
 	free(e->data);
-	free(e);
+	//free(e);
 }
 
 void extractDiskHeader(char *path) {
@@ -838,6 +868,8 @@ void writeToFile(char *data, u32 length, char *path) {
 	if (fwrite(data, 1, length, ofile) != length) {
 		printf("An error occurred trying to write to %s\n", path);
 	}
+	
+	fclose(ofile);
 }
 
 u32 readFromFile(char *buf, char *path) {
