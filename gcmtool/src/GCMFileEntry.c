@@ -49,6 +49,42 @@ GCMFileEntryStruct *GCMRawFileEntryToStruct(char *rawEntry, int index) {
 	return fe;
 }
 
+void GCMFileEntryStructToRaw(GCMFileEntryStruct *e, char *buf) {
+	/*
+	**  ADD DESCRIPTION...
+	*/
+	
+	if (!e || !buf) return;
+	
+	bzero(buf, GCM_FST_ENTRY_LENGTH);
+	
+	char *start = buf;
+	
+	if (e->isDir) {
+		buf[0] = 1;
+	}
+	*buf++;
+	
+	//this gets tricky, because we only have a 24bit unsigned int, here...
+	//there's a better way to do this... it's on my to-do list.
+	u32 *tempFilenameOffset = (u32*)malloc(sizeof(u32));
+	*tempFilenameOffset = (htonl(e->filenameOffset) << 8); //shift it one byte...
+	memcpy(buf, tempFilenameOffset, 3); //since it's only 3 bytes that we want...
+	buf += 3;
+	
+	u32 *offset = (u32*)malloc(sizeof(u32));
+	*offset = htonl(e->offset);
+	memcpy(buf, offset, sizeof(u32));
+	buf += sizeof(u32);
+	
+	u32 *length = (u32*)malloc(sizeof(u32));
+	*length = htonl(e->length);
+	memcpy(buf, length, sizeof(u32));
+	buf += sizeof(u32);
+	
+	buf = start;
+}
+
 static int readCString(char *buf, int maxLen, FILE *ifile) {
 	/*
 	**  reads a string only up to a \0... to prevent it from getting data we don't need.

@@ -25,6 +25,7 @@ typedef struct gcm_file_entry_struct {
 }GCMFileEntryStruct;
 
 GCMFileEntryStruct *GCMRawFileEntryToStruct(char *rawEntry, int index);
+void GCMFileEntryStructToRaw(GCMFileEntryStruct *e, char *buf);
 
 void GCMFetchFilenameForFileEntry(FILE *ifile, GCMFileEntryStruct *entry);
 void GCMFetchDataForFileEntry(FILE *ifile, GCMFileEntryStruct *entry);

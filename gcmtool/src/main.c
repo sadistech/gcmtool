@@ -21,6 +21,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <unistd.h> /* for mktemp() */
+
 //for mkdir:
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -128,6 +130,8 @@
 #define OPT_FILE_INFO						"+i"
 #define OPT_FILE_INFO_SYN					"--full-info"
 
+#pragma mark -
+
 //some utility functions...
 void printEntry(GCMFileEntryStruct *e);
 //void printDirectory(GCMFileEntryStruct *e);
@@ -152,6 +156,8 @@ void extractDiskHeader(char *path);
 void extractDiskHeaderInfo(char *path);
 void extractApploader(char *path);
 void extractBootDol(char *path);
+
+void deleteFile(char *path);
 
 void injectDiskHeader(char *sourcePath);
 void injectDiskHeaderInfo(char *sourcePath);
@@ -178,6 +184,8 @@ int listInfoFlag;				//for listing filesize, directory content count, and filety
 int listPathFlag;				//for listing full file paths...
 char extractRootPath[1024];		//where we're starting to extract from... (directory or file)
 
+#pragma mark -
+
 int main (int argc, char **argv) {
 	// start flags declarations...
 	
@@ -186,6 +194,8 @@ int main (int argc, char **argv) {
 	//for extracting:
 	char *extractFileFrom = NULL;
 	char *extractFileTo = NULL;
+	
+	char *deleteEntryPath = NULL;
 	
 	verboseFlag = 0;
 	
@@ -264,7 +274,17 @@ int main (int argc, char **argv) {
 				printUsage();
 				exit(1);
 			}
+		} else if (CHECK_ARG(ARG_DELETE_FILE)) {
+			//delete a file entry
+			//uage: -d <path>
 			
+			deleteEntryPath		= GET_NEXT_ARG;
+			
+			if (!deleteEntryPath) {
+				printf("Argument error.\n");
+				printUsage();
+				exit(1);
+			}
 		} else if (CHECK_ARG(ARG_EXTRACT_DISK_HEADER)) {
 			// extract disk header... (to a file called "boot.bin")
 			
@@ -398,6 +418,10 @@ int main (int argc, char **argv) {
 		
 		free(e);
 		//extractFile(extractFileFrom, extractFileTo);
+	}
+	
+	if (deleteEntryPath) {
+		deleteFile(deleteEntryPath);
 	}
 	
 	//extract diskheader
@@ -550,6 +574,8 @@ void printGCMInfo(int hexFlag) {
 	GCMFreeFileEntryStruct(r);
 }
 
+#pragma mark -
+
 void extractFileEntry(GCMFileEntryStruct *e) {
 	/*
 	**  this gets called from recurseFileEntry()
@@ -700,6 +726,41 @@ void extractBootDol(char *path) {
 	writeToFile(buf, length, path);
 }
 
+#pragma mark -
+
+void deleteFile(char *path) {
+	char tempFilename[256] = "./";
+	strcat(tempFilename, filename);
+	strcat(tempFilename, ".tmp.XXXXXX");
+	
+	char *newName = mktemp(tempFilename);
+	
+	printf("temp file at %s\n", newName);
+	printf("deleting entry %s\n", path);
+	
+	FILE *tmpFile = NULL;
+	
+	if (!(tmpFile = fopen(newName, "w"))) {
+		printf("ERROR opening tempfile at %s\n", newName);
+		exit(1);
+	}
+	
+	GCMFileEntryStruct *e = GCMGetFileEntryAtPath(gcmFile, path);
+	
+	if (!e) {
+		printf("DeleteEntry: Entry not found!\n");
+		exit(1);
+	}
+	
+	GCMDeleteFileEntry(gcmFile, e, tmpFile);
+	
+	fclose(tmpFile);
+	
+	unlink(newName); //delete the file...
+}
+
+#pragma mark -
+
 void injectDiskHeader(char *sourcePath) {
 	/*
 	**  take a diskHeader (boot.bin) from sourcePath and inject it into gcmFile.
@@ -764,6 +825,8 @@ void injectApploader(char *sourcePath) {
 		return;
 	}
 }
+
+#pragma mark -
 
 void printEntry(GCMFileEntryStruct *e) {
 	/*
