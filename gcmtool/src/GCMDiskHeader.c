@@ -178,8 +178,8 @@ GCMDiskHeaderStruct *GCMRawDiskHeaderToStruct(char *rawHeader) {
 	h->fstOffset	= *(u32*)rawHeader++;
 	h->fstOffset	= ntohl(h->fstOffset);
 	
-	h->fstSize	= *(u32*)rawHeader++;
-	h->fstSize	= ntohl(h->fstSize);
+	h->fstSize		= *(u32*)rawHeader++;
+	h->fstSize		= ntohl(h->fstSize);
 	
 	h->fstSizeMax   = *(u32*)rawHeader++;
 	h->fstSizeMax	= ntohl(h->fstSizeMax);
@@ -190,8 +190,8 @@ GCMDiskHeaderStruct *GCMRawDiskHeaderToStruct(char *rawHeader) {
 	h->userLength   = *(u32*)rawHeader++;
 	h->userLength	= ntohl(h->userLength);
 	
-	h->unknown2	= *(u32*)rawHeader++;
-	h->unknown2	= ntohl(h->unknown2);
+	h->unknown2		= *(u32*)rawHeader++;
+	h->unknown2		= ntohl(h->unknown2);
 	
 	return h;
 }
