@@ -1,11 +1,12 @@
 /*
- *  GCMApploader.c
- *  gcmtool
- *
- *  Created by spike on Mon May 24 2004.
- *  Copyright (c) 2004 Sadistech. All rights reserved.
- *
- */
+**  GCMApploader.c
+**  written by spike <spike666@mac.com>
+**  www.sadistech.com
+**  gcmtool.sourceforge.net
+**  
+**  part of the gcmtool project
+**  Functions for handling Apploaders from Gamecube DVD Images
+*/
 
 #include "GCMApploader.h"
 #include "GCMutils.h"
