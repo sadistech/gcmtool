@@ -278,7 +278,6 @@ void GCMBnrRawImageToGraphic(char *raw, char *buf) {
 	*/
 	
 	if (!raw || !buf) {
-		printf("OH NO!\n");
 		return;
 	}
 	
