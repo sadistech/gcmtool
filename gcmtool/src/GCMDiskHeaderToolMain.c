@@ -16,6 +16,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "FileFunctions.h"
 #include "types.h"
@@ -23,6 +24,48 @@
 #include "GCMDiskHeader.h"
 #include "GCMutils.h"
 #include "GCMextras.h"
+
+
+// Commandline arguments:
+#define ARG_SYSTEMID		"-sid"
+#define ARG_SYSTEMID_SYN	"--system-id"
+#define ARG_SYSTEMID_OPT	"<id>"
+#define ARG_SYSTEMID_HELP	"Set the systemID to " ARG_SYSTEMID_OPT " (G, U)"
+
+#define ARG_GAMEID		"-gid"
+#define ARG_GAMEID_SYN		"--game-id"
+#define ARG_GAMEID_OPT		"<id>"
+#define ARG_GAMEID_HELP		"Set the gameID to " ARG_GAMEID_OPT " (2 characters)"
+
+#define ARG_REGION		"-r"
+#define ARG_REGION_SYN		"--region"
+#define ARG_REGION_OPT		"<region>"
+#define ARG_REGION_HELP		"Set the region to " ARG_REGION_OPT " (E, P, J)"
+
+#define ARG_MAKER		"-m"
+#define ARG_MAKER_SYN		"--maker-code"
+#define ARG_MAKER_OPT		"<code>"
+#define ARG_MAKER_HELP		"Set the maker-code to " ARG_MAKER_OPT " (2 characters, A-Z, a-z, 0-9)"
+
+#define ARG_DISKID		"-d"
+#define ARG_DISKID_SYN		"--disk-id"
+#define ARG_DISKID_OPT		"<id>"
+#define ARG_DISKID_HELP		"Set the diskID to " ARG_DISKID_OPT " (0-255)"
+
+#define ARG_VERSION		"-V"
+#define ARG_VERSION_SYN		"--version"
+#define ARG_VERSION_OPT		"<version>"
+#define ARG_VERSION_HELP	"Set the version to " ARG_VERSION_OPT " (0-255)"
+
+#define ARG_STREAMING		"-s"
+#define ARG_STREAMING_SYN	"--streaming"
+#define ARG_STREAMING_OPT	"<streaming>"
+#define ARG_STREAMING_HELP	"Set streaming to " ARG_STREAMING_OPT " (0-255)"
+
+#define ARG_STREAMING_BUF	"-sb"
+#define ARG_STREAMING_BUF_SYN	"--streaming-buf-size"
+#define ARG_STREAMING_BUF_OPT	"<size>"
+#define ARG_STREAMING_BUF_HELP	"Set streaming buffer size to " ARG_STREAMING_BUF_OPT " (0-255)"
 
 void printUsage();
 void printExtendedUsage();
@@ -38,6 +81,15 @@ char *filename;
 int main(int argc, char **argv) {
 	//commandline argument flags:
 	int fileChanged = 0;
+	
+	char *newSystemID = NULL;
+	char *newGameID = NULL;
+	char *newRegionCode = NULL;
+	char *newMakerCode = NULL;
+	char *newDiskID = NULL;
+	char *newVersion = NULL;
+	char *newStreaming = NULL;
+	char *newStreamBufSize = NULL;
 	
 
 	//start processing the arguments...
@@ -143,5 +195,13 @@ void printExtendedUsage() {
 	printUsage();
 
 	PRINT_HELP(ARG_HELP);
+	PRINT_HELP(ARG_SYSTEMID);
+	PRINT_HELP(ARG_GAMEID);
+	PRINT_HELP(ARG_REGION);
+	PRINT_HELP(ARG_MAKER);
+	PRINT_HELP(ARG_DISKID);
+	PRINT_HELP(ARG_VERSION);
+	PRINT_HELP(ARG_STREAMING);
+	PRINT_HELP(ARG_STREAMING_BUF);
 }
 
