@@ -1,9 +1,17 @@
+2004/6/13
+0.2.3
+Added a new program: gcmbnrtool for working with banners. See its help 
+	for info.
+Moved all source into src/ directory for better management.
+
 2004/6/07
+0.2.2
 Added verbose output (use -v)
 Changed some code to make this compile on little endian systems
 
 
 2004/6/03
+0.2.1
 Revamped the usage help (use -?)
 Added option to use abbreviated commands (ie: --extract-disk-header 
 	instead of -edh)
