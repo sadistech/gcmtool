@@ -17,6 +17,7 @@
 #include <string.h>
 #include "GCMBnr.h"
 #include "GCMCommandline.h" /* for commandline macros */
+#include "FileFunctions.h"  /* for reading, writing, and getting the filesize of files */
 
 //commandline params...
 #define ARG_SET_ICON				"-i"
@@ -73,9 +74,9 @@ void printExtendedUsage();
 void openBnr();
 void closeBnr();
 
-void writeToFile(char *data, u32 length, char *path);
+/*void writeToFile(char *data, u32 length, char *path);
 u32 readFromFile(char *buf, char *path);
-u32 getFilesize(char *path);
+u32 getFilesize(char *path);*/
 
 FILE *bnrFile;
 char *filename;
@@ -182,14 +183,12 @@ int main(int argc, char **argv) {
 	openBnr();
 
 	//read the file into a buffer...
-	fseek(bnrFile, 0, SEEK_END);
-	unsigned long len = ftell(bnrFile);
-	rewind(bnrFile);
+	unsigned long len = GetFilesizeFromStream(bnrFile);
 
 	char *data = (char*)malloc(len);
 	
-	if (fread(data, 1, len, bnrFile) != len) {
-		printf("Error reading from file... (%s)\n", filename);
+	if (ReadDataFromFile(data, filename) != len) {
+		perror(filename);
 		exit(1);
 	}
 
@@ -258,18 +257,18 @@ int main(int argc, char **argv) {
 			GCMBnrGetImagePPM(b, imageData);
 		}
 		
-		writeToFile(imageData, len, extractIconPath);
+		WriteDataToFile(imageData, len, extractIconPath);
 	}
 	
 	if (injectIconPath != NULL) {
 		//printf("going to inject...\n");
-		u32 len = getFilesize(injectIconPath);
+		u32 len = GetFilesizeFromPath(injectIconPath);
 		char *imageData = (char*)malloc(len);
 		
 		if (injectFormat == RAW_FORMAT) {
 			//if the file we're injecting is in raw format (default)
-			if (readFromFile(imageData, injectIconPath) == 0) {
-				printf("Icon file not found! (%s)\n", injectIconPath);
+			if (ReadDataFromFile(imageData, injectIconPath) != len) {
+				perror(injectIconPath);
 				exit(1);
 			}
 		} else {
@@ -337,80 +336,6 @@ void openBnr() {
 
 void closeBnr() {
 	fclose(bnrFile);
-}
-
-void writeToFile(char *data, u32 length, char *path) {
-	/*
-	**  Takes data of length and writes it to a file path. Displays errors when they happen...
-	*/
-	
-	//char msg[1024] = "Writing to file ";
-	//strcat(msg, path);
-	//verbosePrint(msg);
-	
-	if (!data || !length || !path) return;
-	
-	FILE *ofile = NULL;
-	
-	if (!(ofile = fopen(path, "w"))) {
-		printf("An error occurred trying to open %s\n", path);
-		return;
-	}
-	
-	if (fwrite(data, 1, length, ofile) != length) {
-		printf("An error occurred trying to write to %s\n", path);
-	}
-}
-
-u32 readFromFile(char *buf, char *path) {
-	/*
-	**  reads from the file at path, 
-	**  sets buf to the contents of said file...
-	**  and returns the length of data.
-	**
-	**  use getFilesize() when you allocate buf
-	**
-	**  returns 0 and displays messages on error;
-	*/
-	
-	if (!path || !buf) return 0;
-	
-	FILE *ifile = NULL;
-	
-	u32 length = getFilesize(path); //get how much to read...
-	
-	if (!length || !(ifile = fopen(path, "r"))) {
-		printf("An error occurred trying to open %s\n", path);
-		return 0;
-	}
-	
-	if (fread(buf, 1, length, ifile) != length) {
-		printf("An error occurred when trying to read %s\n", path);
-		fclose(ifile);
-		return 0;
-	}
-	
-	fclose(ifile);
-	return length;
-}
-
-u32 getFilesize(char *path) {
-	/*
-	**  returns the filesize of the file at *path
-	**  useful for when you read a file... gotta make sure you allocate enough memory for the file...
-	*/
-	
-	FILE *ifile = NULL;
-	
-	if (!(ifile = fopen(path, "r"))) {
-		return 0;
-	}
-	
-	fseek(ifile, 0, SEEK_END);
-	u32 len = ftell(ifile);
-	fclose(ifile);
-	
-	return len;
 }
 
 void printUsage() {
