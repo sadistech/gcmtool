@@ -2,6 +2,7 @@
 [gcmdiskheadertool] implemented editing of diskheaders. see usage (-?) for help
 [gcmdiskheaderinfotool] implemented editing of diskheaders. see usage (-?)
 	for help.
+[gcmbnrtool] added support for reading v2 BNRs
 
 2004/7/04
 0.3.0
