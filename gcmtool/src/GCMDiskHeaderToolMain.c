@@ -75,10 +75,10 @@ int main(int argc, char **argv) {
 	GCMDiskHeaderStruct *d = GCMRawDiskHeaderToStruct(data);
 
 	//display info...
-	printf("System ID:             %c\n", d->systemID);
+	printf("System ID:             %c (%s)\n", d->systemID, GCMSystemIDToStr(d->systemID));
 	printf("Game ID:               %s\n", d->gameID);
-	printf("Region:                %c (%s)\n", d->regionCode, "Region");
-	printf("Maker:                 %s (%s)\n", d->makerCode, "company");
+	printf("Region:                %c (%s)\n", d->regionCode, GCMRegionCodeToStr(d->regionCode));
+	printf("Maker:                 %s (%s)\n", d->makerCode, GCMMakerCodeToStr(d->makerCode));
 	printf("Disk ID:               %d\n", d->diskID);
 	printf("Version:               %d\n", d->version);
 	printf("Streaming:             %d\n", d->streaming);
