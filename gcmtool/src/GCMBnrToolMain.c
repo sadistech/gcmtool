@@ -14,6 +14,7 @@
 
 #include <stdio.h>
 #include "GCMBnr.h"
+#include "GCMCommandline.h" /* for commandline macros */
 
 //commandline params...
 #define ARG_HELP					"-?"
@@ -62,18 +63,6 @@
 
 #define RAW_FORMAT					0
 #define PPM_FORMAT					1
-
-//macros... although they may be simple...
-//these are for getting help and synonyms and stuff
-#define ARG_SYN(ARG)		ARG ## _SYN
-#define PRINT_HELP(ARG)		printf("\t" ARG "%s" ARG ## _SYN " " ARG ## _OPT "\n\t\t" ARG ## _HELP "\n\n", strcmp("", ARG ## _SYN) == 0 ? "" : ", ");
-
-// these are for the argument parsing engine...
-#define GET_NEXT_ARG		*(++argv)
-#define SKIP_NARG(n)		*(argv += n)	
-#define CHECK_ARG(ARG)		strcmp(ARG, currentArg) == 0 || strcmp(ARG ## _SYN, currentArg) == 0
-#define PEEK_ARG			*(argv + 1)
-#define PEEK_NARG(n)		*(argv + n)
 
 
 void printUsage();
