@@ -884,7 +884,7 @@ void printEntry(GCMFileEntryStruct *e) {
 	
 	int j = 0;
 	
-	char size[100] = "";
+	char info[256] = "";
 	char *path = (char*)malloc(1024);
 	char padding[128] = " ";
 	
@@ -895,13 +895,23 @@ void printEntry(GCMFileEntryStruct *e) {
 	
 	if (listInfoFlag) {
 		if (e->isDir) {
-			sprintf(size, "(%ld)", (e->length - recursiveIndex - 1));
+			sprintf(info, "(%ld)", (e->length - recursiveIndex - 1));
 		} else {
-			sprintf(size, "%ld",e->length);
+			sprintf(info, "%ld",e->length);
 		}
-		sprintf(size, "%-14s", size); //this pads everythign nicely...
+		sprintf(info, "%-14s", info); //this pads everythign nicely...
 	}
 
+	if (listInfoFlag >= 2)
+	{
+		char *info2 = info + strlen(info);
+		if (e->isDir) {
+			sprintf(info2, "(%ld)", e->offset);
+		} else {
+			sprintf(info2, "%ld", e->offset);
+		}
+		sprintf(info2, "%-14s", info2); //this pads everythign nicely...
+	}
 	
 	if (listPathFlag) {
 		if (e->isDir) {
@@ -926,12 +936,11 @@ void printEntry(GCMFileEntryStruct *e) {
 		// if dirDepth == 0, then that means this is the root entry.
 		// there's no way of telling that an entry is the root because it 
 		// looks a lot like the first entry... if not identical...
-		printf("%s /\n", size);
+		printf("%s /\n", info);
 	} else {
-		if (e->isDir)
-			printf("%s%s%s/\n", size, padding, path);
-		else
-			printf("%s%s%s\n", size, padding, path);
+		printf("%s%s%s", info, padding, path);
+		if (e->isDir) printf("/");
+		printf("\n");
 	}
 	
 	//free(e->filename);

@@ -17,6 +17,7 @@
 //for directory enumeration...
 #include <dirent.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 
 #include "FileFunctions.h"
 
@@ -478,6 +479,29 @@ static void initRecursion() {
 	//printf("%s\t%s\n", fstTempFilename, stringTableTempFilename);
 }
 
+#ifdef D_TYPE_IN_DIRENT
+
+#define D_TYPE(const char *path, de)		((de)->d_type)
+
+#else	// check entry type using stat call and use path parameter instead
+
+#define DT_DIR	4
+#define DT_REG	8
+
+static int D_TYPE(const char *path, struct dirent *de)
+{
+	struct stat st;
+	int err;
+	err = stat(path, &st);
+	if (err < 0) return err;
+	if (S_ISREG(st.st_mode)) return DT_REG;
+	if (S_ISDIR(st.st_mode)) return DT_DIR;
+	return 0;
+}
+
+#endif
+
+
 static int recurseDirectory(char *path, char *buf) {
 	/*
 	**  returns the count of entries in buf...
@@ -512,7 +536,7 @@ static int recurseDirectory(char *path, char *buf) {
 		strcat(newPath, "/");
 		strcat(newPath, de->d_name);
 		
-		if (de->d_type == DT_DIR) {
+		if (D_TYPE(newPath, de) == DT_DIR) {
 			//printf("dir : %s\n", de->d_name);
 			
 			count = getFileCount(newPath);
@@ -543,7 +567,7 @@ static int recurseDirectory(char *path, char *buf) {
 
 			i += count;
 			buf += (GCM_FST_ENTRY_LENGTH * count);
-		} else if (de->d_type == DT_REG) {
+		} else if (D_TYPE(newPath, de) == DT_REG) {
 			//printf("file: %s\n", de->d_name);
 			
 			e->isDir = 0;
@@ -559,7 +583,7 @@ static int recurseDirectory(char *path, char *buf) {
 			memcpy(buf, rawEntry, GCM_FST_ENTRY_LENGTH);
 			buf += GCM_FST_ENTRY_LENGTH;
 		} else {
-			printf("unknown filetype! (%d)\n", de->d_type);
+			printf("unknown filetype! (%d)\n", D_TYPE(newPath, de));
 			exit(1);
 		}
 	}
@@ -592,17 +616,17 @@ static int getFileCount(char *path) {
 			i--;
 			continue; 
 		}
+
+		char newPath[1024] = "";
+		strcpy(newPath, path);
+		strcat(newPath, "/");
+		strcat(newPath, de->d_name);
 				
-		if (de->d_type == DT_DIR) {
-			char newPath[1024] = "";
-			strcpy(newPath, path);
-			strcat(newPath, "/");
-			strcat(newPath, de->d_name);
-			
+		if (D_TYPE(newPath, de) == DT_DIR) {
 			int count = getFileCount(newPath);
 			i += count;
-		} else if (de->d_type != DT_REG) {
-			printf("unknown filetype! (%d)\n", de->d_type);
+		} else if (D_TYPE(newPath, de) != DT_REG) {
+			printf("unknown filetype! (%d)\n", D_TYPE(newPath, de));
 			exit(1);
 		}
 	}
