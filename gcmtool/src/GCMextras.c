@@ -133,6 +133,7 @@ GCMFileEntryStruct *GCMGetNthFileEntry(FILE *ifile, int n) {
 	*/
 
 	char *rawEntry = (char*)malloc(GCM_FST_ENTRY_LENGTH);
+	printf("alloc'd enry %d\n", n);
 	GCMGetNthRawFileEntry(ifile, n, rawEntry);
 	GCMFileEntryStruct *entry = GCMRawFileEntryToStruct(rawEntry, n);
 	free(rawEntry);
@@ -184,7 +185,12 @@ GCMFileEntryStruct *GCMGetFileEntryAtPath(FILE *ifile, char *path) {
 		// grab the current entry...
 		GCMFileEntryStruct *e = GCMGetNthFileEntry(ifile, i);
 		GCMFetchFilenameForFileEntry(ifile, e);
-				
+		
+		if (!e) {
+			printf("an error occurred! E is NULL!\n");
+			exit(1);
+		}
+		
 		// if this entry matches the next pathComponent, then....
 		if (strcmp(e->filename, nthPathComponent(path, curPathComponent)) == 0) {
 			
@@ -204,7 +210,8 @@ GCMFileEntryStruct *GCMGetFileEntryAtPath(FILE *ifile, char *path) {
 		}
 
 		// free our working entry so we can move on to the next one...
-		GCMFreeFileEntryStruct(e);
+		//GCMFreeFileEntryStruct(e);
+		free(e);
 	}
 	
 	//file not found, so just return NULL...

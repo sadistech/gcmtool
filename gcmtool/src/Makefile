@@ -38,13 +38,13 @@ pkglibdir = $(libdir)/gcmtool
 pkgincludedir = $(includedir)/gcmtool
 top_builddir = ..
 
-ACLOCAL = ${SHELL} /Users/spike/cvs/gcmtool/missing --run aclocal-1.6
-AUTOCONF = ${SHELL} /Users/spike/cvs/gcmtool/missing --run autoconf
-AUTOMAKE = ${SHELL} /Users/spike/cvs/gcmtool/missing --run automake-1.6
-AUTOHEADER = ${SHELL} /Users/spike/cvs/gcmtool/missing --run autoheader
+ACLOCAL = ${SHELL} /home/spike/cvs/gcmtool/missing --run aclocal-1.6
+AUTOCONF = ${SHELL} /home/spike/cvs/gcmtool/missing --run autoconf
+AUTOMAKE = ${SHELL} /home/spike/cvs/gcmtool/missing --run automake-1.6
+AUTOHEADER = ${SHELL} /home/spike/cvs/gcmtool/missing --run autoheader
 
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
-INSTALL = /usr/bin/install -c
+INSTALL = /bin/install -c
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_DATA = ${INSTALL} -m 644
 install_sh_DATA = $(install_sh) -c -m 644
@@ -63,8 +63,8 @@ POST_UNINSTALL = :
 EXEEXT = 
 OBJEXT = o
 PATH_SEPARATOR = :
-AMTAR = ${SHELL} /Users/spike/cvs/gcmtool/missing --run tar
-AWK = awk
+AMTAR = ${SHELL} /home/spike/cvs/gcmtool/missing --run tar
+AWK = gawk
 CC = gcc
 DEPDIR = .deps
 INSTALL_STRIP_PROGRAM = ${SHELL} $(install_sh) -c -s
@@ -73,7 +73,7 @@ STRIP =
 VERSION = 0.3.1
 am__include = include
 am__quote = 
-install_sh = /Users/spike/cvs/gcmtool/install-sh
+install_sh = /home/spike/cvs/gcmtool/install-sh
 bin_PROGRAMS = gcmtool gcmbnrtool gcmdiskheadertool gcmdiskheaderinfotool gcmapploadertool
 gcmtool_SOURCES = GCMToolMain.c GCMApploader.h GCMApploader.c GCMDiskHeader.h GCMDiskHeader.c GCMDiskHeaderInfo.h GCMDiskHeaderInfo.c GCMDol.h GCMDol.c GCMextras.h GCMextras.c GCMutils.h GCMutils.c pathfunc.h pathfunc.c types.h GCMCommandline.h GCMFileEntry.h GCMFileEntry.c FileFunctions.h FileFunctions.c
 gcmbnrtool_SOURCES = GCMBnrToolMain.c GCMBnr.h GCMBnr.c types.h GCMCommandline.h FileFunctions.c FileFunctions.h GCMBnrInfo.h GCMBnrInfo.c
@@ -152,7 +152,7 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-CFLAGS = -g -O2
+CFLAGS = -g
 DIST_SOURCES = $(gcmapploadertool_SOURCES) $(gcmbnrtool_SOURCES) \
 	$(gcmdiskheaderinfotool_SOURCES) $(gcmdiskheadertool_SOURCES) \
 	$(gcmtool_SOURCES)
