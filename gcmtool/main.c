@@ -29,6 +29,7 @@
 //commandline arguments
 #define GCM_TOOL_ARG_EXTRACT					"-e"
 #define GCM_TOOL_ARG_LIST						"-l"
+#define GCM_TOOL_ARG_INFO						"-i"
 //extracting sections...
 #define GCM_TOOL_ARG_EXTRACT_DISK_HEADER		"-edh"
 #define GCM_TOOL_ARG_EXTRACT_DISK_HEADER_INFO   "-edhi"
@@ -69,8 +70,10 @@ void injectDiskHeader(char *sourcePath);
 void injectDiskHeaderInfo(char *sourcePath);
 void injectApploader(char *sourcePath);
 
+// some file utility functions...
 void writeToFile(char *data, u32 length, char *path);
 u32 readFromFile(char *buf, char *path);
+u32 getFilesize(char *path);
 
 //globals...
 
@@ -87,6 +90,8 @@ int main (int argc, char * const argv[]) {
 	//for extracting:
 	char *extractFileFrom = NULL;
 	char *extractFileTo = NULL;
+	
+	int showInfoFlag = 0;
 
 	int extractDiskHeaderFlag = 0;
 	char *extractDiskHeaderFile = GCM_DISK_HEADER_FILENAME;
@@ -119,6 +124,10 @@ int main (int argc, char * const argv[]) {
 			
 			printUsage();
 			exit(0);
+		} else if (CHECK_ARG(GCM_TOOL_ARG_INFO)) {
+			//they want to see info...
+			
+			showInfoFlag++;
 			
 		} else if (CHECK_ARG(GCM_TOOL_ARG_EXTRACT)) {
 			// extract files...
@@ -398,7 +407,7 @@ void injectDiskHeader(char *sourcePath) {
 	**  take a diskHeader (boot.bin) from sourcePath and inject it into gcmFile.
 	*/
 	
-	char *buf = NULL;
+	char *buf = (char*)malloc(getFilesize(sourcePath));
 	
 	if (readFromFile(buf, sourcePath) != GCM_DISK_HEADER_LENGTH) {
 		printf("This does not appear to be a diskheader (%s)\n", sourcePath);
@@ -407,7 +416,7 @@ void injectDiskHeader(char *sourcePath) {
 	}
 	
 	if (GCMPutDiskHeader(gcmFile, buf) != GCM_SUCCESS) {
-		printf("An error occurred when writing the disk header!\n");
+		printf("An error occurred when writing the disk header! (%d)\n", ferror(gcmFile));
 	}
 	
 	free(buf);
@@ -419,7 +428,7 @@ void injectDiskHeaderInfo(char *sourcePath) {
 	**  take a diskHeaderInfo (bi2.bin) from sourcePath and inject it into gcmFile.
 	*/
 	
-	char *buf = NULL;
+	char *buf = (char*)malloc(getFilesize(sourcePath));
 	
 	if (readFromFile(buf, sourcePath) != GCM_DISK_HEADER_INFO_LENGTH) {
 		printf("This does not appear to be a diskheaderinfo (%s)\n", sourcePath);
@@ -506,33 +515,51 @@ void writeToFile(char *data, u32 length, char *path) {
 u32 readFromFile(char *buf, char *path) {
 	/*
 	**  reads from the file at path, 
-	**  allocates and stores the contents in buf
+	**  sets buf to the contents of said file...
 	**  and returns the length of data.
+	**
+	**  use getFilesize() when you allocate buf
 	**
 	**  returns 0 and displays messages on error;
 	*/
 	
-	if (!path) return 0;
+	if (!path || !buf) return 0;
 	
 	FILE *ifile = NULL;
 	
-	if (!(ifile = fopen(path, "r"))) {
+	u32 length = getFilesize(path); //get how much to read...
+	
+	if (!length || !(ifile = fopen(path, "r"))) {
 		printf("An error occurred trying to open %s\n", path);
 		return 0;
 	}
 	
-	//get the length of the file...
-	fseek(ifile, 0, SEEK_END);
-	u32 length = ftell(ifile);
-	rewind(ifile);
-	
-	buf = (char*)malloc(length);
 	if (fread(buf, 1, length, ifile) != length) {
 		printf("An error occurred when trying to read %s\n", path);
+		fclose(ifile);
 		return 0;
 	}
 	
+	fclose(ifile);
 	return length;
+}
+
+u32 getFilesize(char *path) {
+	/*
+	**  returns the filesize of the file at *path
+	*/
+	
+	FILE *ifile = NULL;
+	
+	if (!(ifile = fopen(path, "r"))) {
+		return 0;
+	}
+	
+	fseek(ifile, 0, SEEK_END);
+	u32 len = ftell(ifile);
+	fclose(ifile);
+	
+	return len;
 }
 
 void printUsage() {
