@@ -42,6 +42,8 @@ extern "C" {
 #define GCM_BNR_PPM_HEADER_LENGTH			13
 #define GCM_BNR_GRAPHIC_PPM_FILE_LENGTH		GCM_BNR_GRAPHIC_RAW_FILE_LENGTH + GCM_BNR_PPM_HEADER_LENGTH
 
+#define GCM_BNR_ICON_COLOR_STEP				(256.0 / 32.0)
+
 typedef struct gcm_bnr_struct {
 	char		version;										// the BNR version (1 or 2)
 	char		graphic[GCM_BNR_GRAPHIC_DATA_LENGTH];			// graphical data
@@ -62,9 +64,13 @@ typedef struct gcm_rgb_color {
 GCMBnrStruct *GCMRawBnrToStruct(char *raw);
 void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf);
 
+uchar GCMBnrReverseBits(uchar v, int bitCount);
 GCMRgbColor *GCMRGB5A1toColor(u16 s);
+u16 GCMColorToRGB5A1(GCMRgbColor *c);
+
 void GCMBnrGetImageRaw(GCMBnrStruct *b, char *buf);
 void GCMBnrGetImagePPM(GCMBnrStruct *b, char *buf);
+void GCMBnrRawImageToGraphic(char *raw, char *buf);
 
 #ifdef __cplusplus
 };
