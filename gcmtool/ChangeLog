@@ -1,4 +1,11 @@
-5/31/2004
+2004/6/03
+Revamped the usage help (use -?)
+Added option to use abbreviated commands (ie: --extract-disk-header 
+	instead of -edh)
+Added injection of the Disk sections
+Added extraction of boot DOL (--extract-boot-dol)
+
+2004/5/31
 0.2
 Added extraction of the Diskheader
 Added extraction of DiskHeaderInfo
@@ -6,11 +13,11 @@ Added extraction of Apploader (see usage)
 Added extraction of files
 Fixed typo in usage output
 
-5/30/2004
+2004/5/30
 0.1.1
 Played around with the code a bit. It now compiles on LinuxPPC (gcc 
 3.2.3). Haven't tried it on an x86 yet. Won't compile with gcc 2.96.
 
-5/26/2004
+2004/5/26
 0.1
 Initial release

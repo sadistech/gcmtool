@@ -656,6 +656,7 @@ u32 readFromFile(char *buf, char *path) {
 u32 getFilesize(char *path) {
 	/*
 	**  returns the filesize of the file at *path
+	**  useful for when you read a file... gotta make sure you allocate enough memory for the file...
 	*/
 	
 	FILE *ifile = NULL;
@@ -683,7 +684,7 @@ void printExtendedUsage() {
 	
 	printf("    Options:\n");
 	PRINT_HELP(ARG_EXTRACT);
-	PRINT_HELP(ARG_VERBOSE);
+//	PRINT_HELP(ARG_VERBOSE);
 	PRINT_HELP(ARG_INFO);
 	PRINT_HELP(ARG_LIST);
 	PRINT_HELP(ARG_HELP);
