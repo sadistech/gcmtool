@@ -56,8 +56,8 @@ GCMBnrStruct *GCMRawBnrToStruct(char *raw);
 void GCMBnrStructToRaw(GCMBnrStruct *b);
 
 GCMRgbColor *GCMRGB5A1toColor(u16 s);
-void GCMBnrGetImage(GCMBnrStruct *b, char *buf);
-
+void GCMBnrGetImageRaw(GCMBnrStruct *b, char *buf);
+void GCMBnrGetImagePPM(GCMBnrStruct *b, char *buf);
 
 #ifdef __cplusplus
 };
