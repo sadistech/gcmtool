@@ -8,10 +8,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "GCMutils.h"
+#include "GCMextras.h"
+#include "GCMFileEntry.h"
+
 #include "GCMCommandline.h"
 #include "pathfunc.h"
+#include "types.h"
 
 #define ARG_VERBOSE							"-v"
 #define ARG_VERBOSE_SYN						"--verbose"
@@ -53,8 +58,51 @@ int main(int argc, char **argv) {
 			break;
 		}
 	} while(*argv);
-
+	
 	printf("opening %s\n", filename);
+
+	FILE *gcmFile;
+
+	if (!(gcmFile = fopen(filepath, "r"))) {
+		perror("error opening!\n");
+		exit(EXIT_FAILURE);
+	}
+
+	u32 fstOffset = GCMGetFSTOffset(gcmFile);
+	u32 fstSize = GCMGetFSTSize(gcmFile);
+	u32 stringTableOffset = GCMGetStringTableOffset(gcmFile);
+	GCMFileEntryStruct *root = GCMGetRootFileEntry(gcmFile);
+
+	printf("FST Offset: %ld\n", fstOffset);
+	printf("FST Size: %ld\n", fstSize);
+	printf("String Table: %ld\n", stringTableOffset);
+	printf("entry count: %ld\n", root->length);
+	
+	int i = 0;
+	u32 highestStringTableOffset = 0;
+	u32 firstFileOffset = GetFilesizeFromStream(gcmFile);
+	
+	for (i = 0; i < root->length; i++) {
+		GCMFileEntryStruct *e = GCMGetNthFileEntry(gcmFile, i);
+
+		if (e->filenameOffset > highestStringTableOffset) {
+			GCMFetchFilenameForFileEntry(gcmFile, e);
+			highestStringTableOffset = e->filenameOffset + strlen(e->filename) + 1; // +1 for \0
+		}
+
+		if (!(e->isDir) && e->offset < firstFileOffset) {
+			firstFileOffset = e->offset;
+		}
+	}
+
+	printf("\n");
+	printf("HighestStringTableOffset: %ld\n", highestStringTableOffset);
+	printf("firstFileOffset: %ld\n", firstFileOffset);
+
+	printf("\n");
+	printf("Savings: %ld\n", firstFileOffset - (stringTableOffset + highestStringTableOffset));
+
+	fclose(gcmFile);
 }
 
 void printUsage() {
