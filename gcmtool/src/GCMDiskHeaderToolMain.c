@@ -395,6 +395,61 @@ int main(int argc, char **argv) {
 		fileChanged++;
 	}
 
+	if (modUnknown1) {
+		d->unknown1 = newUnknown1;
+		fileChanged++;
+	}
+
+	if (newGameName != NULL) {
+		strcpy(d->gameName, newGameName);
+		fileChanged++;
+	}
+
+	if (modDebugMonitorOffset) {
+		d->debugMonitorOffset = newDebugMonitorOffset;
+		fileChanged++;
+	}
+
+	if (modDebugMonitorAddress) {
+		d->debugMonitorAddress = newDebugMonitorAddress;
+		fileChanged++;
+	}
+
+	if (modDolOffset) {
+		d->dolOffset = newDolOffset;
+		fileChanged++;
+	}
+
+	if (modFstOffset) {
+		d->fstOffset = newFstOffset;
+		fileChanged++;
+	}
+
+	if (modFstSize) {
+		d->fstSize = newFstSize;
+		fileChanged++;
+	}
+
+	if (modFstSizeMax) {
+		d->fstSizeMax = newFstSizeMax;
+		fileChanged++;
+	}
+
+	if (modUserPosition) {
+		d->userPosition = newUserPosition;
+		fileChanged++;
+	}
+
+	if (modUserLength) {
+		d->userLength = newUserLength;
+		fileChanged++;
+	}
+
+	if (modUnknown2) {
+		d->unknown2 = newUnknown2;
+		fileChanged++;
+	}
+
 	// If any changes were made, print diskheader again...
 	if (fileChanged) {
 		printf("modifications made... no changes made to file.\n");
