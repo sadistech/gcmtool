@@ -1,10 +1,30 @@
-gcmtool
+GCMTools Suite
 http://gcmtool.sourceforge.net
 
-gcmtool is a tool for auditing and editing Nintendo GameCube DVD images 
-(.iso or .gcm). Currently (5/26/2004), most of the code is there to do 
-whatever the hell you want, but the commandline implementation has yet 
-to be written.
+The GCMTools are a suite of tools to basically rip apart your gamecube games
+and put them back together however you wish. Its aim is to give you access to
+everything so you can modify and hack your games to your wildest dreams.
+
+Currently, there are 5 executables that are part of this package:
+
+	gcmtool- for auditing, extracting and editing Nintendo GameCube DVD images 
+		(.iso or .gcm).
+
+	gcmdiskheadertool- once you've extracted the disk header, this tool lets
+		you modify it.
+
+	gcmdiskheaderinfotool- for modifying the diskheaderinfo
+
+	gcmapploadertool- currently only allows you to view info about the apploader
+		when there is a better understanding of the apploader, I'll give access
+		to editing features. For now, you have to use a hex editor.
+
+	gcmbnrtool- allows modification of the opening.bnr file found in all
+		gamecube games. This tool allows you to extract the icon file of a game
+		either as a photoshop .raw or a .ppm for conversion to other formats.
+		Unfortunately, I'm having trouble getting the ppm import working, so
+		you'll have to use a hex editor to delete the ppm header if you want
+		to re-inject an icon.
 
 WHEN MODIFYING YOUR GCM, ALWAYS WORK ON A BACKUP COPY!
 
@@ -14,4 +34,5 @@ I wouldn't have been able to do this project without it.
 Also Mr. Spiv for porting doltool to OSX so I could check my work in my 
 own code against something.
 
-Documentation must be put together as well.
+Better documentation is available online on the webstie at the top of this
+document.
