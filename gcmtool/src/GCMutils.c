@@ -11,6 +11,7 @@
 #include "GCMextras.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 //#include <arpa/inet.h>
 
 void GCMGetDiskHeader(FILE *ifile, char *buf) {
@@ -351,6 +352,28 @@ void GCMDeleteFileEntry(FILE *ifile, GCMFileEntryStruct *e, FILE *destFile) {
 	
 	printf("GCMutils: \n");
 	
+	//set up the temp files...
+	//first the string table temp...
+	char st_tmpFilename[] = "tmp.st.XXXXXX";
+	FILE *stFile = NULL;
+	int stfd = -1; //the file descriptor
+	
+	if ((stfd = mkstemp(st_tmpFilename)) == -1 || !(stFile = fdopen(stfd, "w+"))) {
+		printf("Error opening string table temp!\n");
+		exit(1);
+	}
+	
+	//then the data file temp...
+	char data_tmpFilename[] = "tmp.data.XXXXXX";
+	FILE *dataFile = NULL;
+	int datafd = -1;
+	
+	if ((datafd = mkstemp(data_tmpFilename)) == -1 || !(dataFile = fdopen(datafd, "w+"))) {
+		printf("Error opening data temp file!\n");
+		exit(1);
+	}
+	
+	
 	GCMFileEntryStruct *root = GCMGetRootFileEntry(ifile);
 	
 	int entryCount = root->length;
@@ -419,23 +442,35 @@ void GCMDeleteFileEntry(FILE *ifile, GCMFileEntryStruct *e, FILE *destFile) {
 			}*/
 			
 			//if we've gotten beyond the deleted entry, then we have to shift all the data...
+			//since the data offsets are stored as absolute offsets in GCM and
+			//the filename offsets are stored as the offset relative to the start of the string table...
+			//the data offset is compounded with the name offset
 			if (i > e->index) {
 				tempEntry->filenameOffset += nameOffset;
 				if (!tempEntry->isDir) {
-					tempEntry->offset += dataOffset;
+					tempEntry->offset += dataOffset - nameOffset;
 				}
 			}
 			
+			//get the filename...
 			GCMFetchFilenameForFileEntry(ifile, tempEntry);
 			
 			if (!tempEntry->isDir) {
 				printf("writing %s data\n", tempEntry->filename);
 				GCMFetchDataForFileEntry(ifile, tempEntry);
-				if (fwrite(tempEntry->data, 1, tempEntry->length, destFile) != tempEntry->length) {
+				if (fwrite(tempEntry->data, 1, tempEntry->length, dataFile) != tempEntry->length) {
 					printf("Error writing to temp file...\n");
 					exit(1);
 				}
 				free(tempEntry->data);
+			}
+			
+			//write string table...
+			if (i != 0) { //don't write it if we're on the root node!
+				if (fwrite(tempEntry->filename, 1, strlen(tempEntry->filename) + 1, stFile) != strlen(tempEntry->filename) + 1) {
+					printf("Error writing filename to string table...\n");
+					exit(1);
+				}
 			}
 			
 			GCMFileEntryStructToRaw(tempEntry, rawEntry);
@@ -446,4 +481,7 @@ void GCMDeleteFileEntry(FILE *ifile, GCMFileEntryStruct *e, FILE *destFile) {
 			free(rawEntry);
 		}
 	}
+	
+	fclose(stFile);
+	fclose(dataFile);
 }
