@@ -260,7 +260,7 @@ int main(int argc, char **argv) {
 	}
 	
 	if (injectIconPath != NULL) {
-		printf("going to inject...\n");
+		//printf("going to inject...\n");
 		u32 len = getFilesize(injectIconPath);
 		char *imageData = (char*)malloc(len);
 		
@@ -272,7 +272,9 @@ int main(int argc, char **argv) {
 			}
 		} else {
 			//if the file we're injecting is in ppm format...
-			
+			//this isn't implemented yet... so tell the user and bail
+			printf("PPM IMPORT IS NOT IMPLEMENTED! (file not affected)\n\n");
+			exit(1);
 		}
 		
 		char *iconData = (char*)malloc(GCM_BNR_GRAPHIC_DATA_LENGTH);
@@ -285,7 +287,7 @@ int main(int argc, char **argv) {
 	}
 	
 	if (fileChanged) {
-		printf("Writing bnr file...\n");
+		//printf("Writing bnr file...\n");
 		rewind(bnrFile);
 		char *buf = (char*)malloc(GCM_BNR_LENGTH_V1);
 		GCMBnrStructToRaw(b, buf);
