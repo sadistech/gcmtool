@@ -246,4 +246,5 @@ void printUsage() {
 	printf("  gcmtool [ options ] <filename>\n\n");
 	printf("    Options:\n");
 	printf("    -l\tList files\n");
+	printf("    -e <gcm_source> <dest>\tExtract a file from a GCM\n");
 }
