@@ -30,9 +30,13 @@
 #define GCM_TOOL_ARG_EXTRACT_DISK_HEADER_INFO   "-edhi"
 #define GCM_TOOL_ARG_EXTRACT_APPLOADER			"-eal"
 
+//commandline options (modifiers to the arguments... hehe)
+#define GCM_TOOL_OPT_FILE						"-f"
+
 //macros... although they may be simple...
 // these are for the argument parsing engine...
 #define GET_NEXT_ARG		*(++argv)
+#define SKIP_NARG(n)		*(argv += n)	
 #define CHECK_ARG(ARG)		strcmp(ARG, currentArg) == 0
 #define PEEK_ARG			*(argv + 1)
 #define PEEK_NARG(n)		*(argv + n)
@@ -48,9 +52,9 @@ void closeFile(void);
 void printGCMInfo(void);
 void printUsage(void);
 void extractFiles(char *source, char *dest);
-void extractDiskHeader(void);
-void extractDiskHeaderInfo(void);
-void extractApploader(void);
+void extractDiskHeader(char *path);
+void extractDiskHeaderInfo(char *path);
+void extractApploader(char *path);
 
 void writeToFile(char *data, u32 length, char *path);
 
@@ -65,14 +69,17 @@ int recursiveIndex; //for the recursive printing...
 int main (int argc, char * const argv[]) {
 	// start flags declarations...
 	//for extracting:
-	char *extractFileFrom;
-	char *extractFileTo;
+	char *extractFileFrom = NULL;
+	char *extractFileTo = NULL;
 
 	int extractDiskHeaderFlag = 0;
+	char *extractDiskHeaderFile = GCM_DISK_HEADER_FILENAME;
 	
 	int extractDiskHeaderInfoFlag = 0;
+	char *extractDiskHeaderInfoFile = GCM_DISK_HEADER_INFO_FILENAME;
 
 	int extractApploaderFlag = 0;
+	char *extractApploaderFile = GCM_APPLOADER_FILENAME;
 
 	int listFilesFlag = 0;
 	// end flag declarations
@@ -104,14 +111,35 @@ int main (int argc, char * const argv[]) {
 			// extract disk header... (to a file called "boot.bin")
 			
 			extractDiskHeaderFlag++;
+			
+			if (PEEK_ARG && strcmp(PEEK_ARG, GCM_TOOL_OPT_FILE) == 0) {
+				// if they're specifying a file...
+				
+				SKIP_NARG(1); //skip that -f we just looked at...
+				extractDiskHeaderFile = GET_NEXT_ARG;
+			}
 		} else if (CHECK_ARG(GCM_TOOL_ARG_EXTRACT_DISK_HEADER_INFO)) {
 			// extract disk header info... (to a file called "bi2.bin")
 			
 			extractDiskHeaderInfoFlag++;
+			
+			if (PEEK_ARG && strcmp(PEEK_ARG, GCM_TOOL_OPT_FILE) == 0) {
+				// if they're specifying a file...
+				
+				SKIP_NARG(1); //skip that -f we just looked at...
+				extractDiskHeaderInfoFile = GET_NEXT_ARG;
+			}
 		} else if (CHECK_ARG(GCM_TOOL_ARG_EXTRACT_APPLOADER)) {
 			//extract apploader... (to a file called "appldr.bin")
 			
 			extractApploaderFlag++;
+			
+			if (PEEK_ARG && strcmp(PEEK_ARG, GCM_TOOL_OPT_FILE) == 0) {
+				// if they're specifying a file...
+				
+				SKIP_NARG(1); //skip that -f we just looked at...
+				extractApploaderFile = GET_NEXT_ARG;
+			}
 		} else if (CHECK_ARG(GCM_TOOL_ARG_LIST)) {
 			// list filesystem
 			
@@ -134,20 +162,23 @@ int main (int argc, char * const argv[]) {
 	printGCMInfo();
 	
 	// extract files...
-	if (*extractFileFrom && *extractFileTo) {
+	if (extractFileFrom && extractFileTo) {
 		extractFiles(extractFileFrom, extractFileTo);
 	}
 	
+	//extract diskheader
 	if (extractDiskHeaderFlag) {
-		extractDiskHeader();
+		extractDiskHeader(extractDiskHeaderFile);
 	}
 	
+	//extract diskheaderinfo
 	if (extractDiskHeaderInfoFlag) {
-		extractDiskHeaderInfo();
+		extractDiskHeaderInfo(extractDiskHeaderInfoFile);
 	}
 	
+	//extract apploader
 	if (extractApploaderFlag) {
-		extractApploader();
+		extractApploader(extractApploaderFile);
 	}
 
 	// list the files, if necesary...
@@ -165,6 +196,10 @@ int main (int argc, char * const argv[]) {
 }
 
 void openFile(void) {
+	/*
+	**  opens the GCM file for reading...
+	*/
+	
 	if (!filepath) {
 		printUsage();
 		exit(1);
@@ -236,7 +271,7 @@ void extractFiles(char *source, char *dest) {
 	free(e);
 }
 
-void extractDiskHeader(void) {
+void extractDiskHeader(char *path) {
 	/*
 	**  extracts the disk header to boot.bin
 	*/
@@ -245,12 +280,12 @@ void extractDiskHeader(void) {
 	char *buf = (char*)malloc(GCM_DISK_HEADER_LENGTH);
 	GCMGetDiskHeader(ifile, buf);
 		
-	writeToFile(buf, GCM_DISK_HEADER_LENGTH, GCM_DISK_HEADER_FILENAME);
+	writeToFile(buf, GCM_DISK_HEADER_LENGTH, path);
 		
 	free(buf);
 }
 
-void extractDiskHeaderInfo(void) {
+void extractDiskHeaderInfo(char *path) {
 	/*
 	**  extracts the diskheaderinfo to bi2.bin
 	*/
@@ -259,12 +294,12 @@ void extractDiskHeaderInfo(void) {
 	char *buf = (char*)malloc(GCM_DISK_HEADER_INFO_LENGTH);
 	GCMGetDiskHeaderInfo(ifile, buf);
 	
-	writeToFile(buf, GCM_DISK_HEADER_INFO_LENGTH, GCM_DISK_HEADER_INFO_FILENAME);
+	writeToFile(buf, GCM_DISK_HEADER_INFO_LENGTH, path);
 	
 	free(buf);
 }
 
-void extractApploader(void) {
+void extractApploader(char *path) {
 	/*
 	**  extracts the apploader to appldr.bin
 	*/
@@ -274,7 +309,7 @@ void extractApploader(void) {
 	char *buf = (char*)malloc(apploaderLength);
 	GCMGetApploader(ifile, buf);
 	
-	writeToFile(buf, apploaderLength, GCM_APPLOADER_FILENAME);
+	writeToFile(buf, apploaderLength, path);
 	
 	free(buf);
 }
