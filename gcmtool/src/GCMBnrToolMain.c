@@ -225,10 +225,15 @@ int main(int argc, char **argv) {
 	int fileChanged = 0;
 	
 	GCMBnrInfoStruct *mod = NULL;
-	if (b->version != 1) {
+	if (b->version != '1') {
 		mod = GCMBnrGetNthInfo(b->info, modIndex - 1);
 	} else {
 		mod = b->info;
+	}
+	
+	if (!mod) {
+		printf("ERROR! mod == NULL (this shouldn't happen!)\n");
+		exit(1);
 	}
 	
 	if (newName != NULL) {
