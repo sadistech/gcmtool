@@ -639,13 +639,28 @@ void extractFile(GCMFileEntryStruct *e, char *dest) {
 		return;
 	}
 	
+	//this way is fast, but uses up wayyyyyy too much memory.
 	//fetch the data
 	GCMFetchDataForFileEntry(gcmFile, e);
 	
 	writeToFile(e->data, e->length, dest);
 	
 	free(e->data);
-	//free(e);
+	
+	//this thing is wayyyyyyyyy too slow:
+	/*FILE *ofile = NULL;
+	if (!(ofile = fopen(dest, "w+"))) {
+		perror(dest);
+		exit(1);
+	}
+	
+	fseek(gcmFile, e->offset, SEEK_SET);
+	
+	while (ftell(gcmFile) < (e->offset + e->length)) {
+		fputc(fgetc(gcmFile), ofile);
+	}
+	
+	fclose(ofile);*/
 }
 
 void extractDiskHeader(char *path) {

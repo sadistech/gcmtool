@@ -25,6 +25,8 @@ static FILE *stringTableTempFile;
 static void initRecursion();
 static int recurseDirectory(char *path, char *buf);
 
+static int getFileCount(char *path);
+
 //for string table stuff...
 static int writeStringToTempFile(char *string);
 
@@ -354,7 +356,7 @@ void GCMGetNthRawFileEntry(FILE *ifile, int n, char *buf) {
 void GCMReplaceFilesystem(FILE *ifile, char *fsRootPath) {
 	initRecursion(); //gotta set up some temp vars...
 
-	int count =	recurseDirectory(fsRootPath, NULL);
+	int count =	getFileCount(fsRootPath);
 	
 	//allocated enough memory for all of the entries + 1 (for the root entry)
 	char *fst = (char*)malloc((count + 1) * GCM_FST_ENTRY_LENGTH);
@@ -460,6 +462,48 @@ static int recurseDirectory(char *path, char *buf) {
 			
 			printf("file: %s\n", de->d_name);
 		} else {
+			printf("unknown filetype! (%d)\n", de->d_type);
+			exit(1);
+		}
+	}
+	
+	closedir(d);
+	
+	return i;
+}
+
+static int getFileCount(char *path) {
+	/*
+	**  returns the count of files in path (including directories and their paths)
+	*/
+	
+	if (!path) return 0;
+	
+	DIR *d = NULL;
+	struct dirent *de = NULL;
+	
+	if (!(d = opendir(path))) {
+		printf("error opening directory! Doesn't exist?\n");
+		exit(1);
+	}
+	
+	int i = 0;
+	
+	for (i = 0; (de = readdir(d)) != NULL; i++) {
+		if (de->d_name[0] == '.') { //skip invisible files and . and ..
+			i--;
+			continue; 
+		}
+				
+		if (de->d_type == DT_DIR) {
+			char newPath[1024] = "";
+			strcpy(newPath, path);
+			strcat(newPath, "/");
+			strcat(newPath, de->d_name);
+			
+			int count = getFileCount(newPath);
+			i += count;
+		} else if (de->d_type != DT_REG) {
 			printf("unknown filetype! (%d)\n", de->d_type);
 			exit(1);
 		}
