@@ -2700,7 +2700,7 @@ test -z "$INSTALL_DATA" && INSTALL_DATA='${INSTALL} -m 644'
 
 # Add the stamp file to the list of files AC keeps track of,
 # along with our hook.
-          ac_config_headers="$ac_config_headers config.h"
+          ac_config_headers="$ac_config_headers src/config.h"
 
 
 
@@ -3250,7 +3250,7 @@ do
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
   "src/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
-  "config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
+  "src/config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS src/config.h" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
@@ -3796,8 +3796,8 @@ echo "$as_me: error: cannot create directory \"$ac_dir\"" >&2;}
   fi
   # Run the commands associated with the file.
   case $ac_file in
-    config.h ) # update the timestamp
-echo 'timestamp for config.h' >"./stamp-h1"
+    src/config.h ) # update the timestamp
+echo 'timestamp for src/config.h' >"src/stamp-h1"
  ;;
   esac
 done
