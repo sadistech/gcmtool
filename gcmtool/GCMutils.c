@@ -10,7 +10,7 @@
 #include "GCMutils.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <arpa/inet.h>
+//#include <arpa/inet.h>
 
 void GCMGetDiskHeader(FILE *ifile, char *buf) {
 	/* 
