@@ -72,7 +72,9 @@ int main(int argc, char **argv) {
 	u32 fstSize = GCMGetFSTSize(gcmFile);
 	u32 stringTableOffset = GCMGetStringTableOffset(gcmFile);
 	GCMFileEntryStruct *root = GCMGetRootFileEntry(gcmFile);
+	u32 filesize = GetFilesizeFromStream(gcmFile);
 
+	printf("Filesize: %ld\n", filesize);
 	printf("FST Offset: %ld\n", fstOffset);
 	printf("FST Size: %ld\n", fstSize);
 	printf("String Table: %ld\n", stringTableOffset);
@@ -81,6 +83,7 @@ int main(int argc, char **argv) {
 	int i = 0;
 	u32 highestStringTableOffset = 0;
 	u32 firstFileOffset = GetFilesizeFromStream(gcmFile);
+	u32 endOfFileList = 0;
 	
 	for (i = 0; i < root->length; i++) {
 		GCMFileEntryStruct *e = GCMGetNthFileEntry(gcmFile, i);
@@ -93,14 +96,19 @@ int main(int argc, char **argv) {
 		if (!(e->isDir) && e->offset < firstFileOffset) {
 			firstFileOffset = e->offset;
 		}
+
+		if (!(e->isDir) && e->offset + e->length > endOfFileList) {
+			endOfFileList = (e->offset + e->length);
+		}
 	}
 
 	printf("\n");
 	printf("HighestStringTableOffset: %ld\n", highestStringTableOffset);
 	printf("firstFileOffset: %ld\n", firstFileOffset);
+	printf("endOfFileList: %ld\n", endOfFileList);
 
 	printf("\n");
-	printf("Savings: %ld\n", firstFileOffset - (stringTableOffset + highestStringTableOffset));
+	printf("Savings: %ld\n", firstFileOffset - (stringTableOffset + highestStringTableOffset) + (filesize - endOfFileList));
 
 	fclose(gcmFile);
 }
