@@ -266,7 +266,7 @@ int main(int argc, char **argv) {
 		} else if (CHECK_ARG(ARG_UNKNOWN1)) {
 			// they want to change the unknown1 (?)
 
-			newUnknown1 = atol(GET_NEXT_ARG);
+			newUnknown1 = strtoul(GET_NEXT_ARG, NULL, 0);
 			modUnknown1++;
 			
 		} else if (CHECK_ARG(ARG_GAME_NAME)) {
@@ -281,55 +281,55 @@ int main(int argc, char **argv) {
 		} else if (CHECK_ARG(ARG_DEBUG_OFFSET)) {
 			// they want to change the debug monitor offset...
 
-			newDebugMonitorOffset = atol(GET_NEXT_ARG);
+			newDebugMonitorOffset = strtoul(GET_NEXT_ARG, NULL, 0);
 			modDebugMonitorOffset++;
 			
 		} else if (CHECK_ARG(ARG_DEBUG_ADDRESS)) {
 			// change the debug monitor length...
 
-			newDebugMonitorAddress = atol(GET_NEXT_ARG);
+			newDebugMonitorAddress = strtoul(GET_NEXT_ARG, NULL, 0);
 			modDebugMonitorAddress++;
 			
 		} else if (CHECK_ARG(ARG_DOL_OFFSET)) {
 			//change DOL offset
 
-			newDolOffset = atol(GET_NEXT_ARG);
+			newDolOffset = strtoul(GET_NEXT_ARG, NULL, 0);
 			modDolOffset++;
 			
 		} else if (CHECK_ARG(ARG_FST_OFFSET)) {
 			// change FST offset
 			
-			newFstOffset = atol(GET_NEXT_ARG);
+			newFstOffset = strtoul(GET_NEXT_ARG, NULL, 0);
 			modFstOffset++;
 			
 		} else if (CHECK_ARG(ARG_FST_SIZE)) {
 			// change FST size
 			
-			newFstSize = atol(GET_NEXT_ARG);
+			newFstSize = strtoul(GET_NEXT_ARG, NULL, 0);
 			modFstSize++;
 			
 		} else if (CHECK_ARG(ARG_FST_SIZE_MAX)) {
 			// change FST max size (for multi-disk)
 			
-			newFstSizeMax = atol(GET_NEXT_ARG);
+			newFstSizeMax = strtoul(GET_NEXT_ARG, NULL, 0);
 			modFstSizeMax++;
 			
 		} else if (CHECK_ARG(ARG_USER_POS)) {
 			// change user position
 			
-			newUserPosition = atol(GET_NEXT_ARG);
+			newUserPosition = strtoul(GET_NEXT_ARG, NULL, 0);
 			modUserPosition++;
 
 		} else if (CHECK_ARG(ARG_USER_LEN)) {
 			// change user address
 			
-			newUserLength = atol(GET_NEXT_ARG);
+			newUserLength = strtoul(GET_NEXT_ARG, NULL, 0);
 			modUserLength++;
 			
 		} else if (CHECK_ARG(ARG_UNKNOWN2)) {
 			// change unknown
 			
-			newUnknown2 = atol(GET_NEXT_ARG);
+			newUnknown2 = strtoul(GET_NEXT_ARG, NULL, 0);
 			modUnknown2++;
 			
 		} else {
