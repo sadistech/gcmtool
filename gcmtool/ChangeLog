@@ -4,6 +4,8 @@
 [all] improved hexadecimal value output
 [all] for all unsigned 32-bit int commandline input, if you precede the value
 	with "0x" the value will be interpreted as hex. (ie 0x0100 for 256)
+[gcmbnrtool] fixed a bug where a bnr was incorrectly always identified as being
+	v2 when deciding how to read the info.
 
 2004/7/14
 0.3.1
