@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
 	do {
 		currentArg = GET_NEXT_ARG;
 
-		if (!curentArg) {
+		if (!currentArg) {
 			printUsage();
 			exit(1);
 		} else if (CHECK_ARG(ARG_HELP)) {
@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
 }
 
 void openFile() {
-	if (!(dhFile = fopen(filename, "r+"))) {
+	if (!(dhiFile = fopen(filename, "r+"))) {
 		perror(filename);
 		exit(1);
 	}
