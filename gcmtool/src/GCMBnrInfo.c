@@ -1,31 +1,31 @@
-#include "GCMBnrInfoRecord.h"
+#include "GCMBnrInfo.h"
 #include <stdlib.h>
 
-void GCMFreeBnrInfoRecordStruct(GCMBnrInfoRecordStruct *r) {
+void GCMFreeBnrInfoStruct(GCMBnrInfoStruct *r) {
 	/*
-	**	recursively frees the BNR infoRecords...
+	**	recursively frees the BNR infos...
 	*/
 	
 	if (r->next) {
-		GCMFreeBnrInfoRecordStruct(r->next);
+		GCMFreeBnrInfoStruct(r->next);
 	}
 
 	free(r);
 }
 
-int GCMBnrInfoRecordCount(GCMBnrInfoRecordStruct *r) {
+int GCMBnrInfoCount(GCMBnrInfoStruct *r) {
 	/*
 	**	returns the number of info records in the record chain including r
 	*/
 
 	if (r->next) {
-		return 1 + GCMBnrInfoRecordCount(r->next);
+		return 1 + GCMBnrInfoCount(r->next);
 	} else {
 		return 1;
 	}
 }
 
-GCMBnrInfoRecordStruct *GCMBnrGetNthInfoRecord(GCMBnrInfoRecordStruct *r, int n) {
+GCMBnrInfoStruct *GCMBnrGetNthInfo(GCMBnrInfoStruct *r, int n) {
 	/*
 	**	returns the nth info record starting at r
 	**	if n == 0, assume you want THIS record.
@@ -35,7 +35,7 @@ GCMBnrInfoRecordStruct *GCMBnrGetNthInfoRecord(GCMBnrInfoRecordStruct *r, int n)
 	if (n == 0) {
 		return r;
 	} else if (r->next) {
-		return GCMBnrGetNthInfoRecord(r->next, n - 1);
+		return GCMBnrGetNthInfo(r->next, n - 1);
 	} else {
 		return NULL;
 	}

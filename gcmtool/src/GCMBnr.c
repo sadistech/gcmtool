@@ -1,5 +1,5 @@
 #include "GCMBnr.h"
-#include "GCMBnrInfoRecord.h"
+#include "GCMBnrInfo.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -38,13 +38,13 @@ GCMBnrStruct *GCMRawBnrToStruct(char *raw, int dataLen) {
 	// grab the only info record (version 1) or...
 	// loop until we get all of the info (for version 2)
 	
-	GCMBnrInfoRecordStruct *recordHead = (GCMBnrInfoRecordStruct*)malloc(sizeof(GCMBnrInfoRecordStruct));
-	GCMBnrInfoRecordStruct *r = recordHead;
+	GCMBnrInfoStruct *recordHead = (GCMBnrInfoStruct*)malloc(sizeof(GCMBnrInfoStruct));
+	GCMBnrInfoStruct *r = recordHead;
 	
 	int dataLeft = dataLen - (raw - start);
 	
 	while (dataLeft >= GCM_BNR_INFO_RECORD_LENGTH) {
-		r->next = (GCMBnrInfoRecordStruct*)malloc(sizeof(GCMBnrInfoRecordStruct));
+		r->next = (GCMBnrInfoStruct*)malloc(sizeof(GCMBnrInfoStruct));
 		r = r->next;
 		
 		bzero(r->name, GCM_BNR_GAME_NAME_LENGTH);
@@ -96,6 +96,7 @@ void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf) {
 	
 	char versionStr[2] = "";
 	sprintf(versionStr, "%c", b->version);
+	
 	memcpy(buf, versionStr, GCM_BNR_MAGIC_WORD_SUFFIX_LENGTH);
 	buf += GCM_BNR_MAGIC_WORD_SUFFIX_LENGTH;
 	
@@ -104,21 +105,28 @@ void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf) {
 	memcpy(buf, b->graphic, GCM_BNR_GRAPHIC_DATA_LENGTH);
 	buf += GCM_BNR_GRAPHIC_DATA_LENGTH;
 
+	// basically what we need to do is loop and append data for all the fields
+	// it's up to you, the programmer (or the user...) to make sure the version is 2 if there's more than one record...
 
-	memcpy(buf, b->info->name, GCM_BNR_GAME_NAME_LENGTH);
-	buf += GCM_BNR_GAME_NAME_LENGTH;
-	
-	memcpy(buf, b->info->developer, GCM_BNR_DEVELOPER_LENGTH);
-	buf += GCM_BNR_DEVELOPER_LENGTH;
-	
-	memcpy(buf, b->info->fullName, GCM_BNR_FULL_TITLE_LENGTH);
-	buf += GCM_BNR_FULL_TITLE_LENGTH;
-	
-	memcpy(buf, b->info->fullDeveloper, GCM_BNR_FULL_DEVELOPER_LENGTH);
-	buf += GCM_BNR_FULL_DEVELOPER_LENGTH;
-	
-	memcpy(buf, b->info->description, GCM_BNR_DESCRIPTION_LENGTH);
-	
+	GCMBnrInfoStruct *head = b->info;
+	GCMBnrInfoStruct *n = head;
+
+	do {
+		memcpy(buf, n->name, GCM_BNR_GAME_NAME_LENGTH);
+		buf += GCM_BNR_GAME_NAME_LENGTH;
+		
+		memcpy(buf, n->developer, GCM_BNR_DEVELOPER_LENGTH);
+		buf += GCM_BNR_DEVELOPER_LENGTH;
+		
+		memcpy(buf, n->fullName, GCM_BNR_FULL_TITLE_LENGTH);
+		buf += GCM_BNR_FULL_TITLE_LENGTH;
+		
+		memcpy(buf, n->fullDeveloper, GCM_BNR_FULL_DEVELOPER_LENGTH);
+		buf += GCM_BNR_FULL_DEVELOPER_LENGTH;
+		
+		memcpy(buf, n->description, GCM_BNR_DESCRIPTION_LENGTH);
+	} while (n = n->next);	
+
 	buf = start;
 }
 

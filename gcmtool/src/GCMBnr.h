@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include "types.h"
-#include "GCMBnrInfoRecord.h"
+#include "GCMBnrInfo.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,7 +44,7 @@ typedef struct gcm_bnr_struct {
 //	char		fullName[GCM_BNR_FULL_TITLE_LENGTH];			// full game title
 //	char		fullDeveloper[GCM_BNR_FULL_DEVELOPER_LENGTH];   // full company/developer name
 //	char		description[GCM_BNR_DESCRIPTION_LENGTH];		// game description
-	GCMBnrInfoRecordStruct *info;
+	GCMBnrInfoStruct *info;
 } GCMBnrStruct;
 
 //struct that stores an RGB value (0-255 for RGB and 0 or 1 for alpha)

@@ -1,5 +1,5 @@
 /*
-**	GCMBnrInfoRecord.h
+**	GCMBnrInfo.h
 **	written by spike <spike666@mac.com>
 **	www.sadistech.com
 **	gcmtool.sourceforge.net
@@ -38,13 +38,13 @@ typedef struct gcm_bnr_info_record_struct {
 	char			fullDeveloper[GCM_BNR_FULL_DEVELOPER_LENGTH];
 	char			description[GCM_BNR_DESCRIPTION_LENGTH];
 	struct gcm_bnr_info_record_struct	*next;
-} GCMBnrInfoRecordStruct;
+} GCMBnrInfoStruct;
 
-void GCMFreeBnrInfoRecordStruct(GCMBnrInfoRecordStruct *r);
+void GCMFreeBnrInfoStruct(GCMBnrInfoStruct *r);
 
-int GCMBnrInfoRecordCount(GCMBnrInfoRecordStruct *r);
+int GCMBnrInfoCount(GCMBnrInfoStruct *r);
 
-GCMBnrInfoRecordStruct *GCMBnrGetNthInfoRecord(GCMBnrInfoRecordStruct *r, int n);
+GCMBnrInfoStruct *GCMBnrGetNthInfo(GCMBnrInfoStruct *r, int n);
 
 #endif	/* GCM_BNR_INFO_RECORD_H_ */
 
