@@ -42,6 +42,7 @@ void closeFile(void);
 
 void printGCMInfo(void);
 void printUsage(void);
+void extractFiles(char *source, char *dest);
 
 char *filepath;
 char *filename;
@@ -52,11 +53,13 @@ int dirDepth;
 int recursiveIndex; //for the recursive printing...
 
 int main (int argc, char * const argv[]) {
+	// start flags declarations...
 	//for extracting:
 	char *extractFrom;
 	char *extractTo;
 
 	int listFiles = 0;
+	// end flag declarations
 	
 	//start argument parsing...
 	char *currentArg = GET_NEXT_ARG; //loads the first argument (the executable... don't do anything with this).
@@ -72,8 +75,8 @@ int main (int argc, char * const argv[]) {
 			// extract files...
 			// usage: -e <path> <destPath>
 			
-			extractFrom = GET_NEXT_ARG;
-			extractTo = GET_NEXT_ARG;
+			extractFrom		= GET_NEXT_ARG;
+			extractTo		= GET_NEXT_ARG;
 			
 			if (!extractFrom || !extractTo) {
 				//argument error... something was omitted...
@@ -94,13 +97,20 @@ int main (int argc, char * const argv[]) {
 			break;
 		}
 	} while(*argv);
+	//end parsing arguments...
 	
 	//open the file... and start processing!
-	
 	openFile();
 
+	// print the info...
 	printGCMInfo();
+	
+	// extract files...
+	if (extractFrom && extractTo) {
+		extractFiles(extractFrom, extractTo);
+	}
 
+	// list the files, if necesary...
 	if (listFiles) {
 		dirDepth = 0;
 		recursiveIndex = 0;
@@ -157,6 +167,34 @@ void printGCMInfo(void) {
 	u32 entryCount = r->length;
 	printf("File count:\t%ld\n", entryCount);
 	GCMFreeFileEntryStruct(r);
+}
+
+void extractFiles(char *source, char *dest) {
+	/*
+	**  extract files from source (in GCM) to dest (in the local filesystem)
+	*/
+	
+	GCMFileEntryStruct *e = GCMGetFileEntryAtPath(ifile, source);
+	
+	if (!e) {
+		printf("File not found (%s)\n", source);
+		return;
+	}
+	
+	FILE *ofile = NULL;
+	
+	if (!(ofile = fopen(dest, "w"))) {
+		printf("An error occurred trying to open %s\n", dest);
+		return;
+	}
+	
+	GCMFetchDataForFileEntry(ifile, e);
+	
+	if (fwrite(e->data, 1, e->length, ofile) != e->length) {
+		printf("An error occurred trying to write %s\n", dest);
+	}
+	
+	fclose(ofile);
 }
 
 void printEntry(GCMFileEntryStruct *e) {
