@@ -157,25 +157,41 @@ GCMDiskHeaderStruct *GCMRawDiskHeaderToStruct(char *rawHeader) {
 	
 	rawHeader += 18; //skip padding ?
 
-	h->unknown1 = ntohl(*((u32*)rawHeader)++);
+	h->unknown1 = *(u32*)rawHeader++;
+	h->unknown1 = ntohl(h->unknown1);
 	
 	bzero(h->gameName, GCM_GAME_NAME_LENGTH);
 	memcpy(h->gameName, rawHeader, GCM_GAME_NAME_LENGTH);
 	rawHeader += GCM_GAME_NAME_LENGTH;
 	
-	h->debugMonitorOffset = ntohl(*((u32*)rawHeader)++);
-	h->debugMonitorAddress = ntohl(*((u32*)rawHeader));
+	h->debugMonitorOffset = *((u32*)rawHeader)++;
+	h->debugMonitorOffset = ntohl(h->debugMonitorOffset);
+	
+	h->debugMonitorAddress = *((u32*)rawHeader);
+	h->debugMonitorAddress = ntohl(h->debugMonitorAddress);
 	
 	rawHeader += 28; //skip some padding?
 	
-	h->dolOffset	= ntohl(*((u32*)rawHeader)++);
-	h->fstOffset	= ntohl(*((u32*)rawHeader)++);
-	h->fstSize		= ntohl(*((u32*)rawHeader)++);
-	h->fstSizeMax   = ntohl(*((u32*)rawHeader)++);
-	h->userPosition = ntohl(*((u32*)rawHeader)++);
-	h->userLength   = ntohl(*((u32*)rawHeader)++);
+	h->dolOffset	= *(u32*)rawHeader++;
+	h->dolOffset	= ntohl(h->dolOffset);
 	
-	h->unknown2		= ntohl(*((u32*)rawHeader)++);
+	h->fstOffset	= *(u32*)rawHeader++;
+	h->fstOffset	= ntohl(h->fstOffset);
+	
+	h->fstSize	= *(u32*)rawHeader++;
+	h->fstSize	= ntohl(h->fstSize);
+	
+	h->fstSizeMax   = *(u32*)rawHeader++;
+	h->fstSizeMax	= ntohl(h->fstSizeMax);
+	
+	h->userPosition = *(u32*)rawHeader++;
+	h->userPosition = ntohl(h->userPosition);
+	
+	h->userLength   = *(u32*)rawHeader++;
+	h->userLength	= ntohl(h->userLength);
+	
+	h->unknown2	= *(u32*)rawHeader++;
+	h->unknown2	= ntohl(h->unknown2);
 	
 	return h;
 }
