@@ -1,3 +1,7 @@
+[gcmtool] fixed a bug where the file would be opened as read/write even if we
+	were only going to be reading (which would lead to permission denied errors
+	on read-only files)
+
 2004/7/14
 0.3.1
 [all] added bold commandline options to extended help.

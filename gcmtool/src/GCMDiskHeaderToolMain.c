@@ -27,17 +27,22 @@
 
 
 // Commandline arguments:
+#define ARG_HEX				"-h"
+#define ARG_HEX_SYN			"--hex"
+#define ARG_HEX_OPT			""
+#define ARG_HEX_HELP		"Print all 32-bit ints in hexidecimal notation"
+
 #define ARG_SYSTEMID		"-sid"
 #define ARG_SYSTEMID_SYN	"--system-id"
 #define ARG_SYSTEMID_OPT	"<id>"
 #define ARG_SYSTEMID_HELP	"Set the systemID to " ARG_SYSTEMID_OPT " (G, U)"
 
-#define ARG_GAMEID		"-gid"
+#define ARG_GAMEID			"-gid"
 #define ARG_GAMEID_SYN		"--game-id"
 #define ARG_GAMEID_OPT		"<id>"
 #define ARG_GAMEID_HELP		"Set the gameID to " ARG_GAMEID_OPT " (2 characters)"
 
-#define ARG_REGION		"-r"
+#define ARG_REGION			"-r"
 #define ARG_REGION_SYN		"--region"
 #define ARG_REGION_OPT		"<region>"
 #define ARG_REGION_HELP		"Set the region to " ARG_REGION_OPT " (E, P, J)"
@@ -133,8 +138,12 @@ void closeFile();
 FILE *dhFile;
 char *filename;
 
+int hexFlag = 0;
+
+
 int main(int argc, char **argv) {
 	//commandline argument flags:
+	
 	int fileChanged = 0;
 	
 	char *newSystemID = NULL;
@@ -191,6 +200,11 @@ int main(int argc, char **argv) {
 
 			printExtendedUsage();
 			exit(0);
+		} else if (CHECK_ARG(ARG_HEX)) {
+			//the want hex notation...
+
+			hexFlag = 1;
+		
 		} else if (CHECK_ARG(ARG_SYSTEMID)) {
 			//they want to change the systemID
 
@@ -494,8 +508,13 @@ void printDiskHeader(GCMDiskHeaderStruct *d) {
 	printf("Version:               %d\n", d->version);
 	printf("Streaming:             %d\n", d->streaming);
 	printf("Stream Buffer Size:    %d\n", d->streamBufSize);
-	printf("Unknown1:              %08X\n", d->unknown1);
+	
+	char format[255] = "";
+	sprintf(format, "Unknown1:              %s\n", hexFlag ? "%08X" : "%ld");
+	printf(format, d->unknown1);
+
 	printf("Name:                  %s\n", d->gameName);
+
 	printf("Debug Monitor Offset:  %08X\n", d->debugMonitorOffset);
 	printf("Debug Monitor Address: %08X\n", d->debugMonitorAddress);
 	printf("DOL Offset:            %08X\n", d->dolOffset);
@@ -530,6 +549,7 @@ void printExtendedUsage() {
 	printUsage();
 
 	PRINT_HELP(ARG_HELP);
+	PRINT_HELP(ARG_HEX);
 	PRINT_HELP(ARG_SYSTEMID);
 	PRINT_HELP(ARG_GAMEID);
 	PRINT_HELP(ARG_REGION);
