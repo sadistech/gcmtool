@@ -44,8 +44,8 @@
 
 #define ARG_LIST							"-l"
 #define ARG_LIST_SYN						"--list"
-#define ARG_LIST_OPT						""
-#define ARG_LIST_HELP						"Lists the filesystem of the GCM"
+#define ARG_LIST_OPT						"[ " OPT_FILE_INFO " " OPT_FULL_PATH " ]"
+#define ARG_LIST_HELP						"Lists the filesystem of the GCM. If " OPT_FILE_INFO " is included, it will show the filesizes or filecount (for directories). If " OPT_FULL_PATH " is included, it will print the full paths of each file (for easy grepping)."
 
 #define ARG_HEX								"-h"
 #define ARG_HEX_SYN							"--hex"
@@ -103,7 +103,14 @@
 
 //commandline options (modifiers to the arguments... hehe)
 #define OPT_FILE							"-f"
+#define OPT_FILE_SYN						"--file"
 #define OPT_FILE_OPT						"<filename>"
+
+#define OPT_FULL_PATH						"-p"
+#define OPT_FULL_PATH_SYN					"--full-path"
+
+#define OPT_FILE_INFO						"-L"
+#define OPT_FILE_INFO_SYN					"--full-info"
 
 //some utility functions...
 void printEntry(GCMFileEntryStruct *e);
@@ -145,6 +152,8 @@ FILE *gcmFile;		//the file we're working with
 //for working with printing directories
 int dirDepth;
 int recursiveIndex; //for the recursive printing...
+int listInfoFlag;   //for listing filesize, directory content count, and filetype (d or f)
+int listPathFlag;   //for listing full file paths...
 
 int main (int argc, char **argv) {
 	// start flags declarations...
@@ -181,6 +190,8 @@ int main (int argc, char **argv) {
 	char *injectApploaderFile = GCM_APPLOADER_FILENAME;
 
 	int listFilesFlag = 0;
+	listInfoFlag = 0;
+	listPathFlag = 0;
 	// end flag declarations
 	
 	//start argument parsing...
@@ -315,6 +326,18 @@ int main (int argc, char **argv) {
 			// list filesystem
 			
 			listFilesFlag++; //turn the listFiles flag on.
+			
+			while(1) {
+				if (PEEK_ARG && (strcmp(PEEK_ARG, OPT_FILE_INFO) == 0 || strcmp(PEEK_ARG, OPT_FILE_INFO_SYN) == 0)) {
+					SKIP_NARG(1);
+					listInfoFlag++;
+				} else if (PEEK_ARG && (strcmp(PEEK_ARG, OPT_FULL_PATH) == 0 || strcmp(PEEK_ARG, OPT_FULL_PATH_SYN) == 0)) {
+					SKIP_NARG(1);
+					listPathFlag++;
+				} else {
+					break;
+				}
+			}
 		} else {
 			// do it to this file... this is the last argument... just ignore the rest...
 			
@@ -637,30 +660,45 @@ void injectApploader(char *sourcePath) {
 }
 
 void printEntry(GCMFileEntryStruct *e) {
-	printf("\t%s\n", e->filename);
-	printf("size:\t%ld\n\n", e->length);
+	int j = 0;
+	
+	char size[10] = "";
+	char path[1024] = "";
+	
+	if (listInfoFlag) {
+		if (e->isDir) {
+			sprintf(size, "(%ld)\t", (e->length - recursiveIndex - 1));
+		} else {
+			sprintf(size, "%ldb\t", e->length);
+		}
+	}
+
+	//space out the next entry...
+	if (!listInfoFlag) {
+		for (j = 0; j < dirDepth; j++) {
+			printf(" ");
+		}
+	}
+	
+	if (dirDepth == 0) {
+		printf("%s/\n", size);
+	} else {
+		if (!e->isDir)
+			printf("%s%s\n", size, e->filename);
+		else
+			printf("%s%s\n", size, e->filename);
+	}
 }
 
 void printDirectory(GCMFileEntryStruct *e) {
 	if (!e) {
 		return;
 	}
-	int j = 0;
 	
 	GCMFetchFilenameForFileEntry(gcmFile, e);
 	
-	for (j = 0; j < dirDepth; j++) {
-		printf(" ");
-	}
+	printEntry(e);
 	
-	if (dirDepth == 0) {
-		printf("/\n");
-	} else {
-		if (!e->isDir)
-			printf("%s\n", e->filename);
-		else
-			printf("%s\n", e->filename);
-	}
 	if (e->isDir) {
 		dirDepth++;
 		GCMFileEntryStruct *next;
