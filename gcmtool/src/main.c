@@ -636,11 +636,11 @@ void extractFile(GCMFileEntryStruct *e, char *dest) {
 	
 	//this way is fast, but uses up wayyyyyy too much memory.
 	//fetch the data
-	GCMFetchDataForFileEntry(gcmFile, e);
+	/*GCMFetchDataForFileEntry(gcmFile, e);
 	
 	WriteDataToFile(e->data, e->length, dest);
 	
-	free(e->data);
+	free(e->data);*/
 	
 	//this thing is wayyyyyyyyy too slow:
 	/*FILE *ofile = NULL;
@@ -656,6 +656,21 @@ void extractFile(GCMFileEntryStruct *e, char *dest) {
 	}
 	
 	fclose(ofile);*/
+	
+	//this uses buffered reads to copy data in chunks...
+	FILE *ofile = NULL;
+	if (!(ofile = fopen(dest, "w+"))) {
+		perror(dest);
+		exit(1);
+	}
+	
+	fseek(gcmFile, e->offset, SEEK_SET);
+	
+	if (CopyData(gcmFile, ofile, e->length) != e->length) {
+		printf("ERROR COPYING DATA!\n");
+	}
+	
+	fclose(ofile);
 }
 
 void extractDiskHeader(char *path) {

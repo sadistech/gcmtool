@@ -19,30 +19,31 @@ int CopyData(FILE *source, FILE *dest, u32 length) {
 	if (!source || !dest || !length) return 0;
 	
 	u32 copiedSize = 0; //the amount we've copied so far...
+	char *buf = (char*)malloc(FF_BUFFER_SIZE);
 	
-	while (length > 0 && (feof(source) == 0) ) {
+	while (length > 0) {
 		u32 sizeToRead = FF_BUFFER_SIZE;
 		
-		if (length < FF_BUFFER_SIZE) {
+		if (length < sizeToRead) {
 			sizeToRead = length;
 		}
-		
-		char *buf = (char*)malloc(sizeToRead);
-		
-		if (fread(buf, 1, sizeToRead, source) != sizeToRead) {
-			return copiedSize;
+				
+		if (fread(buf, 1, sizeToRead, source) != sizeToRead) {			
+			break;
 		}
 		
 		u32 chunkSize = fwrite(buf, 1, sizeToRead, dest);
 		copiedSize += chunkSize;
 		
 		if (chunkSize != sizeToRead) {
-			return copiedSize;
+			break;
 		}
 		
-		length -= copiedSize;
+		length -= chunkSize;
+		printf("len: %ld\n", length);
 	}
 	
+	free(buf);
 	return copiedSize;
 }
 
