@@ -146,7 +146,7 @@ int main(int argc, char **argv) {
 	int newStreaming = -1;
 	int newStreamBufSize = -1;
 	
-	int modUnknwon1 = 0; //since unknown1 can be 0, and is an UNSIGNED int, we gotta label it for change somehow...
+	int modUnknown1 = 0; //since unknown1 can be 0, and is an UNSIGNED int, we gotta label it for change somehow...
 	u32 newUnknown1 = 0;
 	
 	char *newGameName = NULL;
@@ -254,6 +254,75 @@ int main(int argc, char **argv) {
 				printf("Streaming buffer size is out of range. Must be 0-255. (%d is invalid)\n", newStreamBufSize);
 				exit(1);
 			}
+		} else if (CHECK_ARG(ARG_UNKNOWN1)) {
+			// they want to change the unknown1 (?)
+
+			newUnknown1 = atoi(GET_NEXT_ARG);
+			modUnknown1++;
+			
+		} else if (CHECK_ARG(ARG_GAME_NAME)) {
+			// they want to change the gamename
+
+			newGameName = GET_NEXT_ARG;
+
+			if (strlen(newGameName) > GCM_GAME_NAME_LENGTH) {
+				printf("Game name is too long. Must be %d characters or less.\n", GCM_GAME_NAME_LENGTH);
+				exit(1);
+			}
+		} else if (CHECK_ARG(ARG_DEBUG_OFFSET)) {
+			// they want to change the debug monitor offset...
+
+			newDebugMonitorOffset = atoi(GET_NEXT_ARG);
+			modDebugMonitorOffset++;
+			
+		} else if (CHECK_ARG(ARG_DEBUG_ADDRESS)) {
+			// change the debug monitor length...
+
+			newDebugMonitorAddress = atoi(GET_NEXT_ARG);
+			modDebugMonitorAddress++;
+			
+		} else if (CHECK_ARG(ARG_DOL_OFFSET)) {
+			//change DOL offset
+
+			newDolOffset = atoi(GET_NEXT_ARG);
+			modDolOffset++;
+			
+		} else if (CHECK_ARG(ARG_FST_OFFSET)) {
+			// change FST offset
+			
+			newFstOffset = atoi(GET_NEXT_ARG);
+			modFstOffset++;
+			
+		} else if (CHECK_ARG(ARG_FST_SIZE)) {
+			// change FST size
+			
+			newFstSize = atoi(GET_NEXT_ARG);
+			modFstSize++;
+			
+		} else if (CHECK_ARG(ARG_FST_SIZE_MAX)) {
+			// change FST max size (for multi-disk)
+			
+			newFstSizeMax = atoi(GET_NEXT_ARG);
+			modFstSizeMax++;
+			
+		} else if (CHECK_ARG(ARG_USER_POS)) {
+			// change user position
+			
+			newUserPosition = atoi(GET_NEXT_ARG);
+			modUserPosition++;
+
+		} else if (CHECK_ARG(ARG_USER_LEN)) {
+			// change user address
+			
+			newUserLength = atoi(GET_NEXT_ARG);
+			modUserLength++;
+			
+		} else if (CHECK_ARG(ARG_UNKNOWN2)) {
+			// change unknown
+			
+			newUnknown2 = atoi(GET_NEXT_ARG);
+			modUnknown2++;
+			
 		} else {
 			//this is the file...
 			filename = currentArg;
