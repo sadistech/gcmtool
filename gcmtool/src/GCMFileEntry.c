@@ -30,18 +30,19 @@ GCMFileEntryStruct *GCMRawFileEntryToStruct(char *rawEntry, int index) {
 	fe->isDir = *rawEntry;
 	
 	//then get the filename_offset
-	unsigned long *l;
-	l = (unsigned long*)rawEntry;
+	u32 *l;
+	l = (u32*)rawEntry;
 	if (rawEntry[0] != 0)
-		*l -= 0x01000000;
-	fe->filenameOffset = ntohl(*l);
+		fe->filenameOffset = ntohl(*l - 0x01000000);
+	else 
+		fe->filenameOffset = ntohl(*l);
 	
 	//get the file_offset/parent_offset
-	l = (unsigned long*)rawEntry + 1;
+	l = (u32*)rawEntry + 1;
 	fe->offset = ntohl(*l);
 	
 	//get the file_length/next_offset
-	l = (unsigned long*)rawEntry + 2;
+	l = (u32*)rawEntry + 2;
 	fe->length = ntohl(*l);
 	
 	fe->index = index;
@@ -68,7 +69,7 @@ void GCMFileEntryStructToRaw(GCMFileEntryStruct *e, char *buf) {
 	//this gets tricky, because we only have a 24bit unsigned int, here...
 	//there's a better way to do this... it's on my to-do list.
 	u32 *tempFilenameOffset = (u32*)malloc(sizeof(u32));
-	*tempFilenameOffset = (htonl(e->filenameOffset) << 8); //shift it one byte...
+	*tempFilenameOffset = (e->filenameOffset << 8); //shift it one byte...
 	memcpy(buf, tempFilenameOffset, 3); //since it's only 3 bytes that we want...
 	buf += 3;
 	
