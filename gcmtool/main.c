@@ -126,6 +126,8 @@ void printDirectory(GCMFileEntryStruct *e);
 void openFile(void);
 void closeFile(void);
 
+void verbosePrint(char *s);
+
 void printGCMInfo(int hexFlag);
 void printUsage(void);
 void printExtendedUsage();
@@ -147,6 +149,8 @@ u32 getFilesize(char *path);
 
 //globals...
 
+int verboseFlag;	//it's gotta be global, so other functions can see it...
+
 char *filepath;		//path to the file we're working with...
 char *filename;		//the name of the file we're working with
 FILE *gcmFile;		//the file we're working with
@@ -163,6 +167,8 @@ int main (int argc, char * const argv[]) {
 	//for extracting:
 	char *extractFileFrom = NULL;
 	char *extractFileTo = NULL;
+	
+	verboseFlag = 0;
 	
 	int showInfoFlag = 1;
 
@@ -201,6 +207,12 @@ int main (int argc, char * const argv[]) {
 			//printf("No arguments...\n");
 			printUsage();
 			exit(0);
+		} else if (CHECK_ARG(ARG_VERBOSE)) {
+			//turn on verbosity!
+			
+			verboseFlag++;
+			
+			verbosePrint("Verbose output ON.");
 		} else if (CHECK_ARG(ARG_HELP)) {
 			// print extended help
 			
@@ -211,11 +223,13 @@ int main (int argc, char * const argv[]) {
 			
 			showInfoFlag++;
 			
+			verbosePrint("Show info flag ON.");
 		} else if (CHECK_ARG(ARG_HEX)) {
 			//they want hex notation...
 			
 			hexFlag = 1;
 			
+			verbosePrint("Hex notation ON.");
 		} else if (CHECK_ARG(ARG_EXTRACT)) {
 			// extract files...
 			// usage: -e <path> <destPath>
@@ -241,7 +255,7 @@ int main (int argc, char * const argv[]) {
 				SKIP_NARG(1); //skip that -f we just looked at...
 				extractDiskHeaderFile = GET_NEXT_ARG;
 			}
-			
+		
 		} else if (CHECK_ARG(ARG_EXTRACT_DISK_HEADER_INFO)) {
 			// extract disk header info... (to a file called "bi2.bin")
 			
@@ -391,6 +405,8 @@ void openFile(void) {
 	**  opens the GCM file for reading and writing...
 	*/
 	
+	verbosePrint("Opening GCM...");
+	
 	if (!filepath) {
 		printUsage();
 		exit(1);
@@ -400,10 +416,18 @@ void openFile(void) {
 		printf("error opening file... (%s)\n", filepath);
 		exit(1);
 	}
+	
 }
 
 void closeFile(void) {
+	verbosePrint("Closing GCM...");
 	fclose(gcmFile);
+}
+
+void verbosePrint(char *s) {
+	if (verboseFlag) {
+		printf("%s\n", s);
+	}
 }
 
 void printGCMInfo(int hexFlag) {
@@ -465,6 +489,12 @@ void extractFiles(char *source, char *dest) {
 	**  extract files from source (in GCM) to dest (in the local filesystem)
 	*/
 	
+	char vstring[1024] = "Extracting ";
+	strcat(vstring, source);
+	strcat(vstring, " from GCM to ");
+	strcat(vstring, dest);
+	verbosePrint(vstring);
+	
 	GCMFileEntryStruct *e = GCMGetFileEntryAtPath(gcmFile, source);
 	
 	//check to see if the file was actually found...
@@ -486,7 +516,9 @@ void extractDiskHeader(char *path) {
 	/*
 	**  extracts the disk header to boot.bin
 	*/
-		
+	
+	verbosePrint("Extracting the disk header...");
+	
 	//get the data...
 	char *buf = (char*)malloc(GCM_DISK_HEADER_LENGTH);
 	GCMGetDiskHeader(gcmFile, buf);
@@ -500,6 +532,8 @@ void extractDiskHeaderInfo(char *path) {
 	/*
 	**  extracts the diskheaderinfo to bi2.bin
 	*/
+	
+	verbosePrint("Extracting the disk header info...");
 	
 	//get the data...
 	char *buf = (char*)malloc(GCM_DISK_HEADER_INFO_LENGTH);
@@ -515,6 +549,8 @@ void extractApploader(char *path) {
 	**  extracts the apploader to appldr.bin
 	*/
 	
+	verbosePrint("Extracting the apploader...");
+	
 	//get the data...
 	u32 apploaderLength = GCMGetApploaderSize(gcmFile) + GCM_APPLOADER_CODE_OFFSET;
 	char *buf = (char*)malloc(apploaderLength);
@@ -529,6 +565,8 @@ void extractBootDol(char *path) {
 	/*
 	**  extracts the boot DOL from the GCM and saves it to path...
 	*/
+	
+	verbosePrint("Extracting the boot DOL...");
 	
 	if (!path) return;
 	
@@ -548,6 +586,8 @@ void injectDiskHeader(char *sourcePath) {
 	/*
 	**  take a diskHeader (boot.bin) from sourcePath and inject it into gcmFile.
 	*/
+	
+	verbosePrint("Injecting the disk header...");
 	
 	char *buf = (char*)malloc(getFilesize(sourcePath));
 	
@@ -570,6 +610,8 @@ void injectDiskHeaderInfo(char *sourcePath) {
 	**  take a diskHeaderInfo (bi2.bin) from sourcePath and inject it into gcmFile.
 	*/
 	
+	verbosePrint("Injecting the disk header info...");
+	
 	char *buf = (char*)malloc(getFilesize(sourcePath));
 	
 	if (readFromFile(buf, sourcePath) != GCM_DISK_HEADER_INFO_LENGTH) {
@@ -590,6 +632,8 @@ void injectApploader(char *sourcePath) {
 	/*
 	**  this doesn't work, yet... requires some serious shifting of other data...
 	*/
+	
+	verbosePrint("Injecting the apploader...");
 	
 	//first, load the file into memory...
 	
@@ -653,6 +697,10 @@ void writeToFile(char *data, u32 length, char *path) {
 	**  Takes data of length and writes it to a file path. Displays errors when they happen...
 	*/
 	
+	char msg[1024] = "Writing to file ";
+	strcat(msg, path);
+	verbosePrint(msg);
+	
 	if (!data || !length || !path) return;
 	
 	FILE *ofile = NULL;
@@ -677,6 +725,10 @@ u32 readFromFile(char *buf, char *path) {
 	**
 	**  returns 0 and displays messages on error;
 	*/
+	
+	char msg[1024] = "Reading file ";
+	strcat(msg, path);
+	verbosePrint(msg);
 	
 	if (!path || !buf) return 0;
 	
