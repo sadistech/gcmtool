@@ -23,7 +23,7 @@
 
 #include "GCMutils.h"
 #include "GCMextras.h"
-
+#include "GCMCommandline.h"
 #include "pathfunc.h"
 
 //commandline arguments
@@ -104,19 +104,6 @@
 //commandline options (modifiers to the arguments... hehe)
 #define OPT_FILE							"-f"
 #define OPT_FILE_OPT						"<filename>"
-
-//macros... although they may be simple...
-//these are for getting help and synonyms and stuff
-#define ARG_SYN(ARG)		ARG ## _SYN
-#define PRINT_HELP(ARG)		printf("\t" ARG "%s" ARG ## _SYN " " ARG ## _OPT "\n\t\t" ARG ## _HELP "\n\n", strcmp("", ARG ## _SYN) == 0 ? "" : ", ");
-//#define PRINT_HELP(ARG)		printf("\t" ARG ", " ARG ## _SYN " " ARG ## _OPT "\n\t\t" ARG ## _HELP "\n\n");
-
-// these are for the argument parsing engine...
-#define GET_NEXT_ARG		*(++argv)
-#define SKIP_NARG(n)		*(argv += n)	
-#define CHECK_ARG(ARG)		strcmp(ARG, currentArg) == 0 || strcmp(ARG ## _SYN, currentArg) == 0
-#define PEEK_ARG			*(argv + 1)
-#define PEEK_NARG(n)		*(argv + n)
 
 //some utility functions...
 void printEntry(GCMFileEntryStruct *e);
