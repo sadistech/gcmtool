@@ -129,7 +129,7 @@
 
 //some utility functions...
 void printEntry(GCMFileEntryStruct *e);
-//void printDirectory(GCMFileEntryStruct *e);
+void printDirectory(GCMFileEntryStruct *e);
 
 void recurseFileEntry(GCMFileEntryStruct *e, void (*func)(GCMFileEntryStruct *));
 
@@ -170,7 +170,7 @@ FILE *gcmFile;		//the file we're working with
 //for working with printing directories
 int dirDepth;
 GCMFileEntryStruct *lastDir;	//remember the last directory (for absolute paths of files)
-//int recursiveIndex;				//for the recursive printing...
+int recursiveIndex;				//for the recursive printing...
 int listInfoFlag;				//for listing filesize, directory content count, and filetype (d or f)
 int listPathFlag;				//for listing full file paths...
 
@@ -421,7 +421,7 @@ int main (int argc, char **argv) {
 	// list the files, if necesary...
 	if (listFilesFlag) {
 		dirDepth = 0;
-	//	recursiveIndex = 0;
+		recursiveIndex = 0;
 		GCMFileEntryStruct *r = GCMGetRootFileEntry(gcmFile);
 		recurseFileEntry(r, printEntry);
 		GCMFreeFileEntryStruct(r);
@@ -716,7 +716,7 @@ void printEntry(GCMFileEntryStruct *e) {
 	
 	if (listInfoFlag) {
 		if (e->isDir) {
-			sprintf(size, "(%ld)", (e->length - e->index - 1));
+			sprintf(size, "(%ld)", (e->length - recursiveIndex - 1));
 		} else {
 			sprintf(size, "%ld", e->length);
 		}
@@ -776,23 +776,21 @@ void recurseFileEntry(GCMFileEntryStruct *e, void (*func)(GCMFileEntryStruct *))
 		dirDepth++;
 		GCMFileEntryStruct *next;
 		lastDir = e;
-	
-		int i = 0;
-				
-		for(i = e->index + 1; (unsigned long)i < e->length; i++) {
-			next = GCMGetNthFileEntry(gcmFile, i);
+		
+		for(recursiveIndex = e->index + 1; (unsigned long)recursiveIndex < e->length; recursiveIndex++) {
+			next = GCMGetNthFileEntry(gcmFile, recursiveIndex);
 			if (next) {
-				(func)(next);
+				recurseFileEntry(next, func);
 				free(next);
 			}
 		}
-		//i--;
+		recursiveIndex--;
 		dirDepth--;
 		lastDir = GCMGetNthFileEntry(gcmFile, lastDir->offset); //set lastDir to the parent of lastDir...
 	}
 }
 
-/*void printDirectory(GCMFileEntryStruct *e) {
+void printDirectory(GCMFileEntryStruct *e) {
 	if (!e) {
 		return;
 	}
@@ -817,7 +815,7 @@ void recurseFileEntry(GCMFileEntryStruct *e, void (*func)(GCMFileEntryStruct *))
 		dirDepth--;
 		lastDir = GCMGetNthFileEntry(gcmFile, lastDir->offset); //set lastDir to the parent of lastDir...
 	}
-}*/
+}
 
 void writeToFile(char *data, u32 length, char *path) {
 	/*
