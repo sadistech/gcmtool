@@ -115,7 +115,7 @@ void printUsage() {
 	printf("gcmdiskheadertool %s- Utility for working with GameCube DVD Image diskheaders.\n", VERSION);
 	printf("http://gcmtool.sourceforge.net\n\n");
 	printf("Usage:\t");
-	pritnf("gcmdiskheadertool <diskheader_file>\n\n");
+	printf("gcmdiskheadertool <diskheader_file>\n\n");
 	printf("Use %s to view extended usage.\n\n", ARG_HELP);
 }
 
