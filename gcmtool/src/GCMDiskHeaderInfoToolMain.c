@@ -24,50 +24,50 @@
 #include "GCMextras.h"
 #include "GCMDiskHeaderInfo.h"
 
-#define ARG_DEBUG_MON_SIZE		"-dms"
+#define ARG_DEBUG_MON_SIZE			"-dms"
 #define ARG_DEBUG_MON_SIZE_SYN		"--debug-monitor-size"
 #define ARG_DEBUG_MON_SIZE_OPT		"<size>"
 #define ARG_DEBUG_MON_SIZE_HELP		"Set the debug monitor size to " ARG_DEBUG_MON_SIZE_OPT " (unsigned 32-bit int)"
 
-#define ARG_SIM_MEM_SIZE		"-sms"
+#define ARG_SIM_MEM_SIZE			"-sms"
 #define ARG_SIM_MEM_SIZE_SYN		"--simulated-memory-size"
 #define ARG_SIM_MEM_SIZE_OPT		"<size>"
 #define ARG_SIM_MEM_SIZE_HELP		"Set the simulated memory size to " ARG_SIM_MEM_SIZE_OPT " (unsigned 32-bit int)"
 
-#define ARG_ARGUMENT_OFFSET		"-a"
+#define ARG_ARGUMENT_OFFSET			"-a"
 #define ARG_ARGUMENT_OFFSET_SYN		"--argument-offset"
 #define ARG_ARGUMENT_OFFSET_OPT		"<offset>"
 #define ARG_ARGUMENT_OFFSET_HELP	"Set the argument offset to " ARG_ARGUMENT_OFFSET_OPT " (unsigned 32-bit int)"
 
-#define ARG_DEBUG_FLAG			"-d"
-#define ARG_DEBUG_FLAG_SYN		"--debug-flag"
-#define ARG_DEBUG_FLAG_OPT		"<flag>"
-#define ARG_DEBUG_FLAG_HELP		"Set the debug flag to " ARG_DEBUG_FLAG_OPT " (unsigned 32-bit int)"
+#define ARG_DEBUG_FLAG				"-d"
+#define ARG_DEBUG_FLAG_SYN			"--debug-flag"
+#define ARG_DEBUG_FLAG_OPT			"<flag>"
+#define ARG_DEBUG_FLAG_HELP			"Set the debug flag to " ARG_DEBUG_FLAG_OPT " (unsigned 32-bit int)"
 
-#define ARG_TRACK_LOCATION		"-tl"
+#define ARG_TRACK_LOCATION			"-tl"
 #define ARG_TRACK_LOCATION_SYN		"--track-location"
 #define ARG_TRACK_LOCATION_OPT		"<location>"
 #define ARG_TRACK_LOCATION_HELP		"Set the track location to " ARG_TRACK_LOCATION_OPT " (unsigned 32-bit int)"
 
-#define ARG_TRACK_SIZE			"-ts"
-#define ARG_TRACK_SIZE_SYN		"--track-size"
-#define ARG_TRACK_SIZE_OPT		"<size>"
-#define ARG_TRACK_SIZE_HELP		"Set the track size to " ARG_TRACK_SIZE_OPT " (unsigned 32-bit int)"
+#define ARG_TRACK_SIZE				"-ts"
+#define ARG_TRACK_SIZE_SYN			"--track-size"
+#define ARG_TRACK_SIZE_OPT			"<size>"
+#define ARG_TRACK_SIZE_HELP			"Set the track size to " ARG_TRACK_SIZE_OPT " (unsigned 32-bit int)"
 
-#define ARG_COUNTRY_CODE		"-c"
+#define ARG_COUNTRY_CODE			"-c"
 #define ARG_COUNTRY_CODE_SYN		"--country-code"
 #define ARG_COUNTRY_CODE_OPT		"<code>"
 #define ARG_COUNTRY_CODE_HELP		"Set the country code to " ARG_COUNTRY_CODE_OPT " (unsigned 32-bit int)"
 
-#define ARG_UNKNOWN1			"-u1"
-#define ARG_UNKNOWN1_SYN		"--unknown-1"
-#define ARG_UNKNOWN1_OPT		"<value>"
-#define ARG_UNKNOWN1_HELP		"Set unknown1 to " ARG_UNKNOWN1_OPT " (unsigned 32-bit int)"
+#define ARG_UNKNOWN1				"-u1"
+#define ARG_UNKNOWN1_SYN			"--unknown-1"
+#define ARG_UNKNOWN1_OPT			"<value>"
+#define ARG_UNKNOWN1_HELP			"Set unknown1 to " ARG_UNKNOWN1_OPT " (unsigned 32-bit int)"
 
-#define ARG_UNKNOWN2			"-u2"
-#define ARG_UNKNOWN2_SYN		"--unknown-2"
-#define ARG_UNKNOWN2_OPT		"<value>"
-#define ARG_UNKNOWN2_HELP		"Set unknown2 to " ARG_UNKNOWN2_OPT " (unsigned 32-bit int)"
+#define ARG_UNKNOWN2				"-u2"
+#define ARG_UNKNOWN2_SYN			"--unknown-2"
+#define ARG_UNKNOWN2_OPT			"<value>"
+#define ARG_UNKNOWN2_HELP			"Set unknown2 to " ARG_UNKNOWN2_OPT " (unsigned 32-bit int)"
 
 void openFile(char *mode);
 void closeFile();
@@ -125,55 +125,55 @@ int main(int argc, char **argv) {
 		} else if (CHECK_ARG(ARG_DEBUG_MON_SIZE)) {
 			// set the debug monitor size
 
-			newDebugMonitorSize = atol(GET_NEXT_ARG);
+			newDebugMonitorSize = strtoul(GET_NEXT_ARG, NULL, 0);
 			modDebugMonitorSize++;
 			
 		} else if (CHECK_ARG(ARG_SIM_MEM_SIZE)) {
 			// set the simulated memory size
 
-			newSimulatedMemorySize = atol(GET_NEXT_ARG);
+			newSimulatedMemorySize = strtoul(GET_NEXT_ARG, NULL, 0);
 			modSimulatedMemorySize++;
 			
 		} else if (CHECK_ARG(ARG_ARGUMENT_OFFSET)) {
 			//set the argument offset
 
-			newArgumentOffset = atol(GET_NEXT_ARG);
+			newArgumentOffset = strtoul(GET_NEXT_ARG, NULL, 0);
 			modArgumentOffset++;
 			
 		} else if (CHECK_ARG(ARG_DEBUG_FLAG)) {
 			//set the debug flag
 
-			newDebugFlag = atol(GET_NEXT_ARG);
+			newDebugFlag = strtoul(GET_NEXT_ARG, NULL, 0);
 			modDebugFlag++;
 			
 		} else if (CHECK_ARG(ARG_TRACK_LOCATION)) {
 			// set the track location
 
-			newTrackLocation = atol(GET_NEXT_ARG);
+			newTrackLocation = strtoul(GET_NEXT_ARG, NULL, 0);
 			modTrackLocation++;
 			
 		} else if (CHECK_ARG(ARG_TRACK_SIZE)) {
 			//set the track size
 
-			newTrackSize = atol(GET_NEXT_ARG);
+			newTrackSize = strtoul(GET_NEXT_ARG, NULL, 0);
 			modTrackSize++;
 			
 		} else if (CHECK_ARG(ARG_COUNTRY_CODE)) {
 			// set the country code
 
-			newCountryCode = atol(GET_NEXT_ARG);
+			newCountryCode = strtoul(GET_NEXT_ARG, NULL, 0);
 			modCountryCode++;
 			
 		} else if (CHECK_ARG(ARG_UNKNOWN1)) {
 			// set unknown1
 
-			newUnknown1 = atol(GET_NEXT_ARG);
+			newUnknown1 = strtoul(GET_NEXT_ARG, NULL, 0);
 			modUnknown1++;
 			
 		} else if (CHECK_ARG(ARG_UNKNOWN2)) {
 			// set unknown2
 
-			newUnknown2 = atol(GET_NEXT_ARG);
+			newUnknown2 = strtoul(GET_NEXT_ARG, NULL, 0);
 			modUnknown2++;
 			
 		} else {
