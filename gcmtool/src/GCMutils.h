@@ -17,15 +17,13 @@
 #include "types.h"
 #include "GCMFileEntry.h"
 
+#include "GCMErrors.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 // BEGIN CODE...
-
-//error codes
-#define GCM_ERROR						1
-#define GCM_SUCCESS						0
 
 //constants...
 #define MAXFILENAMESIZE					256
@@ -76,10 +74,10 @@ extern "C" {
 #define GCM_DVD_IMAGE_LENGTH			1459978240  /* the size of a FULL GCM */
 
 // getting disk sections
-void GCMGetDiskHeader(FILE *ifile, char *buf);
-void GCMGetDiskHeaderInfo(FILE *ifile, char *buf);
-void GCMGetApploader(FILE *ifile, char *buf);
-void GCMGetFST(FILE *ifile, char *buf);
+GCMError GCMGetDiskHeader(FILE *ifile, char *buf);
+GCMError GCMGetDiskHeaderInfo(FILE *ifile, char *buf);
+GCMError GCMGetApploader(FILE *ifile, char *buf);
+GCMError GCMGetFST(FILE *ifile, char *buf);
 
 // putting disk sections (for injection): Returns GCM_ERROR or GCM_SUCCESS
 int GCMPutDiskHeader(FILE *ofile, char *buf);

@@ -12,6 +12,9 @@
 
 #define kPathSeparator '/'
 
+//for windows, use this instead
+//#define kpathSeparator '\\'
+
 #ifdef __cplusplus
 extern "C" {
 #endif
