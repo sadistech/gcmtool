@@ -572,6 +572,7 @@ static int recurseDirectory(char *path, char *buf) {
 static int getFileCount(char *path) {
 	/*
 	**  returns the count of files in path (including directories and their paths)
+	**  kills the whole program if it runs into anything that's not a file or directory (ie- socket, device, etc)
 	*/
 	
 	if (!path) return 0;

@@ -950,6 +950,7 @@ void printExtendedUsage() {
 	PRINT_HELP(ARG_LIST);
 	PRINT_HELP(ARG_HELP);
 	PRINT_HELP(ARG_HEX);
+	PRINT_HELP(ARG_REPLACE_FILESYSTEM);
 	printf("\n");
 	printf("  You can add -f <filename> to specify a filename for the following options...\n");
 	
