@@ -86,14 +86,6 @@
 #define ARG_EXTRACT_BOOT_DOL_OPT			"[ " OPT_FILE " " OPT_FILE_OPT " ]"
 #define ARG_EXTRACT_BOOT_DOL_HELP			"Extract the main executable DOL (" GCM_BOOT_DOL_FILENAME ")"
 
-//injecting sections
-/*//we don't have support for this yet...
-#define ARG_INJECT_FILE						"-j"
-#define ARG_INJECT_FILE_SYN					"--inject-file"
-#define ARG_INJECT_FILE_OPT					"<file>"
-#define ARG_INJECT_FILE_HELP				"Inject " ARG_INJECT_FILE_OPT " into the GCM"
-*/
-
 #define ARG_INJECT_DISK_HEADER				"-idh"
 #define ARG_INJECT_DISK_HEADER_SYN			"--inject-disk-header"
 #define ARG_INJECT_DISK_HEADER_OPT			"[ " OPT_FILE " " OPT_FILE_OPT " ]"
@@ -113,11 +105,6 @@
 #define ARG_INJECT_BOOT_DOL_SYN				"--inject-boot-dol"
 #define ARG_INJECT_BOOT_DOL_OPT				"[ " OPT_FILE " " OPT_FILE_OPT " ]"
 #define ARG_INJECT_BOOT_DOL_HELP			"Inject the main executable DOL"
-
-#define ARG_DELETE_FILE						"-d"
-#define ARG_DELETE_FILE_SYN					"--delete-file"
-#define ARG_DELETE_FILE_OPT					"<path>"
-#define ARG_DELETE_FILE_HELP				"Deletes the file (or directory, and all of its children) at " ARG_DELETE_FILE_OPT " in a GCM"
 
 //commandline options (modifiers to the arguments... hehe)
 #define OPT_FILE							"+f"
@@ -157,8 +144,6 @@ void extractDiskHeaderInfo(char *path);
 void extractApploader(char *path);
 void extractBootDol(char *path);
 
-void deleteFile(char *path);
-
 void injectDiskHeader(char *sourcePath);
 void injectDiskHeaderInfo(char *sourcePath);
 void injectApploader(char *sourcePath);
@@ -194,8 +179,6 @@ int main (int argc, char **argv) {
 	//for extracting:
 	char *extractFileFrom = NULL;
 	char *extractFileTo = NULL;
-	
-	char *deleteEntryPath = NULL;
 	
 	verboseFlag = 0;
 	
@@ -270,17 +253,6 @@ int main (int argc, char **argv) {
 			
 			if (!extractFileFrom || !extractFileTo) {
 				//argument error... something was omitted...
-				printf("Argument error.\n");
-				printUsage();
-				exit(1);
-			}
-		} else if (CHECK_ARG(ARG_DELETE_FILE)) {
-			//delete a file entry
-			//uage: -d <path>
-			
-			deleteEntryPath		= GET_NEXT_ARG;
-			
-			if (!deleteEntryPath) {
 				printf("Argument error.\n");
 				printUsage();
 				exit(1);
@@ -418,10 +390,6 @@ int main (int argc, char **argv) {
 		
 		free(e);
 		//extractFile(extractFileFrom, extractFileTo);
-	}
-	
-	if (deleteEntryPath) {
-		deleteFile(deleteEntryPath);
 	}
 	
 	//extract diskheader
@@ -724,39 +692,6 @@ void extractBootDol(char *path) {
 	}
 	
 	writeToFile(buf, length, path);
-}
-
-#pragma mark -
-
-void deleteFile(char *path) {
-	char tempFilename[256] = "./";
-	strcat(tempFilename, filename);
-	strcat(tempFilename, ".tmp.XXXXXX");
-	
-	char *newName = mktemp(tempFilename);
-	
-	printf("temp file at %s\n", newName);
-	printf("deleting entry %s\n", path);
-	
-	FILE *tmpFile = NULL;
-	
-	if (!(tmpFile = fopen(newName, "w"))) {
-		printf("ERROR opening tempfile at %s\n", newName);
-		exit(1);
-	}
-	
-	GCMFileEntryStruct *e = GCMGetFileEntryAtPath(gcmFile, path);
-	
-	if (!e) {
-		printf("DeleteEntry: Entry not found!\n");
-		exit(1);
-	}
-	
-	GCMDeleteFileEntry(gcmFile, e, tmpFile);
-	
-	fclose(tmpFile);
-	
-	//unlink(newName); //delete the file...
 }
 
 #pragma mark -
