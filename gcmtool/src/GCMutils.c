@@ -132,7 +132,7 @@ GCMError GCMGetFST(FILE *ifile, char *buf) {
 	GCM_RETURN_SUCCESS();
 }
 
-int GCMPutDiskHeader(FILE *ofile, char *buf) {
+GCMError GCMPutDiskHeader(FILE *ofile, char *buf) {
 	/*
 	**  takes a diskheader (boot.bin) and replaces the one in ofile with
 	**  the new one... ALWAYS WORK ON A BACKUP!
@@ -140,21 +140,23 @@ int GCMPutDiskHeader(FILE *ofile, char *buf) {
 	**  Since disk headers are always the same size, we can just overwrite the old one...
 	**  also, we can assume that buf is GCM_DISK_HEADER_LENGTH bytes long...
 	**
-	**  returns GCM_ERROR on error
+	**  returns GCM_ERROR on error and sets GCMError
 	**  returns GCM_SUCCESS on success
 	*/
 	
-	if (!ofile || !buf) return GCM_ERROR;
+	if (!ofile || !buf) {
+		GCM_RETURN_ERROR(GCM_ERR_NULL_ARG);
+	}
 	
 	fseek(ofile, GCM_DISK_HEADER_OFFSET, SEEK_SET);
 	if (fwrite(buf, 1, GCM_DISK_HEADER_LENGTH, ofile) != GCM_DISK_HEADER_LENGTH) {
-		return GCM_ERROR;
+		GCM_RETURN_ERROR(GCM_ERR_FILE);
 	}
 	
-	return GCM_SUCCESS;
+	GCM_RETURN_SUCCESS();
 }
 
-int GCMPutDiskHeaderInfo(FILE *ofile, char *buf) {
+GCMError GCMPutDiskHeaderInfo(FILE *ofile, char *buf) {
 	/*
 	**  takes a diskheaderinfo (bi2.bin) and replaces the one in ofile with
 	**  the new one... ALWAYS WORK ON A BACKUP!
@@ -165,17 +167,19 @@ int GCMPutDiskHeaderInfo(FILE *ofile, char *buf) {
 	**  returns GCM_SUCCESS on success
 	*/
 	
-	if (!ofile || !buf) return GCM_ERROR;
+	if (!ofile || !buf) {
+		GCM_RETURN_ERROR(GCM_ERR_NULL_ARG);
+	}
 	
 	fseek(ofile, GCM_DISK_HEADER_INFO_OFFSET, SEEK_SET);
 	if (fwrite(buf, 1, GCM_DISK_HEADER_INFO_LENGTH, ofile) != GCM_DISK_HEADER_INFO_LENGTH) {
-		return GCM_ERROR;
+		GCM_RETURN_ERROR(GCM_ERR_FILE);
 	}
 	
-	return GCM_SUCCESS;
+	GCM_RETURN_SUCCESS();
 }
 
-int GCMPutApploader(FILE *ofile, char *buf, u32 length) {
+GCMError GCMPutApploader(FILE *ofile, char *buf, u32 length) {
 	/*
 	**  takes an apploader (appldr.bin) and replaces the one in ofile with
 	**  the new one... ALWAYS WORK ON A BACKUP!
@@ -184,7 +188,7 @@ int GCMPutApploader(FILE *ofile, char *buf, u32 length) {
 	**  THIS IS NOT IMPLEMENTED YET (obviously). MAY TAKE A WHILE.
 	*/
 	
-	return GCM_ERROR;
+	GCM_RETURN_ERROR(GCM_ERR_NOT_IMPLEMENTED);
 }
 
 char GCMGetSystemID(FILE *ifile) {

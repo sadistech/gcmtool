@@ -79,10 +79,10 @@ GCMError GCMGetDiskHeaderInfo(FILE *ifile, char *buf);
 GCMError GCMGetApploader(FILE *ifile, char *buf);
 GCMError GCMGetFST(FILE *ifile, char *buf);
 
-// putting disk sections (for injection): Returns GCM_ERROR or GCM_SUCCESS
-int GCMPutDiskHeader(FILE *ofile, char *buf);
-int GCMPutDiskHeaderInfo(FILE *ofile, char *buf);
-int GCMPutApploader(FILE *ofile, char *buf, u32 length);
+// putting disk sections (for injection): Returns a GCMError
+GCMError GCMPutDiskHeader(FILE *ofile, char *buf);
+GCMError GCMPutDiskHeaderInfo(FILE *ofile, char *buf);
+GCMError GCMPutApploader(FILE *ofile, char *buf, u32 length);
 
 //read from header...
 char GCMGetSystemID(FILE *ifile);
