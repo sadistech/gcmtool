@@ -188,7 +188,7 @@ void GCMBnrGetImageRaw(GCMBnrStruct *b, char *buf) {
 	/*
 	**  sets buf to raw RGB image data. 96 pixels wide by 32 pixels tall
 	**  since the BNR stores the graphic data in 4x4 pixel tiles, we've gotta re-order them...
-	**  buf should be allocated with (3 * WIDTH * HEIGHT)
+	**  buf should be allocated with (3 * WIDTH * HEIGHT) or GCM_BNR_RAW_FILE_LENGTH
 	*/
 	
 	if (!b || !buf) return;
