@@ -25,7 +25,13 @@
 #include "GCMApploader.h"
 
 //commandline options:
-#define ARG_DATE		"-d"
+
+#define ARG_HEX				"-h"
+#define ARG_HEX_SYN			"--hex"
+#define ARG_HEX_OPT			""
+#define ARG_HEX_HELP		"Display 32bit int values as hex"
+
+#define ARG_DATE			"-d"
 #define ARG_DATE_SYN		"--date"
 #define ARG_DATE_OPT		"<date>"
 #define ARG_DATE_HELP		"Set the date to " ARG_DATE_OPT ".  ASCII date in format MM/DD/YYYY"
@@ -35,7 +41,7 @@
 #define ARG_ENTRYPOINT_OPT	"<address>"
 #define ARG_ENTRYPOINT_HELP	"Set the entrypoint. to " ARG_ENTRYPOINT_OPT " (unsigned 32-bit int)"
 
-#define ARG_UNKNOWN		"-u"
+#define ARG_UNKNOWN			"-u"
 
 
 void openFile(char *mode);
@@ -43,12 +49,16 @@ void closeFile();
 char *filename; //the filename/path we are working with...
 FILE *appldrFile; //the file that we're working with
 
+int hexFlag;
+
 void printUsage();
 void printExtendedUsage();
 
 void printApploader(GCMApploaderStruct *a);
 
 int main(int argc, char **argv) {
+	hexFlag = 0;
+	
 	char *currentArg = NULL;
 
 	do {
@@ -62,6 +72,10 @@ int main(int argc, char **argv) {
 
 			printExtendedUsage();
 			exit(0);
+		} else if (CHECK_ARG(ARG_HEX)) {
+			//hex output!
+
+			hexFlag = 1;
 		} else {
 			//this is the file...
 			filename = currentArg;
@@ -93,9 +107,15 @@ int main(int argc, char **argv) {
 void printApploader(GCMApploaderStruct *a) {
 	//display that info...
 	printf("Date:       %s\n", a->date);
-	printf("Entrypoint: %08X\n", a->entrypoint);
-	printf("Size:       %08X\n", a->size);
-	printf("Unknown:    %08X\n", a->unknown);
+
+	char format[255] = "";
+
+	sprintf(format, "Entrypoint: %s\n", hexFlag ? "0x%08X" : "%lu");
+	printf(format, a->entrypoint);
+	sprintf(format,"Size:       %s\n", hexFlag ? "0x%08X" : "%lu");
+	printf(format, a->size);
+	sprintf(format, "Unknown:    %s\n", hexFlag ? "0x%08X" : "%lu");
+	printf(format, a->unknown);
 }
 
 void openFile(char *mode) {
