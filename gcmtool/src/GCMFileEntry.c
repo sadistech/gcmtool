@@ -132,7 +132,7 @@ void GCMGetFullPathForFileEntry(FILE *ifile, GCMFileEntryStruct *entry, char *bu
 	
 	GCMFetchFilenameForFileEntry(ifile, entry);
 
-	printf("%d %s\n", entry->index, entry->filename);
+	//printf("%d %s\n", entry->index, entry->filename);
 	
 	char fullPath[1024] = ""; //allocate 1024, just to be safe...
 		
