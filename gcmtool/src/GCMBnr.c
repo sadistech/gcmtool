@@ -19,8 +19,9 @@ GCMBnrStruct *GCMRawBnrToStruct(char *raw) {
 	
 	b->version = raw[0];
 	*raw++;
-	
-	raw += GCM_BNR_GRAPHIC_DATA_OFFSET - GCM_BNR_MAGIC_WORD_LENGTH;
+
+	raw += GCM_BNR_HEADER_PADDING; //skip the padding...
+//	raw += GCM_BNR_GRAPHIC_DATA_OFFSET - GCM_BNR_MAGIC_WORD_LENGTH; //skip the padding
 	
 	bzero(b->graphic, GCM_BNR_GRAPHIC_DATA_LENGTH);
 	memcpy(b->graphic, raw, GCM_BNR_GRAPHIC_DATA_LENGTH);
@@ -62,6 +63,8 @@ void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf) {
 	
 	char *start = buf;
 	
+	bzero(buf, GCM_BNR_LENGTH_V1); //zero that out...
+	
 	memcpy(buf, GCM_BNR_MAGIC_WORD_PREFIX, GCM_BNR_MAGIC_WORD_PREFIX_LENGTH);
 	buf += GCM_BNR_MAGIC_WORD_PREFIX_LENGTH;
 	
@@ -69,6 +72,8 @@ void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf) {
 	sprintf(versionStr, "%d", b->version);
 	memcpy(buf, versionStr, GCM_BNR_MAGIC_WORD_SUFFIX_LENGTH);
 	buf += GCM_BNR_MAGIC_WORD_SUFFIX_LENGTH;
+	
+	buf += GCM_BNR_HEADER_PADDING;
 	
 	memcpy(buf, b->graphic, GCM_BNR_GRAPHIC_DATA_LENGTH);
 	buf += GCM_BNR_GRAPHIC_DATA_LENGTH;
