@@ -43,11 +43,17 @@ extern "C" {
 #define GCM_MAKER_NAMCO					"AF"
 #define GCM_MAKER_TOMY					"DA"
 #define GCM_MAKER_KONAMI				"EM"
-//the following maker codes I figured out myself... (not from yagcd)
+//the following maker codes I figured out myself... (not from yagcd, HA!)
 #define GCM_MAKER_ACTIVISION			"52"
 #define GCM_MAKER_BANDAI				"B2"
 #define GCM_MAKER_UBISOFT				"41"
 #define GCM_MAKER_MIRAGE				"A4"
+
+//filenames for various sections...
+#define GCM_DISK_HEADER_FILENAME		"boot.bin"
+#define GCM_DISK_HEADER_INFO_FILENAME   "bi2.bin"
+#define GCM_APPLOADER_FILENAME			"appldr.bin"
+#define GCM_FST_FILENAME				"fst.bin"
 
 
 //structs...
