@@ -15,6 +15,9 @@
 #include <arpa/inet.h>
 
 typedef unsigned long u32;
+typedef unsigned short u16;
+
+typedef unsigned char uchar;
 
 #endif
 

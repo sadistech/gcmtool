@@ -134,6 +134,14 @@ int GCMPutApploader(FILE *ofile, char *buf, u32 length) {
 	**  THIS IS NOT IMPLEMENTED YET (obviously). MAY TAKE A WHILE.
 	*/
 	
+	// first, calculate the size difference...
+	// the old apploader and new one might be different sizes, so you may have to shift
+	// the rest of the file...
+	
+	long lengthDiff = length - GCMGetApploaderSize(ofile);
+	
+	
+	
 	return GCM_ERROR;
 }
 
