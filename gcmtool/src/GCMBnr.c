@@ -5,15 +5,17 @@
 static uchar GCMBnrReverseBits(uchar v, int bitCount);
 
 
-GCMBnrStruct *GCMRawBnrToStruct(char *raw) {
+GCMBnrStruct *GCMRawBnrToStruct(char *raw, int dataLen) {
 	/*
 	**  take a raw bnr (ie- from an opening.bnr file) and return a struct object...
 	**  currently, this code only supports version 1 (US/Japan) BNRs, although it will
 	**  correctly load version 2 BNRs, the information will be incomplete.
 	*/
 	
-	if (!raw) printf("wtf?! NULL BNR!\n");
+//	if (!raw) printf("wtf?! NULL BNR!\n");
 	if (!raw) return NULL;
+
+	char *start = raw;
 	
 	//check the magic word... (BNR)
 	if (strncmp(raw, GCM_BNR_MAGIC_WORD_PREFIX, strlen(GCM_BNR_MAGIC_WORD_PREFIX)) != 0) return NULL;
@@ -27,29 +29,41 @@ GCMBnrStruct *GCMRawBnrToStruct(char *raw) {
 	raw += GCM_BNR_HEADER_PADDING; //skip the padding...
 //	raw += GCM_BNR_GRAPHIC_DATA_OFFSET - GCM_BNR_MAGIC_WORD_LENGTH; //skip the padding
 	
+	//grab the graphic....
 	bzero(b->graphic, GCM_BNR_GRAPHIC_DATA_LENGTH);
 	memcpy(b->graphic, raw, GCM_BNR_GRAPHIC_DATA_LENGTH);
 	raw += GCM_BNR_GRAPHIC_DATA_LENGTH;
 	
-	bzero(b->name, GCM_BNR_GAME_NAME_LENGTH);
-	memcpy(b->name, raw, GCM_BNR_GAME_NAME_LENGTH);
-	raw += GCM_BNR_GAME_NAME_LENGTH;
+	// grab the only info record (version 1) or...
+	// loop until we get all of the info (for version 2)
 	
-	bzero(b->developer, GCM_BNR_DEVELOPER_LENGTH);
-	memcpy(b->developer, raw, GCM_BNR_DEVELOPER_LENGTH);
-	raw += GCM_BNR_DEVELOPER_LENGTH;
+	GCMBnrInfoRecord *r = b->info;
 	
-	bzero(b->fullName, GCM_BNR_FULL_TITLE_LENGTH);
-	memcpy(b->fullName, raw, GCM_BNR_FULL_TITLE_LENGTH);
-	raw += GCM_BNR_FULL_TITLE_LENGTH;
+	while (raw - start >= GCM_BNR_INFO_RECORD_LENGTH) {
+		r = (GCMBnrInfoRecord*)malloc(sizeof(GCMBnrInfoRecord));
 	
-	bzero(b->fullDeveloper, GCM_BNR_FULL_DEVELOPER_LENGTH);
-	memcpy(b->fullDeveloper, raw, GCM_BNR_FULL_DEVELOPER_LENGTH);
-	raw += GCM_BNR_FULL_DEVELOPER_LENGTH;
+		bzero(r->name, GCM_BNR_GAME_NAME_LENGTH);
+		memcpy(r->name, raw, GCM_BNR_GAME_NAME_LENGTH);
+		raw += GCM_BNR_GAME_NAME_LENGTH;
 	
-	bzero(b->description, GCM_BNR_DESCRIPTION_LENGTH);
-	memcpy(b->description, raw, GCM_BNR_DESCRIPTION_LENGTH);
-	raw += GCM_BNR_DESCRIPTION_LENGTH;
+		bzero(r->developer, GCM_BNR_DEVELOPER_LENGTH);
+		memcpy(r->developer, raw, GCM_BNR_DEVELOPER_LENGTH);
+		raw += GCM_BNR_DEVELOPER_LENGTH;
+	
+		bzero(r->fullName, GCM_BNR_FULL_TITLE_LENGTH);
+		memcpy(r->fullName, raw, GCM_BNR_FULL_TITLE_LENGTH);
+		raw += GCM_BNR_FULL_TITLE_LENGTH;
+	
+		bzero(r->fullDeveloper, GCM_BNR_FULL_DEVELOPER_LENGTH);
+		memcpy(r->fullDeveloper, raw, GCM_BNR_FULL_DEVELOPER_LENGTH);
+		raw += GCM_BNR_FULL_DEVELOPER_LENGTH;
+	
+		bzero(r->description, GCM_BNR_DESCRIPTION_LENGTH);
+		memcpy(r->description, raw, GCM_BNR_DESCRIPTION_LENGTH);
+		raw += GCM_BNR_DESCRIPTION_LENGTH;
+
+		r = r->next;
+	}
 	
 	return b;
 }
