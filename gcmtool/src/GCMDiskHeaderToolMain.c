@@ -86,10 +86,10 @@ int main(int argc, char **argv) {
 	char *newGameID = NULL;
 	char *newRegionCode = NULL;
 	char *newMakerCode = NULL;
-	char *newDiskID = NULL;
-	char *newVersion = NULL;
-	char *newStreaming = NULL;
-	char *newStreamBufSize = NULL;
+	int newDiskID = 0;
+	int newVersion = 0;
+	int newStreaming = 0;
+	int newStreamBufSize = 0;
 	
 
 	//start processing the arguments...
@@ -105,6 +105,69 @@ int main(int argc, char **argv) {
 
 			printExtendedUsage();
 			exit(0);
+		} else if (CHECK_ARG(ARG_SYSTEMID)) {
+			//they want to change the systemID
+
+			newSystemID = GET_NEXT_ARG;
+
+			if (strlen(newSystemID) != 1) {
+				printf("SystemID MUST be one character. (%s is invalid)\n", newSystemID);
+				exit(1);
+			}
+		} else if (CHECK_ARG(ARG_GAMEID)) {
+			// they want to change the gameID
+
+			newGameID = GET_NEXT_ARG;
+
+			if (strlen(newGameID) != GCM_GAME_ID_LENGTH) {
+				printf("GameID MUST be 2 characters. (%s is invalid)\n", newGameID);
+				exit(1);
+			}
+		} else if (CHECK_ARG(ARG_REGION)) {
+			// they want to change the region
+
+			newRegionCode = GET_NEXT_ARG;
+
+			if (strlen(newRegionCode) != 1) {
+				printf("Region MUST be 1 character. (%s is invalid)\n", newRegionCode);
+				exit(1);
+			}
+		} else if (CHECK_ARG(ARG_DISKID)) {
+			// they want to change the diskid
+
+			newDiskID = atoi(GET_NEXT_ARG);
+
+			if (newDiskID > 255 || newDiskID < 0) {
+				printf("DiskID is out of range. Must be 0-255. (%d is invalid)\n", newDiskID);
+				exit(1);
+			}
+		} else if (CHECK_ARG(ARG_VERSION)) {
+			// they want to change the version
+
+			newVersion = atoi(GET_NEXT_ARG);
+
+			if (newVersion > 255 || newVersion < 0) {
+				printf("Version is out of range. Must be 0-255. (%d is invalid)\n", newVersion);
+				exit(1);
+			}
+		} else if (CHECK_ARG(ARG_STREAMING)) {
+			// they want to change the streaming (?)
+
+			newStreaming = atoi(GET_NEXT_ARG);
+
+			if (newStreaming > 255 || newStreaming < 0) {
+				printf("Streaming is out of range. Must be 0-255. (%d is invalid)\n", newStreaming);
+				exit(1);
+			}
+		} else if (CHECK_ARG(ARG_STREAMING_BUF)) {
+			// they want to change the streaming buffer size... (?)
+
+			newStreamBufSize = atoi(GET_NEXT_ARG);
+
+			if (newStreamBufSize > 255 || newStreamBufSize < 0) {
+				printf("Streaming buffer size is out of range. Must be 0-255. (%d is invalid)\n", newStreamBufSize);
+				exit(1);
+			}
 		} else {
 			//this is the file...
 			filename = currentArg;
