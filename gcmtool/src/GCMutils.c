@@ -414,7 +414,9 @@ void GCMReplaceFilesystem(FILE *ifile, char *fsRootPath) {
 	for (i = 0; i < root->length; i++) {
 		re = (RawEntry*)fst;
 		if (!(re->a & 0x01000000)) { //if it's a file...
+			re->b = ntohl(re->b);
 			re->b += offsetSize;
+			re->b = htonl(re->b);
 			memcpy(fst, re, sizeof(RawEntry));
 		}
 		
@@ -519,7 +521,7 @@ static int recurseDirectory(char *path, char *buf) {
 			int oldLastDir = lastDir;
 			lastDir = currentEntryIndex;
 			
-			printf("%d\t%ld\t%ld\t%ld\n", lastDir, e->filenameOffset, e->offset, e->length);
+			//printf("%d\t%ld\t%ld\t%ld\n", lastDir, e->filenameOffset, e->offset, e->length);
 			
 			char *rawEntry = (char*)malloc(GCM_FST_ENTRY_LENGTH);
 			GCMFileEntryStructToRaw(e, rawEntry);
@@ -545,10 +547,8 @@ static int recurseDirectory(char *path, char *buf) {
 			e->offset = writeDataToTempFile(newPath); 
 			e->length = getFilesize(newPath); 
 			
-			printf("%ld\t%ld\t%ld\n", e->filenameOffset, e->offset, e->length);
-			
-		//	printf("%d\n", e->filenameOffset);
-			
+			//printf("%ld\t%ld\t%ld\n", e->filenameOffset, e->offset, e->length);
+						
 			char *rawEntry = (char*)malloc(GCM_FST_ENTRY_LENGTH);
 			GCMFileEntryStructToRaw(e, rawEntry);
 			

@@ -3,7 +3,7 @@
 [gcmtool] Added info output to file listing (shows file sizes, or 
 	directory contents file-count)
 [gcmtool] Added full-path output to file listing. Very handy if you 
-wanna grep for something.
+	wanna grep for something.
 
 2004/6/13
 0.2.3
