@@ -377,6 +377,8 @@ void printExtendedUsage() {
 	PRINT_HELP(ARG_HELP);
 	PRINT_HELP(ARG_SET_ICON);
 	PRINT_HELP(ARG_GET_ICON);
+	PRINT_HELP(ARG_MOD_NTH);
+	printf("When editing BNR2s, you must use %s to declare which field you'd like to edit.\n", ARG_MOD_NTH);
 	PRINT_HELP(ARG_SET_NAME);
 	PRINT_HELP(ARG_SET_DEVELOPER);
 	PRINT_HELP(ARG_SET_FULL_NAME);
