@@ -452,8 +452,18 @@ int main(int argc, char **argv) {
 
 	// If any changes were made, print diskheader again...
 	if (fileChanged) {
-		printf("modifications made... no changes made to file.\n");
 		printDiskHeader(d);
+		char *data = (char*)malloc(GCM_DISK_HEADER_LENGTH);
+
+		GCMDiskHeaderStructToRaw(d, data);
+
+		rewind(dhFile);
+		if (fwrite(data, 1, GCM_DISK_HEADER_LENGTH, dhFile) != GCM_DISK_HEADER_LENGTH) {
+			perror("Something went wrong writing to the file:");
+			exit(1);
+		}
+
+		free(data);
 	}
 
 	closeFile();
