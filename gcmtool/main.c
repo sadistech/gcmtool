@@ -27,28 +27,54 @@
 #include "pathfunc.h"
 
 //commandline arguments
-#define ARG_EXTRACT					"-e"
-#define ARG_LIST						"-l"
-#define ARG_INFO						"-i"
-//extracting sections...
-#define ARG_EXTRACT_DISK_HEADER		"-edh"
-#define ARG_EXTRACT_DISK_HEADER_INFO   "-edhi"
-#define ARG_EXTRACT_APPLOADER			"-eal"
-#define ARG_EXTRACT_BOOT_DOL			"-ed"
+#define ARG_EXTRACT							"-e"
+#define ARG_EXTRACT_SYN						""
+#define ARG_VERBOSE							"-v"
+#define ARG_VERBOSE_SYN						""
+#define ARG_INFO							"-i"
+#define ARG_INFO_SYN						""
+#define ARG_LIST							"-l"
+#define ARG_LIST_SYN						""
+
+// commands:
+// command_appreviation, command_synonym, command_helptext
+// extracting sections...
+#define ARG_EXTRACT_DISK_HEADER				"-edh"
+#define ARG_EXTRACT_DISK_HEADER_SYN			"--extract-disk-header"
+
+#define ARG_EXTRACT_DISK_HEADER_INFO		"-edhi"
+#define ARG_EXTRACT_DISK_HEADER_INFO_SYN	"--extract-disk-header-info"
+
+#define ARG_EXTRACT_APPLOADER				"-eal"
+#define ARG_EXTRACT_APPLOADER_SYN			"--extract-apploader"
+
+#define ARG_EXTRACT_BOOT_DOL				"-ed"
+#define ARG_EXTRACT_BOOT_DOL_SYN			"--extract-boot-dol"
+
 //injecting sections
-#define ARG_INJECT_DISK_HEADER			"-idh"
-#define ARG_INJECT_DISK_HEADER_INFO	"-idhi"
-#define ARG_INJECT_APPLOADER			"-ial"
-#define ARG_INJECT_BOOT_DOL			"-ed"
+#define ARG_INJECT_DISK_HEADER				"-idh"
+#define ARG_INJECT_DISK_HEADER_SYN			"--inject-disk-header"
+
+#define ARG_INJECT_DISK_HEADER_INFO			"-idhi"
+#define ARG_INJECT_DISK_HEADER_INFO_SYN		"--inject-disk-header-info"
+
+#define ARG_INJECT_APPLOADER				"-ial"
+#define ARG_INJECT_APPLOADER_SYN			"--inject-apploader"
+
+#define ARG_INJECT_BOOT_DOL					"-id"
+#define ARG_INJECT_BOOT_DOL_SYN				"--inject-boot-dol"
 
 //commandline options (modifiers to the arguments... hehe)
-#define GCM_TOOL_OPT_FILE						"-f"
+#define OPT_FILE							"-f"
 
 //macros... although they may be simple...
+//these are for getting help and synonyms and stuff
+#define ARG_SYN(ARG)		ARG ## _SYN
+//#define ARG_HELP(ARG)		ARG ## _HELP
 // these are for the argument parsing engine...
 #define GET_NEXT_ARG		*(++argv)
 #define SKIP_NARG(n)		*(argv += n)	
-#define CHECK_ARG(ARG)		strcmp(ARG, currentArg) == 0
+#define CHECK_ARG(ARG)		strcmp(ARG, currentArg) == 0 || strcmp(ARG ## _SYN, currentArg) == 0
 #define PEEK_ARG			*(argv + 1)
 #define PEEK_NARG(n)		*(argv + n)
 
@@ -128,6 +154,7 @@ int main (int argc, char * const argv[]) {
 		if (!currentArg) {
 			//there's no args! uh oh!
 			
+			printf("no arguments...\n");
 			printUsage();
 			exit(0);
 		} else if (CHECK_ARG(ARG_INFO)) {
@@ -154,7 +181,7 @@ int main (int argc, char * const argv[]) {
 			
 			extractDiskHeaderFlag++;
 			
-			if (PEEK_ARG && strcmp(PEEK_ARG, GCM_TOOL_OPT_FILE) == 0) {
+			if (PEEK_ARG && strcmp(PEEK_ARG, OPT_FILE) == 0) {
 				// if they're specifying a file...
 				
 				SKIP_NARG(1); //skip that -f we just looked at...
@@ -166,7 +193,7 @@ int main (int argc, char * const argv[]) {
 			
 			extractDiskHeaderInfoFlag++;
 			
-			if (PEEK_ARG && strcmp(PEEK_ARG, GCM_TOOL_OPT_FILE) == 0) {
+			if (PEEK_ARG && strcmp(PEEK_ARG, OPT_FILE) == 0) {
 				// if they're specifying a file...
 				
 				SKIP_NARG(1); //skip that -f we just looked at...
@@ -178,7 +205,7 @@ int main (int argc, char * const argv[]) {
 			
 			extractApploaderFlag++;
 			
-			if (PEEK_ARG && strcmp(PEEK_ARG, GCM_TOOL_OPT_FILE) == 0) {
+			if (PEEK_ARG && strcmp(PEEK_ARG, OPT_FILE) == 0) {
 				// if they're specifying a file...
 				
 				SKIP_NARG(1); //skip that -f we just looked at...
@@ -189,7 +216,7 @@ int main (int argc, char * const argv[]) {
 			
 			extractBootDolFlag++;
 			
-			if (PEEK_ARG && strcmp(PEEK_ARG, GCM_TOOL_OPT_FILE) == 0) {
+			if (PEEK_ARG && strcmp(PEEK_ARG, OPT_FILE) == 0) {
 				//if they specify a file...
 				
 				SKIP_NARG(1); //skip that -f
@@ -200,7 +227,7 @@ int main (int argc, char * const argv[]) {
 			
 			injectDiskHeaderFlag++;
 			
-			if (PEEK_ARG && strcmp(PEEK_ARG, GCM_TOOL_OPT_FILE) == 0) {
+			if (PEEK_ARG && strcmp(PEEK_ARG, OPT_FILE) == 0) {
 				//if they're specifying a file... (otherwise use the default);
 				
 				SKIP_NARG(1); //skip the -f we just looked at...
@@ -212,7 +239,7 @@ int main (int argc, char * const argv[]) {
 			
 			injectDiskHeaderInfoFlag++;
 			
-			if (PEEK_ARG && strcmp(PEEK_ARG, GCM_TOOL_OPT_FILE) == 0) {
+			if (PEEK_ARG && strcmp(PEEK_ARG, OPT_FILE) == 0) {
 				// if they're specifying a file...
 				
 				SKIP_NARG(1);
@@ -223,7 +250,7 @@ int main (int argc, char * const argv[]) {
 			
 			injectApploaderFlag++;
 			
-			if (PEEK_ARG && strcmp(PEEK_ARG, GCM_TOOL_OPT_FILE) == 0) {
+			if (PEEK_ARG && strcmp(PEEK_ARG, OPT_FILE) == 0) {
 				//if they're specifying a file...
 				
 				SKIP_NARG(1);
