@@ -29,48 +29,83 @@
 //commandline arguments
 #define ARG_EXTRACT							"-e"
 #define ARG_EXTRACT_SYN						""
+#define ARG_EXTRACT_OPT						"<source> <dest>"
+#define ARG_EXTRACT_HELP					"Extracts the file from <source> (in the GCM) to <dest> (local filesystem)"
+
 #define ARG_VERBOSE							"-v"
 #define ARG_VERBOSE_SYN						""
+#define ARG_VERBOSE_OPT						""
+#define ARG_VERBOSE_HELP					"Verbose output"
+
 #define ARG_INFO							"-i"
 #define ARG_INFO_SYN						""
+#define ARG_INFO_OPT						""
+#define ARG_INFO_HELP						"Display additional info about the GCM (useful for auditing)"
+
 #define ARG_LIST							"-l"
 #define ARG_LIST_SYN						""
+#define ARG_LIST_OPT						""
+#define ARG_LIST_HELP						"Lists the filesystem of the GCM"
+
+#define ARG_HELP							"-?"
+#define ARG_HELP_SYN						"--help"
+#define ARG_HELP_OPT						""
+#define ARG_HELP_HELP						"Displays this help text."
 
 // commands:
 // command_appreviation, command_synonym, command_helptext
 // extracting sections...
 #define ARG_EXTRACT_DISK_HEADER				"-edh"
 #define ARG_EXTRACT_DISK_HEADER_SYN			"--extract-disk-header"
+#define ARG_EXTRACT_DISK_HEADER_OPT			"[ " OPT_FILE " " OPT_FILE_OPT " ]"
+#define ARG_EXTRACT_DISK_HEADER_HELP		"Extract the disk header (" GCM_DISK_HEADER_FILENAME ")"
 
 #define ARG_EXTRACT_DISK_HEADER_INFO		"-edhi"
 #define ARG_EXTRACT_DISK_HEADER_INFO_SYN	"--extract-disk-header-info"
+#define ARG_EXTRACT_DISK_HEADER_INFO_OPT	"[ " OPT_FILE " " OPT_FILE_OPT " ]"
+#define ARG_EXTRACT_DISK_HEADER_INFO_HELP   "Extract the disk header info (" GCM_DISK_HEADER_INFO_FILENAME ")"
 
 #define ARG_EXTRACT_APPLOADER				"-eal"
 #define ARG_EXTRACT_APPLOADER_SYN			"--extract-apploader"
+#define ARG_EXTRACT_APPLOADER_OPT			"[ " OPT_FILE " " OPT_FILE_OPT " ]"
+#define ARG_EXTRACT_APPLOADER_HELP			"Extract the apploader (" GCM_APPLOADER_FILENAME ")"
 
 #define ARG_EXTRACT_BOOT_DOL				"-ed"
 #define ARG_EXTRACT_BOOT_DOL_SYN			"--extract-boot-dol"
+#define ARG_EXTRACT_BOOT_DOL_OPT			"[ " OPT_FILE " " OPT_FILE_OPT " ]"
+#define ARG_EXTRACT_BOOT_DOL_HELP			"Extract the main executable DOL (" GCM_BOOT_DOL_FILENAME ")"
 
 //injecting sections
 #define ARG_INJECT_DISK_HEADER				"-idh"
 #define ARG_INJECT_DISK_HEADER_SYN			"--inject-disk-header"
+#define ARG_INJECT_DISK_HEADER_OPT			"[ " OPT_FILE " " OPT_FILE_OPT " ]"
+#define ARG_INJECT_DISK_HEADER_HELP			"Inject the disk header"
 
 #define ARG_INJECT_DISK_HEADER_INFO			"-idhi"
 #define ARG_INJECT_DISK_HEADER_INFO_SYN		"--inject-disk-header-info"
+#define ARG_INJECT_DISK_HEADER_INFO_OPT		"[ " OPT_FILE " " OPT_FILE_OPT " ]"
+#define ARG_INJECT_DISK_HEADER_INFO_HELP	"Inject the disk header info"
 
 #define ARG_INJECT_APPLOADER				"-ial"
 #define ARG_INJECT_APPLOADER_SYN			"--inject-apploader"
+#define ARG_INJECT_APPLOADER_OPT			"[ " OPT_FILE " " OPT_FILE_OPT " ]"
+#define ARG_INJECT_APPLOADER_HELP			"Inject the apploader"
 
 #define ARG_INJECT_BOOT_DOL					"-id"
 #define ARG_INJECT_BOOT_DOL_SYN				"--inject-boot-dol"
+#define ARG_INJECT_BOOT_DOL_OPT				"[ " OPT_FILE " " OPT_FILE_OPT " ]"
+#define ARG_INJECT_BOOT_DOL_HELP			"Inject the main executable DOL"
 
 //commandline options (modifiers to the arguments... hehe)
 #define OPT_FILE							"-f"
+#define OPT_FILE_OPT						"<filename>"
 
 //macros... although they may be simple...
 //these are for getting help and synonyms and stuff
 #define ARG_SYN(ARG)		ARG ## _SYN
-//#define ARG_HELP(ARG)		ARG ## _HELP
+#define PRINT_HELP(ARG)		printf("\t" ARG "%s" ARG ## _SYN " " ARG ## _OPT "\n\t\t" ARG ## _HELP "\n\n", strcmp("", ARG ## _SYN) == 0 ? "" : ", ");
+//#define PRINT_HELP(ARG)		printf("\t" ARG ", " ARG ## _SYN " " ARG ## _OPT "\n\t\t" ARG ## _HELP "\n\n");
+
 // these are for the argument parsing engine...
 #define GET_NEXT_ARG		*(++argv)
 #define SKIP_NARG(n)		*(argv += n)	
@@ -88,6 +123,7 @@ void closeFile(void);
 
 void printGCMInfo(void);
 void printUsage(void);
+void printExtendedUsage();
 
 void extractFiles(char *source, char *dest);
 void extractDiskHeader(char *path);
@@ -154,8 +190,13 @@ int main (int argc, char * const argv[]) {
 		if (!currentArg) {
 			//there's no args! uh oh!
 			
-			printf("no arguments...\n");
+			//printf("No arguments...\n");
 			printUsage();
+			exit(0);
+		} else if (CHECK_ARG(ARG_HELP)) {
+			// print extended help
+			
+			printExtendedUsage();
 			exit(0);
 		} else if (CHECK_ARG(ARG_INFO)) {
 			//they want to see info...
@@ -634,17 +675,27 @@ void printUsage() {
 	printf("GCMTool %s- A utility for working with Nintendo GameCube DVD images.\n\tgcmtool.sourceforge.net\n\n", VERSION);
 	printf("Usage:");
 	printf("  gcmtool [ options ] <filename>\n\n");
+	printf("Use -? for extended usage.\n\n");
+}
+
+void printExtendedUsage() {
+	printUsage();
+	
 	printf("    Options:\n");
-	printf("    -l\tList files\n");
-	printf("    -e <gcm_source> <dest>\tExtract a file from a GCM\n");
+	PRINT_HELP(ARG_EXTRACT);
+	PRINT_HELP(ARG_VERBOSE);
+	PRINT_HELP(ARG_INFO);
+	PRINT_HELP(ARG_LIST);
+	PRINT_HELP(ARG_HELP);
 	printf("\n");
-	printf("  You can use -f <filename> to specify a filename for the following options...\n");
-	printf("    -edh  [ -f <filename> ]\tExtract the Disk Header (boot.bin)\n");
-	printf("    -edhi [ -f <filename> ]\tExtract the Disk Header Info (bi2.bin)\n");
-	printf("    -eal  [ -f <filename> ]\tExtract the Apploader (appldr.bin)\n");
-	printf("    -ed   [ -f <filename> ]\tExtract the main executable DOL (boot.dol)\n");
-	printf("    -idh  [ -f <filename> ]\tInject the Disk Header\n");
-	printf("    -idhi [ -f <filename> ]\tInject the Disk Header Info\n");
-	printf("    -ial  [ -f <filename> ]\tInject the Apploader (NOT IMPLEMENTED)\n");
-	printf("    -id   [ -f <filename> ]\tInject the main executable DOL (NOT IMPLEMENTED)\n");
+	printf("  You can add -f <filename> to specify a filename for the following options...\n");
+	
+	PRINT_HELP(ARG_EXTRACT_DISK_HEADER);
+	PRINT_HELP(ARG_EXTRACT_DISK_HEADER_INFO);
+	PRINT_HELP(ARG_EXTRACT_APPLOADER);
+	PRINT_HELP(ARG_EXTRACT_BOOT_DOL);
+	PRINT_HELP(ARG_INJECT_DISK_HEADER);
+	PRINT_HELP(ARG_INJECT_DISK_HEADER_INFO);
+	PRINT_HELP(ARG_INJECT_APPLOADER);
+	PRINT_HELP(ARG_INJECT_BOOT_DOL);
 }
