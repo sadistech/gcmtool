@@ -143,6 +143,7 @@ void printGCMInfo(int hexFlag);
 void printUsage(void);
 void printExtendedUsage();
 
+void extractFileEntry(GCMFileEntryStruct *e, char *dest);
 void extractFile(char *source, char *dest);
 void extractDiskHeader(char *path);
 void extractDiskHeaderInfo(char *path);
@@ -512,6 +513,14 @@ void printGCMInfo(int hexFlag) {
 	GCMFreeFileEntryStruct(r);
 }
 
+void extractFileEntry(GCMFileEntryStruct *e, char *dest) {
+	if (!e || !dest) return;
+	
+	GCMFetchDataForFileEntry(e);
+	//DOESN'T WORK!!!!!!!
+	return;
+}
+
 void extractFile(char *source, char *dest) {
 	/*
 	**  extract files from source (in GCM) to dest (in the local filesystem)
@@ -530,6 +539,8 @@ void extractFile(char *source, char *dest) {
 		printf("File not found (%s)\n", source);
 		return;
 	}
+	
+	if (e->isDir)
 	
 	//fetch the data
 	GCMFetchDataForFileEntry(gcmFile, e);
@@ -673,8 +684,6 @@ void injectApploader(char *sourcePath) {
 		free(data);
 		return;
 	}
-	
-	
 }
 
 void printEntry(GCMFileEntryStruct *e) {
@@ -739,6 +748,13 @@ void printEntry(GCMFileEntryStruct *e) {
 }
 
 void recurseFileEntry(GCMFileEntryStruct *e, void (*func)(GCMFileEntryStruct *)) {
+	/*
+	**  Recurse through the file entry... if it's a directory, recurse through all its children
+	**  otherwise, it's just gonna perform func on the entry...
+	**
+	**  one problem is that it uses recursiveIndex to grab the nth file entry... you have to set it before you begin...
+	*/
+	
 	if (!e) {
 		return;
 	}
@@ -749,8 +765,6 @@ void recurseFileEntry(GCMFileEntryStruct *e, void (*func)(GCMFileEntryStruct *))
 		dirDepth++;
 		GCMFileEntryStruct *next;
 		lastDir = e;
-		
-		//printf("for(%d++; %d < %ld; i++)\n", i, i, e->length);
 		
 		for(recursiveIndex++; (unsigned long)recursiveIndex < e->length; recursiveIndex++) {
 			next = GCMGetNthFileEntry(gcmFile, recursiveIndex);

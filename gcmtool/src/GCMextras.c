@@ -133,7 +133,7 @@ GCMFileEntryStruct *GCMGetNthFileEntry(FILE *ifile, int n) {
 
 	char *rawEntry = (char*)malloc(GCM_FST_ENTRY_LENGTH);
 	GCMGetNthRawFileEntry(ifile, n, rawEntry);
-	GCMFileEntryStruct *entry = GCMRawFileEntryToStruct(rawEntry);
+	GCMFileEntryStruct *entry = GCMRawFileEntryToStruct(rawEntry, n);
 	free(rawEntry);
 	
 	return entry;
