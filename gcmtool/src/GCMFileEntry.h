@@ -13,21 +13,23 @@
 #include "types.h"
 
 typedef struct gcm_file_entry_struct {
+	int				index;		//for recursion... this is the file's index in the GCM... the file_entry_offset, if you will...
+
 	char			isDir;
 	u32				filenameOffset;
-	unsigned long   offset;   //file_offset or parent_offset (dir)
-	unsigned long   length;   //file_length or num_entries (root) or next_offset (dir)
+	unsigned long   offset;		//file_offset or parent_offset (dir)
+	unsigned long   length;		//file_length or num_entries (root) or next_offset (dir)
 
 	char			*data;
 	char			*filename;
 }GCMFileEntryStruct;
 
-GCMFileEntryStruct *GCMRawFileEntryToStruct(char *rawEntry);
+GCMFileEntryStruct *GCMRawFileEntryToStruct(char *rawEntry, int index);
 
 void GCMFetchFilenameForFileEntry(FILE *ifile, GCMFileEntryStruct *entry);
 void GCMFetchDataForFileEntry(FILE *ifile, GCMFileEntryStruct *entry);
-void GCMGetFullPathForFileEntry(FILE *ifile, GCMFileEntryStruct *entry, char *buf);
 
+void GCMGetFullPathForFileEntry(FILE *ifile, GCMFileEntryStruct *entry, char *buf);
 
 //freeing up memory
 void GCMFreeFileEntryStruct(GCMFileEntryStruct *fe);

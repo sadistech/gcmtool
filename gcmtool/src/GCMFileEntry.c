@@ -3,7 +3,7 @@
 #include "GCMextras.h"
 #include <stdlib.h>
 
-GCMFileEntryStruct *GCMRawFileEntryToStruct(char *rawEntry) {
+GCMFileEntryStruct *GCMRawFileEntryToStruct(char *rawEntry, int index) {
 	/*
 	**  converts the rawEntry into a struct.
 	**  doesn't fetch the filename or data (to save memory/speed things up)
@@ -40,6 +40,8 @@ GCMFileEntryStruct *GCMRawFileEntryToStruct(char *rawEntry) {
 	//get the file_length/next_offset
 	l = (unsigned long*)rawEntry + 2;
 	fe->length = ntohl(*l);
+	
+	fe->index = index;
 	
 	return fe;
 }
