@@ -81,3 +81,4 @@ void GCMBnrRawImageToGraphic(char *raw, char *buf);
 #endif
 
 #endif /* _GCM_BNR_H_ */
+

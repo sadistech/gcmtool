@@ -144,3 +144,4 @@ u32 GetFilesizeFromStream(FILE *stream) {
 	
 	return len;
 }
+
