@@ -181,7 +181,9 @@ GCMRgbColor *GCMRGB5A1toColor(u16 s) {
 	c->green = g;
 	c->blue = b;
 	c->alpha = a;
-	
+
+	printf("converted: %03d, %03d, %03d\n", c->red, c->green, c->blue);
+
 	return c;
 }
 
@@ -320,3 +322,4 @@ void GCMBnrRawImageToGraphic(char *raw, char *buf) {
 		free(p);
 	}
 }
+
