@@ -144,6 +144,8 @@ void printGCMInfo(int hexFlag);
 void printUsage(void);
 void printExtendedUsage();
 
+void listFiles();
+
 void extractFileEntry(GCMFileEntryStruct *e);
 void extractFile(GCMFileEntryStruct *e, char *dest);
 void extractDiskHeader(char *path);
@@ -434,11 +436,7 @@ int main (int argc, char **argv) {
 
 	// list the files, if necesary...
 	if (listFilesFlag) {
-		dirDepth = 0;
-		recursiveIndex = 0;
-		GCMFileEntryStruct *r = GCMGetRootFileEntry(gcmFile);
-		recurseFileEntry(r, printEntry);
-		GCMFreeFileEntryStruct(r);
+		listFiles();
 	}
 	
 	closeFile();
@@ -466,14 +464,35 @@ void openFile(void) {
 }
 
 void closeFile(void) {
+	/*
+	**  Closes the GCM for when we're done...
+	*/
+	
 	verbosePrint("Closing GCM...");
 	fclose(gcmFile);
 }
 
 void verbosePrint(char *s) {
+	/*
+	**  this prints a string if verbosity is turned on...
+	**  this should be turned into a verbosePrintf() so we can accept arguments... but I'm lazy.
+	*/
+	
 	if (verboseFlag) {
 		printf("%s\n", s);
 	}
+}
+
+void listFiles() {
+	/*
+	**  lists the file system of the GCM...
+	*/
+	
+	dirDepth = 0;
+	recursiveIndex = 0;
+	GCMFileEntryStruct *r = GCMGetRootFileEntry(gcmFile);
+	recurseFileEntry(r, printEntry);
+	GCMFreeFileEntryStruct(r);
 }
 
 void printGCMInfo(int hexFlag) {
@@ -504,6 +523,7 @@ void printGCMInfo(int hexFlag) {
 	
 	char format[256]; //this is for the hexFlag stuff...
 	
+	//this has to be cleaned up and simplified with a macro or something...
 	strcpy(format, "DOL offset:\t");
 	strcat(format, (hexFlag) ? "%08X" : "%ld");
 	strcat(format, "\n");
