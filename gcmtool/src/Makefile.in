@@ -74,19 +74,29 @@ VERSION = @VERSION@
 am__include = @am__include@
 am__quote = @am__quote@
 install_sh = @install_sh@
-bin_PROGRAMS = gcmtool gcmbnrtool gcmdiskheadertool gcmdiskheaderinfotool
+bin_PROGRAMS = gcmtool gcmbnrtool gcmdiskheadertool gcmdiskheaderinfotool gcmapploadertool
 gcmtool_SOURCES = GCMToolMain.c GCMApploader.h GCMApploader.c GCMDiskHeader.h GCMDiskHeader.c GCMDiskHeaderInfo.h GCMDiskHeaderInfo.c GCMDol.h GCMDol.c GCMextras.h GCMextras.c GCMutils.h GCMutils.c pathfunc.h pathfunc.c types.h GCMCommandline.h GCMFileEntry.h GCMFileEntry.c FileFunctions.h FileFunctions.c
 gcmbnrtool_SOURCES = GCMBnrToolMain.c GCMBnr.h GCMBnr.c types.h GCMCommandline.h FileFunctions.c FileFunctions.h
 gcmdiskheadertool_SOURCES = GCMDiskHeaderToolMain.c GCMextras.h GCMextras.c GCMutils.h GCMutils.c GCMCommandline.h FileFunctions.h FileFunctions.c types.h pathfunc.h pathfunc.c GCMFileEntry.h GCMFileEntry.c GCMDol.h GCMDol.c GCMDiskHeader.h GCMDiskHeader.c
 gcmdiskheaderinfotool_SOURCES = GCMDiskHeaderInfoToolMain.c GCMDiskHeaderInfo.h GCMDiskHeaderInfo.c GCMutils.h GCMutils.c GCMextras.h GCMextras.c GCMCommandline.h FileFunctions.h FileFunctions.c types.h pathfunc.h pathfunc.c GCMFileEntry.h GCMFileEntry.c GCMDol.h GCMDol.c
+gcmapploadertool_SOURCES = GCMApploaderToolMain.c GCMApploader.h GCMApploader.c GCMutils.h GCMutils.c GCMExtras.h GCMextras.c GCMCommandline.h FileFunctions.h FileFunctions.c types.h pathfunc.h pathfunc.c GCMFileEntry.h GCMFileEntry.c GCMDol.h GCMDol.c
 subdir = src
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =
 bin_PROGRAMS = gcmtool$(EXEEXT) gcmbnrtool$(EXEEXT) \
-	gcmdiskheadertool$(EXEEXT) gcmdiskheaderinfotool$(EXEEXT)
+	gcmdiskheadertool$(EXEEXT) gcmdiskheaderinfotool$(EXEEXT) \
+	gcmapploadertool$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
+am_gcmapploadertool_OBJECTS = GCMApploaderToolMain.$(OBJEXT) \
+	GCMApploader.$(OBJEXT) GCMutils.$(OBJEXT) GCMextras.$(OBJEXT) \
+	FileFunctions.$(OBJEXT) pathfunc.$(OBJEXT) \
+	GCMFileEntry.$(OBJEXT) GCMDol.$(OBJEXT)
+gcmapploadertool_OBJECTS = $(am_gcmapploadertool_OBJECTS)
+gcmapploadertool_LDADD = $(LDADD)
+gcmapploadertool_DEPENDENCIES =
+gcmapploadertool_LDFLAGS =
 am_gcmbnrtool_OBJECTS = GCMBnrToolMain.$(OBJEXT) GCMBnr.$(OBJEXT) \
 	FileFunctions.$(OBJEXT)
 gcmbnrtool_OBJECTS = $(am_gcmbnrtool_OBJECTS)
@@ -127,8 +137,9 @@ LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/FileFunctions.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/GCMApploader.Po ./$(DEPDIR)/GCMBnr.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/GCMBnrToolMain.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/GCMApploader.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/GCMApploaderToolMain.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/GCMBnr.Po ./$(DEPDIR)/GCMBnrToolMain.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/GCMDiskHeader.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/GCMDiskHeaderInfo.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/GCMDiskHeaderInfoToolMain.Po \
@@ -141,10 +152,11 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 CFLAGS = @CFLAGS@
-DIST_SOURCES = $(gcmbnrtool_SOURCES) $(gcmdiskheaderinfotool_SOURCES) \
-	$(gcmdiskheadertool_SOURCES) $(gcmtool_SOURCES)
+DIST_SOURCES = $(gcmapploadertool_SOURCES) $(gcmbnrtool_SOURCES) \
+	$(gcmdiskheaderinfotool_SOURCES) $(gcmdiskheadertool_SOURCES) \
+	$(gcmtool_SOURCES)
 DIST_COMMON = Makefile.am Makefile.in config.h.in
-SOURCES = $(gcmbnrtool_SOURCES) $(gcmdiskheaderinfotool_SOURCES) $(gcmdiskheadertool_SOURCES) $(gcmtool_SOURCES)
+SOURCES = $(gcmapploadertool_SOURCES) $(gcmbnrtool_SOURCES) $(gcmdiskheaderinfotool_SOURCES) $(gcmdiskheadertool_SOURCES) $(gcmtool_SOURCES)
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -197,6 +209,9 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+gcmapploadertool$(EXEEXT): $(gcmapploadertool_OBJECTS) $(gcmapploadertool_DEPENDENCIES) 
+	@rm -f gcmapploadertool$(EXEEXT)
+	$(LINK) $(gcmapploadertool_LDFLAGS) $(gcmapploadertool_OBJECTS) $(gcmapploadertool_LDADD) $(LIBS)
 gcmbnrtool$(EXEEXT): $(gcmbnrtool_OBJECTS) $(gcmbnrtool_DEPENDENCIES) 
 	@rm -f gcmbnrtool$(EXEEXT)
 	$(LINK) $(gcmbnrtool_LDFLAGS) $(gcmbnrtool_OBJECTS) $(gcmbnrtool_LDADD) $(LIBS)
@@ -218,6 +233,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FileFunctions.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GCMApploader.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GCMApploaderToolMain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GCMBnr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GCMBnrToolMain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GCMDiskHeader.Po@am__quote@
