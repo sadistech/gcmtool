@@ -127,7 +127,7 @@ void printExtendedUsage();
 
 void printDiskHeader(GCMDiskHeaderStruct *d);
 
-void openFile();
+void openFile(char *mode);
 void closeFile();
 
 FILE *dhFile;
@@ -340,7 +340,7 @@ int main(int argc, char **argv) {
 		}
 	} while(*argv);
 
-	openFile();
+	openFile("r");
 
 	u32 len = GetFilesizeFromStream(dhFile);
 
@@ -362,7 +362,9 @@ int main(int argc, char **argv) {
 	GCMDiskHeaderStruct *d = GCMRawDiskHeaderToStruct(data);
 	
 	printDiskHeader(d); //print the diskheader...
-
+	
+	closeFile();
+	
 	//perform any operations on it...
 	if (newSystemID != NULL) {
 		d->systemID = newSystemID[0];
@@ -461,7 +463,8 @@ int main(int argc, char **argv) {
 
 	// If any changes were made, print diskheader again...
 	if (fileChanged) {
-		printf("\nWRITING TO FILE:\n");
+		//printf("\nWRITING TO FILE:\n");
+		openFile("r+");
 		
 		printDiskHeader(d);
 		char *data = (char*)malloc(GCM_DISK_HEADER_LENGTH);
@@ -475,9 +478,8 @@ int main(int argc, char **argv) {
 		}
 
 		free(data);
+		closeFile();
 	}
-
-	closeFile();
 
 	return 0;
 }
@@ -505,8 +507,8 @@ void printDiskHeader(GCMDiskHeaderStruct *d) {
 	printf("Unknown2:              %08X\n", d->unknown2);
 }
 
-void openFile() {
-	if (!(dhFile = fopen(filename, "r+"))) {
+void openFile(char *mode) {
+	if (!(dhFile = fopen(filename, mode))) {
 		perror(filename);
 		exit(1);
 	}
