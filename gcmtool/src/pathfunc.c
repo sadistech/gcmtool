@@ -50,11 +50,13 @@ char *lastPathComponent(char *source) {
 	}
 }
 
-char *nthPathComponent(char *source, int n) {
+char *nthPathComponent(char *source, int n, char *buf) {
 	/*
 	**  returns a copy of the nth path component
 	**  nthPathComponent("this/path/is/cool", 2) returns "is"
 	*/
+	
+	if (!source || !buf) return NULL;
 	
 	int i = 0;
 	char *pathItem = (char*)malloc(strlen(source));
@@ -63,11 +65,18 @@ char *nthPathComponent(char *source, int n) {
 	
 	for (i = 0; (i < n) && (s = index(s, kPathSeparator)); i++, *s++);
 
+	//printf("- %s\n", s);
+
 	while (*s != kPathSeparator && (*pathItem++ = *s++));
 
 	*pathItem++ = 0;
 	
-	return os1;
+	strcpy(buf, os1);
+	
+	//printf("%d of %s = %s (%s)\n", n, source, buf, os1);
+	free(os1);
+
+	return buf;
 }
 
 int pathComponentCount(char *source) {

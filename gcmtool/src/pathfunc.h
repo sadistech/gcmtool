@@ -18,7 +18,7 @@ extern "C" {
 
 char *appendPathComponent(char *source, char *append);
 char *lastPathComponent(char *source);
-char *nthPathComponent(char *source, int n);
+char *nthPathComponent(char *source, int n, char *buf);
 int pathComponentCount(char *source);
 
 #ifdef __cplusplus

@@ -192,7 +192,8 @@ GCMFileEntryStruct *GCMGetFileEntryAtPath(FILE *ifile, char *path) {
 		}
 		
 		// if this entry matches the next pathComponent, then....
-		if (strcmp(e->filename, nthPathComponent(path, curPathComponent)) == 0) {
+		char *nthPC = (char*)malloc(512);
+		if (strcmp(e->filename, nthPathComponent(path, curPathComponent, nthPC)) == 0) {
 			
 			if (curPathComponent == pathComponentCount(path)) {
 				// it's the file we're looking for! return it!
@@ -208,10 +209,11 @@ GCMFileEntryStruct *GCMGetFileEntryAtPath(FILE *ifile, char *path) {
 			
 			i = (int)e->length - 1;
 		}
+		free(nthPC);
 
 		// free our working entry so we can move on to the next one...
-		//GCMFreeFileEntryStruct(e);
-		free(e);
+		GCMFreeFileEntryStruct(e);
+		//free(e);
 	}
 	
 	//file not found, so just return NULL...
