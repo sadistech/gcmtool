@@ -1,3 +1,8 @@
+2004/6/07
+Added verbose output (use -v)
+Changed some code to make this compile on little endian systems
+
+
 2004/6/03
 Revamped the usage help (use -?)
 Added option to use abbreviated commands (ie: --extract-disk-header 
