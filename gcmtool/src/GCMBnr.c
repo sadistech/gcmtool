@@ -1,4 +1,5 @@
 #include "GCMBnr.h"
+#include "GCMBnrInfoRecord.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -37,10 +38,10 @@ GCMBnrStruct *GCMRawBnrToStruct(char *raw, int dataLen) {
 	// grab the only info record (version 1) or...
 	// loop until we get all of the info (for version 2)
 	
-	GCMBnrInfoRecord *r = b->info;
+	GCMBnrInfoRecordStruct *r = b->info;
 	
 	while (raw - start >= GCM_BNR_INFO_RECORD_LENGTH) {
-		r = (GCMBnrInfoRecord*)malloc(sizeof(GCMBnrInfoRecord));
+		r = (GCMBnrInfoRecordStruct*)malloc(sizeof(GCMBnrInfoRecordStruct));
 	
 		bzero(r->name, GCM_BNR_GAME_NAME_LENGTH);
 		memcpy(r->name, raw, GCM_BNR_GAME_NAME_LENGTH);
@@ -95,7 +96,8 @@ void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf) {
 	
 	memcpy(buf, b->graphic, GCM_BNR_GRAPHIC_DATA_LENGTH);
 	buf += GCM_BNR_GRAPHIC_DATA_LENGTH;
-	
+
+/*
 	memcpy(buf, b->name, GCM_BNR_GAME_NAME_LENGTH);
 	buf += GCM_BNR_GAME_NAME_LENGTH;
 	
@@ -109,7 +111,7 @@ void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf) {
 	buf += GCM_BNR_FULL_DEVELOPER_LENGTH;
 	
 	memcpy(buf, b->description, GCM_BNR_DESCRIPTION_LENGTH);
-	
+*/	
 	buf = start;
 }
 

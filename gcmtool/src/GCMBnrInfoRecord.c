@@ -1,4 +1,5 @@
 #include "GCMBnrInfoRecord.h"
+#include <stdlib.h>
 
 void GCMFreeBnrInfoRecordStruct(GCMBnrInfoRecordStruct *r) {
 	/*
