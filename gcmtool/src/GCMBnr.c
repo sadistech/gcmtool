@@ -104,16 +104,14 @@ uchar GCMBnrReverseBits(uchar v, int bitCount) {
 	uchar t = 0;
 	int i = 0;
 
-	printf("%d\n", v);
+//	printf("%d\n", v);
 
-	for (i = bitCount - 1; i; i--)
+	for (i = bitCount; i; i--)
 	{
+		t <<= 1;
 		if (v % 2) 
 			t++;
-			
-		if (i != 1) {
-			t <<= 1;
-		}
+		
 		v >>= 1;
 	}
 
