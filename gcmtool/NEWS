@@ -1,2 +1,15 @@
+2004/6/13 (0.2.3)
+There are now 2 executables in this package:
+	gcmtool:	for working with GameCube DVD images
+	gcmbnrtool:	for working with .bnr files (ie: opening.bnr)
+
+See execute either program with -? to see a list of commandline options 
+and their explanations. I'll create a more robust readme for the next 
+release.
+
+I've also got to put some stuff up on the site.
+
+--
+
 5/24/2004 (0.0)
 First packaging attempt using automake tools.

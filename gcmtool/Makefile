@@ -21,7 +21,7 @@ top_srcdir = .
 prefix = /usr/local
 exec_prefix = ${prefix}
 
-bindir = /usr/bin
+bindir = ${exec_prefix}/bin
 sbindir = ${exec_prefix}/sbin
 libexecdir = ${exec_prefix}/libexec
 datadir = ${prefix}/share
