@@ -1,16 +1,19 @@
 2004/7/4 (0.3.0)
-There are now 3 executables in this package:
+There are now 5 executables in this package:
 	gcmtool
 	gcmbnrtool
 	gcmdiskheadertool
+	gcmdiskheaderinfotool
+	gcmapploadertool
 
 This release is primarily for bugfixes, optimizations and more robust programs.
 There's still a lot to do, but that'll all wait for a later release. Check out
 the website for more information and news (http://gcmtool.sf.net)
 
-gcmdiskheadertool is, for the most part, useless right now, except for the fact
-that it dumps the full info for a GCM's diskheader. The next release should add
-editing features and other fun things.
+gcmdiskheadertool, gcmdiskheaderinfotool, and gcmapploadertool are, for the most 
+part, useless right now, except for the fact that it dumps the full info for 
+a GCM's diskheader. The next release should add editing features and other 
+fun things.
 
 --
 
