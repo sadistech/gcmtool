@@ -112,6 +112,8 @@ void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf) {
 	GCMBnrInfoStruct *n = head;
 
 	do {
+		printf("writing: %s\n", n->name);
+	
 		memcpy(buf, n->name, GCM_BNR_GAME_NAME_LENGTH);
 		buf += GCM_BNR_GAME_NAME_LENGTH;
 		
@@ -125,9 +127,19 @@ void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf) {
 		buf += GCM_BNR_FULL_DEVELOPER_LENGTH;
 		
 		memcpy(buf, n->description, GCM_BNR_DESCRIPTION_LENGTH);
+		buf += GCM_BNR_DESCRIPTION_LENGTH;
 	} while (n = n->next);	
 
 	buf = start;
+}
+
+u32 GCMBnrRawSize(GCMBnrStruct *b) {
+	/*
+	**  Returns the amount you need to malloc if you want to
+	**  get the BnrStruct as raw data...
+	*/
+	
+	return (GCM_BNR_MAGIC_WORD_LENGTH + GCM_BNR_HEADER_PADDING + GCM_BNR_GRAPHIC_DATA_LENGTH + (GCMBnrInfoCount(b->info) * GCM_BNR_INFO_RECORD_LENGTH));
 }
 
 static uchar GCMBnrReverseBits(uchar v, int bitCount) {
