@@ -81,6 +81,13 @@
 #define ARG_EXTRACT_BOOT_DOL_HELP			"Extract the main executable DOL (" GCM_BOOT_DOL_FILENAME ")"
 
 //injecting sections
+/*//we don't have support for this yet...
+#define ARG_INJECT_FILE						"-j"
+#define ARG_INJECT_FILE_SYN					"--inject-file"
+#define ARG_INJECT_FILE_OPT					"<file>"
+#define ARG_INJECT_FILE_HELP				"Inject " ARG_INJECT_FILE_OPT " into the GCM"
+*/
+
 #define ARG_INJECT_DISK_HEADER				"-idh"
 #define ARG_INJECT_DISK_HEADER_SYN			"--inject-disk-header"
 #define ARG_INJECT_DISK_HEADER_OPT			"[ " OPT_FILE " " OPT_FILE_OPT " ]"
@@ -100,6 +107,11 @@
 #define ARG_INJECT_BOOT_DOL_SYN				"--inject-boot-dol"
 #define ARG_INJECT_BOOT_DOL_OPT				"[ " OPT_FILE " " OPT_FILE_OPT " ]"
 #define ARG_INJECT_BOOT_DOL_HELP			"Inject the main executable DOL"
+
+#define ARG_DELETE_FILE						"-d"
+#define ARG_DELETE_FILE_SYN					"--delete-file"
+#define ARG_DELETE_FILE_OPT					"<path>"
+#define ARG_DELETE_FILE_HELP				"Deletes the file at " ARG_DELETE_FILE_OPT " in a GCM"
 
 //commandline options (modifiers to the arguments... hehe)
 #define OPT_FILE							"-f"

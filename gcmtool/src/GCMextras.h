@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include "GCMutils.h"
+#include "GCMFileEntry.h"
 #include "GCMDol.h"
 #include "types.h"
 
@@ -57,41 +58,21 @@ extern "C" {
 #define GCM_BOOT_DOL_FILENAME			"boot.dol"
 
 
-//structs...
-
-typedef struct gcm_file_entry_struct {
-	char			isDir;
-	long			filenameOffset;
-	unsigned long   offset;   //file_offset or parent_offset (dir)
-	unsigned long   length;   //file_length or num_entries (root) or next_offset (dir)
-
-	char			*data;
-	char			*filename;
-}GCMFileEntryStruct;
-
-
 char *GCMSystemIDToStr(char sysID);
 char *GCMMakerCodeToStr(char *code);
 char *GCMRegionCodeToStr(char code);
 
-//working with file entries...
 GCMFileEntryStruct *GCMGetRootFileEntry(FILE *ifile);
 GCMFileEntryStruct *GCMGetNthFileEntry(FILE *ifile, int n);
 GCMFileEntryStruct *GCMGetFileEntryByName(FILE *ifile, char *name);
 GCMFileEntryStruct *GCMGetFileEntryAtPath(FILE *ifile, char *path);
-GCMFileEntryStruct *GCMRawFileEntryToStruct(char *rawEntry);
 
 u32 GCMGetStringTableOffset(FILE *ifile);
-void GCMFetchFilenameForFileEntry(FILE *ifile, GCMFileEntryStruct *entry);
-void GCMFetchDataForFileEntry(FILE *ifile, GCMFileEntryStruct *entry);
-void GCMGetFullPathForFileEntry(FILE *ifile, GCMFileEntryStruct *entry, char *buf);
 
 //working with bootfile.dol from a .gcm file
 u32 GCMGetBootDolLength(FILE *ifile);
 u32 GCMGetBootDol(FILE *ifile, char *buf);
 
-//freeing up memory
-void GCMFreeFileEntryStruct(GCMFileEntryStruct *fe);
 
 #ifdef __cplusplus
 };
