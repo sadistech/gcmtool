@@ -129,13 +129,13 @@ void printEntry(GCMFileEntryStruct *e);
 void recurseFileEntry(GCMFileEntryStruct *e, void (*func)(GCMFileEntryStruct *));
 
 //regular function prototypes...
-void openFile(void);
-void closeFile(void);
+void openFile(char *mode);
+void closeFile();
 
 void verbosePrint(char *s);
 
 void printGCMInfo(int hexFlag);
-void printUsage(void);
+void printUsage();
 void printExtendedUsage();
 
 void listFiles();
@@ -373,14 +373,19 @@ int main (int argc, char **argv) {
 	} while(*argv);
 	//end parsing arguments...
 	
-	//open the file... and start processing!
-	openFile();
+	//open the file for reading and start doing read operations!
+	openFile("r");
 
 	// print the info...
 	if (showInfoFlag) {
 		printGCMInfo(hexFlag);
 	}
 	
+	// list the files, if necesary...
+	if (listFilesFlag) {
+		listFiles();
+	}
+
 	// extract files...
 	if (extractFileFrom && extractFileTo) {
 		//testing recursive extraction...
@@ -402,9 +407,6 @@ int main (int argc, char **argv) {
 		//extractFile(extractFileFrom, extractFileTo);
 	}
 	
-	if (fsReplacePath) {
-		GCMReplaceFilesystem(gcmFile, fsReplacePath);
-	}
 	
 	//extract diskheader
 	if (extractDiskHeaderFlag) {
@@ -421,9 +423,14 @@ int main (int argc, char **argv) {
 		extractApploader(extractApploaderFile);
 	}
 	
+	//extract main executable DOL
 	if (extractBootDolFlag) {
 		extractBootDol(extractBootDolFile);
 	}
+	
+	//close the file and open it again for read/write
+	closeFile();
+	openFile("r+");
 	
 	//inject the diskheader
 	if (injectDiskHeaderFlag) {
@@ -440,9 +447,9 @@ int main (int argc, char **argv) {
 		injectApploader(injectApploaderFile);
 	}
 
-	// list the files, if necesary...
-	if (listFilesFlag) {
-		listFiles();
+	//replace the filesystem
+	if (fsReplacePath) {
+		GCMReplaceFilesystem(gcmFile, fsReplacePath);
 	}
 	
 	closeFile();
@@ -450,9 +457,11 @@ int main (int argc, char **argv) {
 	return 0;
 }
 
-void openFile(void) {
+void openFile(char *mode) {
 	/*
-	**  opens the GCM file for reading and writing...
+	**  opens the GCM file with the mode set to mode
+	**	if we were to open it for reading AND writing,
+	**	it would error out if we didn't have write permission
 	*/
 	
 	verbosePrint("Opening GCM...");
@@ -462,7 +471,7 @@ void openFile(void) {
 		exit(1);
 	}
 	
-	if (!(gcmFile = fopen(filepath, "r+"))) { //open as r+ so we can inject data, too...
+	if (!(gcmFile = fopen(filepath, mode))) { //open as r+ so we can inject data, too...
 		perror(filepath);
 		exit(1);
 	}
