@@ -47,6 +47,11 @@
 #define ARG_LIST_OPT						""
 #define ARG_LIST_HELP						"Lists the filesystem of the GCM"
 
+#define ARG_HEX								"-h"
+#define ARG_HEX_SYN							"--hex"
+#define ARG_HEX_OPT							""
+#define ARG_HEX_HELP						"Display file offsets in hexadecimal notation"
+
 #define ARG_HELP							"-?"
 #define ARG_HELP_SYN						"--help"
 #define ARG_HELP_OPT						""
@@ -121,7 +126,7 @@ void printDirectory(GCMFileEntryStruct *e);
 void openFile(void);
 void closeFile(void);
 
-void printGCMInfo(void);
+void printGCMInfo(int hexFlag);
 void printUsage(void);
 void printExtendedUsage();
 
@@ -152,6 +157,9 @@ int recursiveIndex; //for the recursive printing...
 
 int main (int argc, char * const argv[]) {
 	// start flags declarations...
+	
+	int hexFlag = 0;
+	
 	//for extracting:
 	char *extractFileFrom = NULL;
 	char *extractFileTo = NULL;
@@ -202,6 +210,11 @@ int main (int argc, char * const argv[]) {
 			//they want to see info...
 			
 			showInfoFlag++;
+			
+		} else if (CHECK_ARG(ARG_HEX)) {
+			//they want hex notation...
+			
+			hexFlag = 1;
 			
 		} else if (CHECK_ARG(ARG_EXTRACT)) {
 			// extract files...
@@ -317,7 +330,7 @@ int main (int argc, char * const argv[]) {
 
 	// print the info...
 	if (showInfoFlag) {
-		printGCMInfo();
+		printGCMInfo(hexFlag);
 	}
 	
 	// extract files...
@@ -375,7 +388,7 @@ int main (int argc, char * const argv[]) {
 
 void openFile(void) {
 	/*
-	**  opens the GCM file for reading...
+	**  opens the GCM file for reading and writing...
 	*/
 	
 	if (!filepath) {
@@ -393,7 +406,7 @@ void closeFile(void) {
 	fclose(gcmFile);
 }
 
-void printGCMInfo(void) {
+void printGCMInfo(int hexFlag) {
 	/*
 	**  This just prints all of the relevant info for the ROM
 	**  fun fun fun
@@ -419,7 +432,27 @@ void printGCMInfo(void) {
 	printf("Maker Code:\t%s (%s)\n", makerCode, GCMMakerCodeToStr(makerCode));
 	printf("Game Name:\t%s\n", gameName);
 	
-	printf("DOL offset:\t%ld\n", GCMGetDolOffset(gcmFile));
+	char format[256]; //this is for the hexFlag stuff...
+	
+	strcpy(format, "DOL offset:\t");
+	strcat(format, (hexFlag) ? "%08X" : "%ld");
+	strcat(format, "\n");
+	printf(format, GCMGetDolOffset(gcmFile));
+	
+	strcpy(format, "Apploader:\t");
+	strcat(format, (hexFlag) ? "%08X" : "%ld");
+	strcat(format, "\n");
+	printf(format, GCM_APPLOADER_OFFSET);
+	
+	strcpy(format,"ApploaderSize:\t");
+	strcat(format, (hexFlag) ? "%08X" : "%ld");
+	strcat(format, "\n");
+	printf(format, GCMGetApploaderSize(gcmFile));
+	
+	strcpy(format, "FST:      \t");
+	strcat(format, (hexFlag) ? "%08X" : "%ld");
+	strcat(format, "\n");
+	printf(format, GCMGetFSTOffset(gcmFile));
 	
 	GCMFileEntryStruct *r = GCMGetRootFileEntry(gcmFile);
 	u32 entryCount = r->length;
@@ -557,6 +590,19 @@ void injectApploader(char *sourcePath) {
 	/*
 	**  this doesn't work, yet... requires some serious shifting of other data...
 	*/
+	
+	//first, load the file into memory...
+	
+	u32 length = getFilesize(sourcePath);
+	char *data = (char*)malloc(length);
+	
+	if (readFromFile(sourcePath, data) != length) {
+		printf("An error occurred reading the file (%s)", sourcePath);
+		free(data);
+		return;
+	}
+	
+	
 }
 
 void printEntry(GCMFileEntryStruct *e) {
