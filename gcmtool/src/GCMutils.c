@@ -378,10 +378,29 @@ void GCMDeleteFileEntry(FILE *ifile, GCMFileEntryStruct *e, FILE *destFile) {
 			char *rawEntry = (char*)malloc(GCM_FST_ENTRY_LENGTH);
 			GCMGetNthRawFileEntry(ifile, i, rawEntry);
 			
+			char *rawEntry2 = (char*)malloc(GCM_FST_ENTRY_LENGTH);
+			
 			GCMFileEntryStruct *tempEntry = GCMRawFileEntryToStruct(rawEntry, 0); //MUST FIX... CHANGE INDEX.
 			
 			
-			GCMFileEntryStructToRaw(tempEntry, rawEntry);
+			GCMFileEntryStructToRaw(tempEntry, rawEntry2);
+			
+			if (memcmp(rawEntry, rawEntry2, GCM_FST_ENTRY_LENGTH) != 0) {
+				printf("conversion error with entries...(%d)\n", i);
+				
+				printf("isDir->%d\n", tempEntry->isDir);
+				printf("filename->%ld\n", tempEntry->filenameOffset);
+				printf("offset->%ld\n", tempEntry->offset);
+				printf("length->%ld\n", tempEntry->length);
+				
+				tempEntry = GCMRawFileEntryToStruct(rawEntry2, 0);
+				printf("isDir->%d\n", tempEntry->isDir);
+				printf("filename->%ld\n", tempEntry->filenameOffset);
+				printf("offset->%ld\n", tempEntry->offset);
+				printf("length->%ld\n", tempEntry->length);
+				
+				exit(1);
+			}
 			
 			memcpy(fstBuf, rawEntry, GCM_FST_ENTRY_LENGTH);
 			*fstBuf += GCM_FST_ENTRY_LENGTH;
