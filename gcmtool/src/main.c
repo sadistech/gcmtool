@@ -378,6 +378,9 @@ int main (int argc, char **argv) {
 	
 	// extract files...
 	if (extractFileFrom && extractFileTo) {
+		//testing recursive extraction...
+	//	GCMFileEntryStruct *e = GCMGetFileEntryAtPath(gcmFile, extractFileFrom);
+		//recurseFileEntry(
 		extractFile(extractFileFrom, extractFileTo);
 	}
 	
@@ -514,9 +517,14 @@ void printGCMInfo(int hexFlag) {
 }
 
 void extractFileEntry(GCMFileEntryStruct *e, char *dest) {
+	/*
+	**  this gets called recursively from recurseFileEntry()
+	**  because of this,  we only need to create a directory if e is a directory
+	*/
+	
 	if (!e || !dest) return;
 	
-	GCMFetchDataForFileEntry(e);
+	GCMFetchDataForFileEntry(gcmFile, e);
 	//DOESN'T WORK!!!!!!!
 	return;
 }
@@ -766,7 +774,7 @@ void recurseFileEntry(GCMFileEntryStruct *e, void (*func)(GCMFileEntryStruct *))
 		GCMFileEntryStruct *next;
 		lastDir = e;
 		
-		for(recursiveIndex++; (unsigned long)recursiveIndex < e->length; recursiveIndex++) {
+		for(recursiveIndex = e->index + 1; (unsigned long)recursiveIndex < e->length; recursiveIndex++) {
 			next = GCMGetNthFileEntry(gcmFile, recursiveIndex);
 			if (next) {
 				printDirectory(next);
