@@ -817,11 +817,13 @@ void injectDiskHeader(char *sourcePath) {
 	if (ReadDataFromFile(buf, sourcePath) != GCM_DISK_HEADER_LENGTH) {
 		printf("This does not appear to be a diskheader (%s)\n", sourcePath);
 		free(buf);
-		return;
+		exit(EXIT_FAILURE);
 	}
 	
 	if (GCMPutDiskHeader(gcmFile, buf) != GCM_SUCCESS) {
-		printf("An error occurred when writing the disk header! (%d)\n", ferror(gcmFile));
+		free(buf);
+		printf("An error occurred when writing the disk header! (%d)\n", GCMErrno);
+		exit(EXIT_FAILURE);
 	}
 	
 	free(buf);
@@ -838,13 +840,15 @@ void injectDiskHeaderInfo(char *sourcePath) {
 	char *buf = (char*)malloc(GetFilesizeFromPath(sourcePath));
 	
 	if (ReadDataFromFile(buf, sourcePath) != GCM_DISK_HEADER_INFO_LENGTH) {
-		printf("This does not appear to be a diskheaderinfo (%s)\n", sourcePath);
 		free(buf);
-		return;
+		printf("This does not appear to be a diskheaderinfo (%s)\n", sourcePath);
+		exit(EXIT_FAILURE);
 	}
 	
 	if (GCMPutDiskHeaderInfo(gcmFile, buf) != GCM_SUCCESS) {
-		printf("An error occurred when writing the disk header info!\n");
+		free(buf);
+		printf("An error occurred when writing the disk header info! (%d)\n", GCMErrno);
+		exit(EXIT_FAILURE);
 	}
 	
 	free(buf);
@@ -868,6 +872,8 @@ void injectApploader(char *sourcePath) {
 		free(data);
 		return;
 	}
+	
+	free(data);
 }
 
 void replaceFile(char *gcmPath, char *localPath) {
