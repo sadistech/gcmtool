@@ -223,8 +223,14 @@ int main(int argc, char **argv) {
 	printBnr(b);
 	
 	int fileChanged = 0;
-	GCMBnrInfoStruct *mod = GCMBnrGetNthInfo(b->info, modIndex - 1);
-
+	
+	GCMBnrInfoStruct *mod = NULL;
+	if (b->version != 1) {
+		mod = GCMBnrGetNthInfo(b->info, modIndex - 1);
+	} else {
+		mod = b->info;
+	}
+	
 	if (newName != NULL) {
 		//let's set the name...
 		bzero(mod->name, GCM_BNR_GAME_NAME_LENGTH);
@@ -304,15 +310,12 @@ int main(int argc, char **argv) {
 	}
 	
 	if (fileChanged) {
-		if (b->version > 1) {
-			printf("ERROR: No support for modifying Version 2 BNRs, yet!\n");
-			exit(1);
-		}
 		//printf("Writing bnr file...\n");
 		rewind(bnrFile);
-		char *buf = (char*)malloc(GCM_BNR_LENGTH_V1);
+		u32 bnrSize = GCMBnrRawSize(b);
+		char *buf = (char*)malloc(bnrSize);
 		GCMBnrStructToRaw(b, buf);
-		if (fwrite(buf, 1, GCM_BNR_LENGTH_V1, bnrFile) != GCM_BNR_LENGTH_V1) {
+		if (fwrite(buf, 1, bnrSize, bnrFile) != bnrSize) {
 			perror(filename);
 			//printf("error writing to bnr! (%s)\n", filename);
 			exit(1);
@@ -334,11 +337,11 @@ void printBnr(GCMBnrStruct *b) {
 		printf("\n");
 	}
 	
-	GCMBnrInfoStruct *info = NULL;
-	while (info = info->next) {
+	GCMBnrInfoStruct *info = b->info;
+	do {
 		printBnrInfo(info);
 		printf("\n");
-	}
+	} while (info = info->next);
 }
 
 void printBnrInfo(GCMBnrInfoStruct *r) {

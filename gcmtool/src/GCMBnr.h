@@ -59,6 +59,8 @@ typedef struct gcm_rgb_color {
 GCMBnrStruct *GCMRawBnrToStruct(char *raw, int dataLen);
 void GCMBnrStructToRaw(GCMBnrStruct *b, char *buf);
 
+u32 GCMBnrRawSize(GCMBnrStruct *b); //returns the size you need to malloc to write this...
+
 //GCMBnrAppendInfoRecord(GCMBnrStruct *b, GCMBnrInfoRecordStruct *r);
 
 //color conversion
