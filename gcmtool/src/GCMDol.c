@@ -1,11 +1,14 @@
 /*
- *  GCMDol.c
- *  gcmtool
- *
- *  Created by spike on Fri May 21 2004.
- *  Copyright (c) 2004 Sadistech. All rights reserved.
- *
- */
+**  GCMDol.c
+**  written by spike <spike666@mac.com>
+**  www.sadistech.com
+**  gcmtool.sourceforge.net
+**  
+**  part of the gcmtool project
+**  Functions for handling DOLs from Gamecube DVD Images
+**  These functions are explicitly for working with .dol files
+**  Some functions may be used to aide in working with .gcm files.
+*/
 
 #include "GCMDol.h"
 

@@ -1,12 +1,12 @@
 /*
- *  GCMextras.h
- *  gcmtool
- *
- *  Created by spike on Sun Mar 28 2004.
- *  Copyright (c) 2004 Sadistech. All rights reserved.
- *
- *  a couple extra functions for working with GCMs
- */
+**  GCMetras.h
+**  written by spike <spike666@mac.com>
+**  www.sadistech.com
+**  gcmtool.sourceforge.net
+**  
+**  part of the gcmtool project
+**  Extra functions for working with Gamecube DVD images.
+*/
 
 #ifndef _GCM_EXTRAS_H_
 #define _GCM_EXTRAS_H_

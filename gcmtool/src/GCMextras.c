@@ -1,11 +1,12 @@
 /*
- *  GCMextras.c
- *  gcmtool
- *
- *  Created by spike on Sun Mar 28 2004.
- *  Copyright (c) 2004 Sadistech. All rights reserved.
- *
- */
+**  GCMetras.c
+**  written by spike <spike666@mac.com>
+**  www.sadistech.com
+**  gcmtool.sourceforge.net
+**  
+**  part of the gcmtool project
+**  Extra functions for working with Gamecube DVD images.
+*/
 
 #include "GCMextras.h"
 #include "GCMutils.h"

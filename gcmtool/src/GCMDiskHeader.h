@@ -1,11 +1,12 @@
 /*
- *  GCMDiskHeader.h
- *  gcmtool
- *
- *  Created by spike on Mon May 24 2004.
- *  Copyright (c) 2004 Sadistech. All rights reserved.
- *
- */
+**  GCMDiskHeader.h
+**  written by spike <spike666@mac.com>
+**  www.sadistech.com
+**  gcmtool.sourceforge.net
+**  
+**  part of the gcmtool project
+**  Functions for handling diskheaders from Gamecube DVD Images
+*/
 
 #ifndef _GCM_DISK_HEADER_H_
 #define _GCM_DISK_HEADER_H_
