@@ -33,17 +33,17 @@
 #define ARG_EXTRACT_HELP					"Extracts the file from <source> (in the GCM) to <dest> (local filesystem)"
 
 #define ARG_VERBOSE							"-v"
-#define ARG_VERBOSE_SYN						""
+#define ARG_VERBOSE_SYN						"--verbose"
 #define ARG_VERBOSE_OPT						""
 #define ARG_VERBOSE_HELP					"Verbose output"
 
 #define ARG_INFO							"-i"
-#define ARG_INFO_SYN						""
+#define ARG_INFO_SYN						"--info"
 #define ARG_INFO_OPT						""
 #define ARG_INFO_HELP						"Display additional info about the GCM (useful for auditing)"
 
 #define ARG_LIST							"-l"
-#define ARG_LIST_SYN						""
+#define ARG_LIST_SYN						"--list"
 #define ARG_LIST_OPT						""
 #define ARG_LIST_HELP						"Lists the filesystem of the GCM"
 

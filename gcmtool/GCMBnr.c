@@ -142,7 +142,7 @@ GCMRgbColor *GCMRGB5A1toColor(u16 s) {
 	return c;
 }
 
-void GCMBnrGetImage(GCMBnrStruct *b, char *buf) {
+void GCMBnrGetImageRaw(GCMBnrStruct *b, char *buf) {
 	/*
 	**  sets buf to raw RGB image data. 96 pixels wide by 32 pixels tall
 	**  since the BNR stores the graphic data in 4x4 pixel tiles, we've gotta re-order them...
@@ -171,4 +171,21 @@ void GCMBnrGetImage(GCMBnrStruct *b, char *buf) {
 		free(c);
 	}
 
+}
+
+void GCMBnrGetImagePPM(GCMBnrStruct *b, char *buf) {
+	/*
+	**  for working with various programs like imagemagic and stuff...
+	**  you should allocate enough memory for the Raw image plus an additional 256 bytes (for the header), minimum.
+	**
+	**  At some point, I'd like to #define some of these magic values to allow for more formats...
+	*/
+
+	char header[256];
+	
+	sprintf(header, "%s\n%d %d\n255\n", "P6", GCM_BNR_GRAPHIC_WIDTH, GCM_BNR_GRAPHIC_HEIGHT);
+	
+	strcpy(buf, header);
+	buf += strlen(header);
+	GCMBnrGetImageRaw(b, buf);
 }
