@@ -56,7 +56,10 @@ void GCMBnrStructToRaw(GCMBnrStruct *b) {
 
 GCMRgbColor *GCMRGB5A1toColor(u16 s) {
 	/*
-	**  convert from RGB5A1 to GCMColor
+	**  convert from RGB5A1 to GCMRgbColor
+	**  it's a bit of a hack, right now... I've gotta clean it up at some point
+	**  basically, RGB5A1 is 5-bit color with 1-bit alpha... (16 bits or 2 bytes per pixel)
+	**  arranged like: ARRRRRGG GGGBBBBB
 	*/
 	
 	int i = 0;
@@ -125,9 +128,9 @@ GCMRgbColor *GCMRGB5A1toColor(u16 s) {
 		b2 = b2 << 1;
 	}
 	
-	r = ((255 / 31) * r2);
-	g = ((255 / 31) * g2);
-	b = ((255 / 31) * b2);
+	r = ((255.0 / 31.0) * r2);
+	g = ((255.0 / 31.0) * g2);
+	b = ((255.0 / 31.0) * b2);
 	
 	GCMRgbColor *c = (GCMRgbColor*)malloc(sizeof(GCMRgbColor));
 	
@@ -141,7 +144,9 @@ GCMRgbColor *GCMRGB5A1toColor(u16 s) {
 
 void GCMBnrGetImage(GCMBnrStruct *b, char *buf) {
 	/*
-	**  buf should be allocated with 3 * WIDTH * HEIGHT
+	**  sets buf to raw RGB image data. 96 pixels wide by 32 pixels tall
+	**  since the BNR stores the graphic data in 4x4 pixel tiles, we've gotta re-order them...
+	**  buf should be allocated with (3 * WIDTH * HEIGHT)
 	*/
 	
 	if (!b || !buf) return;
@@ -150,18 +155,19 @@ void GCMBnrGetImage(GCMBnrStruct *b, char *buf) {
 	
 	int i = 0;
 	for (i = 0; i < (GCM_BNR_GRAPHIC_WIDTH * GCM_BNR_GRAPHIC_HEIGHT); i++) {
+		// we've gotta rearrange the order of the pixels for the raw image
 		int j = ((i / 4) * (4 * 4) + (i % 4)) % (96 * 4);
 		j = j + (i / 96 % 4 * 4) + (i / 384 % 8 * 384);
 		
+		//convert the pixel into an RgbColor
 		GCMRgbColor *c = GCMRGB5A1toColor(curPixel[j]);
 		
-		//printf("%d, %d, %d\n", c->red, c->green, c->blue);
-		
-		
+		//put the data into buf
 		buf[i * 3] = c->red;
 		buf[i * 3 + 1] = c->green;
 		buf[i * 3 + 2] = c->blue;
 
+		//free the color...
 		free(c);
 	}
 
