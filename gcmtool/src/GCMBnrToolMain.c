@@ -83,6 +83,8 @@ void openBnr();
 void closeBnr();
 
 void writeToFile(char *data, u32 length, char *path);
+u32 readFromFile(char *buf, char *path);
+u32 getFilesize(char *path);
 
 FILE *bnrFile;
 char *filename;
@@ -161,7 +163,22 @@ int main(int argc, char **argv) {
 				}
 			}
 		} else if (CHECK_ARG(ARG_SET_ICON)) {
+			//they want to inject the icon...
 			
+			if (PEEK_ARG) {
+				//make sure there's at least one more argument...
+				if (strcmp(PEEK_ARG, OPT_FORMAT_RAW) == 0) {
+					injectFormat = RAW_FORMAT;
+					SKIP_NARG(1);
+				} else if (strcmp(PEEK_ARG, OPT_FORMAT_PPM) == 0) {
+					injectFormat = PPM_FORMAT;
+					SKIP_NARG(1);
+				}
+				
+				if (PEEK_ARG) {
+					injectIconPath = GET_NEXT_ARG;
+				}
+			}
 		} else {
 			//if the argument doesn't fit anything else... it must be the filename.
 			// set the filename and stop looping... start processing!
@@ -234,16 +251,29 @@ int main(int argc, char **argv) {
 		u32 len;
 		
 		if (extractFormat == RAW_FORMAT) {
+			//if we're extracting to a .raw file... (default)
 			len = GCM_BNR_GRAPHIC_RAW_FILE_LENGTH;
 			imageData = (char*)malloc(len);
 			GCMBnrGetImageRaw(b, imageData);
 		} else {
+			//if we're extracting to a .ppm file...
 			len = GCM_BNR_GRAPHIC_PPM_FILE_LENGTH;
 			imageData = (char*)malloc(len);
 			GCMBnrGetImagePPM(b, imageData);
 		}
 		
 		writeToFile(imageData, len, extractIconPath);
+	}
+	
+	if (injectIconPath != NULL) {
+		
+		if (injectFormat == RAW_FORMAT) {
+			//if the file we're injecting is in raw format (default)
+			
+		} else {
+			//if the file we're injecting is in ppm format...
+			
+		}
 	}
 	
 	if (fileChanged) {
@@ -315,6 +345,57 @@ void writeToFile(char *data, u32 length, char *path) {
 	if (fwrite(data, 1, length, ofile) != length) {
 		printf("An error occurred trying to write to %s\n", path);
 	}
+}
+
+u32 readFromFile(char *buf, char *path) {
+	/*
+	**  reads from the file at path, 
+	**  sets buf to the contents of said file...
+	**  and returns the length of data.
+	**
+	**  use getFilesize() when you allocate buf
+	**
+	**  returns 0 and displays messages on error;
+	*/
+	
+	if (!path || !buf) return 0;
+	
+	FILE *ifile = NULL;
+	
+	u32 length = getFilesize(path); //get how much to read...
+	
+	if (!length || !(ifile = fopen(path, "r"))) {
+		printf("An error occurred trying to open %s\n", path);
+		return 0;
+	}
+	
+	if (fread(buf, 1, length, ifile) != length) {
+		printf("An error occurred when trying to read %s\n", path);
+		fclose(ifile);
+		return 0;
+	}
+	
+	fclose(ifile);
+	return length;
+}
+
+u32 getFilesize(char *path) {
+	/*
+	**  returns the filesize of the file at *path
+	**  useful for when you read a file... gotta make sure you allocate enough memory for the file...
+	*/
+	
+	FILE *ifile = NULL;
+	
+	if (!(ifile = fopen(path, "r"))) {
+		return 0;
+	}
+	
+	fseek(ifile, 0, SEEK_END);
+	u32 len = ftell(ifile);
+	fclose(ifile);
+	
+	return len;
 }
 
 void printUsage() {
