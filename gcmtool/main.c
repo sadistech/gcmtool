@@ -4,7 +4,7 @@
 **  www.sadistech.com
 **  gcmtool.sourceforge.net
 **  
-**  part of the gcmtool project
+**  part of the gcmtool projectgcmFile
 **  commandline wrappers for some of the standard functions of GCMutils.h and GCMExtras.h
 **
 */
@@ -29,9 +29,14 @@
 //commandline arguments
 #define GCM_TOOL_ARG_EXTRACT					"-e"
 #define GCM_TOOL_ARG_LIST						"-l"
+//extracting sections...
 #define GCM_TOOL_ARG_EXTRACT_DISK_HEADER		"-edh"
 #define GCM_TOOL_ARG_EXTRACT_DISK_HEADER_INFO   "-edhi"
 #define GCM_TOOL_ARG_EXTRACT_APPLOADER			"-eal"
+//injecting sections
+#define GCM_TOOL_ARG_INJECT_DISK_HEADER			"-idh"
+#define GCM_TOOL_ARG_INJECT_DISK_HEADER_INFO	"-idhi"
+#define GCM_TOOL_ARG_INJECT_APPLOADER			"-ial"
 
 //commandline options (modifiers to the arguments... hehe)
 #define GCM_TOOL_OPT_FILE						"-f"
@@ -48,22 +53,30 @@
 void printEntry(GCMFileEntryStruct *e);
 void printDirectory(GCMFileEntryStruct *e);
 
-//regular functions...
+//regular function prototypes...
 void openFile(void);
 void closeFile(void);
 
 void printGCMInfo(void);
 void printUsage(void);
+
 void extractFiles(char *source, char *dest);
 void extractDiskHeader(char *path);
 void extractDiskHeaderInfo(char *path);
 void extractApploader(char *path);
 
-void writeToFile(char *data, u32 length, char *path);
+void injectDiskHeader(char *sourcePath);
+void injectDiskHeaderInfo(char *sourcePath);
+void injectApploader(char *sourcePath);
 
-char *filepath;
-char *filename;
-FILE *ifile;
+void writeToFile(char *data, u32 length, char *path);
+u32 readFromFile(char *buf, char *path);
+
+//globals...
+
+char *filepath;		//path to the file we're working with...
+char *filename;		//the name of the file we're working with
+FILE *gcmFile;		//the file we're working with
 
 //for working with printing directories
 int dirDepth;
@@ -83,6 +96,15 @@ int main (int argc, char * const argv[]) {
 
 	int extractApploaderFlag = 0;
 	char *extractApploaderFile = GCM_APPLOADER_FILENAME;
+	
+	int injectDiskHeaderFlag = 0;
+	char *injectDiskHeaderFile = GCM_DISK_HEADER_FILENAME;
+	
+	int injectDiskHeaderInfoFlag = 0;
+	char *injectDiskHeaderInfoFile = GCM_DISK_HEADER_INFO_FILENAME;
+	
+	int injectApploaderFlag = 0;
+	char *injectApploaderFile = GCM_APPLOADER_FILENAME;
 
 	int listFilesFlag = 0;
 	// end flag declarations
@@ -97,6 +119,7 @@ int main (int argc, char * const argv[]) {
 			
 			printUsage();
 			exit(0);
+			
 		} else if (CHECK_ARG(GCM_TOOL_ARG_EXTRACT)) {
 			// extract files...
 			// usage: -e <path> <destPath>
@@ -110,6 +133,7 @@ int main (int argc, char * const argv[]) {
 				printUsage();
 				exit(1);
 			}
+			
 		} else if (CHECK_ARG(GCM_TOOL_ARG_EXTRACT_DISK_HEADER)) {
 			// extract disk header... (to a file called "boot.bin")
 			
@@ -121,6 +145,7 @@ int main (int argc, char * const argv[]) {
 				SKIP_NARG(1); //skip that -f we just looked at...
 				extractDiskHeaderFile = GET_NEXT_ARG;
 			}
+			
 		} else if (CHECK_ARG(GCM_TOOL_ARG_EXTRACT_DISK_HEADER_INFO)) {
 			// extract disk header info... (to a file called "bi2.bin")
 			
@@ -132,6 +157,7 @@ int main (int argc, char * const argv[]) {
 				SKIP_NARG(1); //skip that -f we just looked at...
 				extractDiskHeaderInfoFile = GET_NEXT_ARG;
 			}
+			
 		} else if (CHECK_ARG(GCM_TOOL_ARG_EXTRACT_APPLOADER)) {
 			//extract apploader... (to a file called "appldr.bin")
 			
@@ -142,6 +168,41 @@ int main (int argc, char * const argv[]) {
 				
 				SKIP_NARG(1); //skip that -f we just looked at...
 				extractApploaderFile = GET_NEXT_ARG;
+			}
+			
+		} else if (CHECK_ARG(GCM_TOOL_ARG_INJECT_DISK_HEADER)) {
+			//inject the diskheader
+			
+			injectDiskHeaderFlag++;
+			
+			if (PEEK_ARG && strcmp(PEEK_ARG, GCM_TOOL_OPT_FILE) == 0) {
+				//if they're specifying a file... (otherwise use the default);
+				
+				SKIP_NARG(1); //skip the -f we just looked at...
+				injectDiskHeaderFile = GET_NEXT_ARG;
+			}
+			
+		} else if (CHECK_ARG(GCM_TOOL_ARG_INJECT_DISK_HEADER_INFO)) {
+			//inject the diskheaderinfo...
+			
+			injectDiskHeaderInfoFlag++;
+			
+			if (PEEK_ARG && strcmp(PEEK_ARG, GCM_TOOL_OPT_FILE) == 0) {
+				// if they're specifying a file...
+				
+				SKIP_NARG(1);
+				injectDiskHeaderInfoFile = GET_NEXT_ARG;
+			}
+		} else if (CHECK_ARG(GCM_TOOL_ARG_INJECT_APPLOADER)) {
+			//inject the apploader...
+			
+			injectApploaderFlag++;
+			
+			if (PEEK_ARG && strcmp(PEEK_ARG, GCM_TOOL_OPT_FILE) == 0) {
+				//if they're specifying a file...
+				
+				SKIP_NARG(1);
+				injectApploaderFile = GET_NEXT_ARG;
 			}
 		} else if (CHECK_ARG(GCM_TOOL_ARG_LIST)) {
 			// list filesystem
@@ -183,12 +244,27 @@ int main (int argc, char * const argv[]) {
 	if (extractApploaderFlag) {
 		extractApploader(extractApploaderFile);
 	}
+	
+	//inject the diskheader
+	if (injectDiskHeaderFlag) {
+		injectDiskHeader(injectDiskHeaderFile);
+	}
+	
+	//inject the diskheaderinfo
+	if (injectDiskHeaderInfoFlag) {
+		injectDiskHeaderInfo(injectDiskHeaderInfoFile);
+	}
+	
+	//inject the apploader
+	if (injectApploaderFlag) {
+		injectApploader(injectApploaderFile);
+	}
 
 	// list the files, if necesary...
 	if (listFilesFlag) {
 		dirDepth = 0;
 		recursiveIndex = 0;
-		GCMFileEntryStruct *r = GCMGetRootFileEntry(ifile);
+		GCMFileEntryStruct *r = GCMGetRootFileEntry(gcmFile);
 		printDirectory(r);
 		GCMFreeFileEntryStruct(r);
 	}
@@ -208,14 +284,14 @@ void openFile(void) {
 		exit(1);
 	}
 	
-	if (!(ifile = fopen(filepath, "r"))) {
+	if (!(gcmFile = fopen(filepath, "r+"))) { //open as r+ so we can inject data, too...
 		printf("error opening file... (%s)\n", filepath);
 		exit(1);
 	}
 }
 
 void closeFile(void) {
-	fclose(ifile);
+	fclose(gcmFile);
 }
 
 void printGCMInfo(void) {
@@ -224,18 +300,18 @@ void printGCMInfo(void) {
 	**  fun fun fun
 	*/
 
-	char systemID = GCMGetSystemID(ifile);
+	char systemID = GCMGetSystemID(gcmFile);
 	
 	char *gameID = (char*)malloc(GCM_GAME_ID_LENGTH + 1);
-	GCMGetGameID(ifile, gameID);
+	GCMGetGameID(gcmFile, gameID);
 	
-	char regionCode = GCMGetRegionCode(ifile);
+	char regionCode = GCMGetRegionCode(gcmFile);
 	
 	char *makerCode = (char*)malloc(GCM_MAKER_CODE_LENGTH + 1);
-	GCMGetMakerCode(ifile, makerCode);
+	GCMGetMakerCode(gcmFile, makerCode);
 	
 	char *gameName = (char*)malloc(256);
-	GCMGetGameName(ifile, gameName);
+	GCMGetGameName(gcmFile, gameName);
 	
 	printf("Filename:\t%s\n", filename);
 	printf("System ID:\t%c (%s)\n", systemID, GCMSystemIDToStr(systemID));
@@ -244,9 +320,9 @@ void printGCMInfo(void) {
 	printf("Maker Code:\t%s (%s)\n", makerCode, GCMMakerCodeToStr(makerCode));
 	printf("Game Name:\t%s\n", gameName);
 	
-	printf("DOL offset:\t%ld\n", GCMGetDolOffset(ifile));
+	printf("DOL offset:\t%ld\n", GCMGetDolOffset(gcmFile));
 	
-	GCMFileEntryStruct *r = GCMGetRootFileEntry(ifile);
+	GCMFileEntryStruct *r = GCMGetRootFileEntry(gcmFile);
 	u32 entryCount = r->length;
 	printf("File count:\t%ld\n", entryCount);
 	GCMFreeFileEntryStruct(r);
@@ -257,7 +333,7 @@ void extractFiles(char *source, char *dest) {
 	**  extract files from source (in GCM) to dest (in the local filesystem)
 	*/
 	
-	GCMFileEntryStruct *e = GCMGetFileEntryAtPath(ifile, source);
+	GCMFileEntryStruct *e = GCMGetFileEntryAtPath(gcmFile, source);
 	
 	//check to see if the file was actually found...
 	if (!e) {
@@ -266,7 +342,7 @@ void extractFiles(char *source, char *dest) {
 	}
 	
 	//fetch the data
-	GCMFetchDataForFileEntry(ifile, e);
+	GCMFetchDataForFileEntry(gcmFile, e);
 	
 	writeToFile(e->data, e->length, dest);
 	
@@ -281,7 +357,7 @@ void extractDiskHeader(char *path) {
 		
 	//get the data...
 	char *buf = (char*)malloc(GCM_DISK_HEADER_LENGTH);
-	GCMGetDiskHeader(ifile, buf);
+	GCMGetDiskHeader(gcmFile, buf);
 		
 	writeToFile(buf, GCM_DISK_HEADER_LENGTH, path);
 		
@@ -295,7 +371,7 @@ void extractDiskHeaderInfo(char *path) {
 	
 	//get the data...
 	char *buf = (char*)malloc(GCM_DISK_HEADER_INFO_LENGTH);
-	GCMGetDiskHeaderInfo(ifile, buf);
+	GCMGetDiskHeaderInfo(gcmFile, buf);
 	
 	writeToFile(buf, GCM_DISK_HEADER_INFO_LENGTH, path);
 	
@@ -308,13 +384,61 @@ void extractApploader(char *path) {
 	*/
 	
 	//get the data...
-	u32 apploaderLength = GCMGetApploaderSize(ifile) + GCM_APPLOADER_CODE_OFFSET;
+	u32 apploaderLength = GCMGetApploaderSize(gcmFile) + GCM_APPLOADER_CODE_OFFSET;
 	char *buf = (char*)malloc(apploaderLength);
-	GCMGetApploader(ifile, buf);
+	GCMGetApploader(gcmFile, buf);
 	
 	writeToFile(buf, apploaderLength, path);
 	
 	free(buf);
+}
+
+void injectDiskHeader(char *sourcePath) {
+	/*
+	**  take a diskHeader (boot.bin) from sourcePath and inject it into gcmFile.
+	*/
+	
+	char *buf = NULL;
+	
+	if (readFromFile(buf, sourcePath) != GCM_DISK_HEADER_LENGTH) {
+		printf("This does not appear to be a diskheader (%s)\n", sourcePath);
+		free(buf);
+		return;
+	}
+	
+	if (GCMPutDiskHeader(gcmFile, buf) != GCM_SUCCESS) {
+		printf("An error occurred when writing the disk header!\n");
+	}
+	
+	free(buf);
+	return;
+}
+
+void injectDiskHeaderInfo(char *sourcePath) {
+	/*
+	**  take a diskHeaderInfo (bi2.bin) from sourcePath and inject it into gcmFile.
+	*/
+	
+	char *buf = NULL;
+	
+	if (readFromFile(buf, sourcePath) != GCM_DISK_HEADER_INFO_LENGTH) {
+		printf("This does not appear to be a diskheaderinfo (%s)\n", sourcePath);
+		free(buf);
+		return;
+	}
+	
+	if (GCMPutDiskHeaderInfo(gcmFile, buf) != GCM_SUCCESS) {
+		printf("An error occurred when writing the disk header info!\n");
+	}
+	
+	free(buf);
+	return;
+}
+
+void injectApploader(char *sourcePath) {
+	/*
+	**  this doesn't work, yet... requires some serious shifting of other data...
+	*/
 }
 
 void printEntry(GCMFileEntryStruct *e) {
@@ -328,7 +452,7 @@ void printDirectory(GCMFileEntryStruct *e) {
 	}
 	int j = 0;
 	
-	GCMFetchFilenameForFileEntry(ifile, e);
+	GCMFetchFilenameForFileEntry(gcmFile, e);
 	
 	for (j = 0; j < dirDepth; j++) {
 		printf(" ");
@@ -349,7 +473,7 @@ void printDirectory(GCMFileEntryStruct *e) {
 		//printf("for(%d++; %d < %ld; i++)\n", i, i, e->length);
 		
 		for(recursiveIndex++; (unsigned long)recursiveIndex < e->length; recursiveIndex++) {
-			next = GCMGetNthFileEntry(ifile, recursiveIndex);
+			next = GCMGetNthFileEntry(gcmFile, recursiveIndex);
 			if (next) {
 				printDirectory(next);
 				free(next);
@@ -379,6 +503,38 @@ void writeToFile(char *data, u32 length, char *path) {
 	}
 }
 
+u32 readFromFile(char *buf, char *path) {
+	/*
+	**  reads from the file at path, 
+	**  allocates and stores the contents in buf
+	**  and returns the length of data.
+	**
+	**  returns 0 and displays messages on error;
+	*/
+	
+	if (!path) return 0;
+	
+	FILE *ifile = NULL;
+	
+	if (!(ifile = fopen(path, "r"))) {
+		printf("An error occurred trying to open %s\n", path);
+		return 0;
+	}
+	
+	//get the length of the file...
+	fseek(ifile, 0, SEEK_END);
+	u32 length = ftell(ifile);
+	rewind(ifile);
+	
+	buf = (char*)malloc(length);
+	if (fread(buf, 1, length, ifile) != length) {
+		printf("An error occurred when trying to read %s\n", path);
+		return 0;
+	}
+	
+	return length;
+}
+
 void printUsage() {
 	printf("GCMTool %s- A utility for working with Nintendo GameCube DVD images.\n\tgcmtool.sourceforge.net\n\n", VERSION);
 	printf("Usage:");
@@ -386,7 +542,12 @@ void printUsage() {
 	printf("    Options:\n");
 	printf("    -l\tList files\n");
 	printf("    -e <gcm_source> <dest>\tExtract a file from a GCM\n");
-	printf("    -edh\tExtract the Disk Header (boot.bin)\n");
-	printf("    -edhi\tExtract the Disk Header Info (bi2.bin)\n");
-	printf("    -eal\tExtract the Apploader (appldr.bin)\n");
+	printf("\n");
+	printf("  You can use -f <filename> to specify a filename for the following options...\n");
+	printf("    -edh  [ -f <filename> ]\tExtract the Disk Header (boot.bin)\n");
+	printf("    -edhi [ -f <filename> ]\tExtract the Disk Header Info (bi2.bin)\n");
+	printf("    -eal  [ -f <filename> ]\tExtract the Apploader (appldr.bin)\n");
+	printf("    -idh  [ -f <filename> ]\tInject the Disk Header\n");
+	printf("    -idhi [ -f <filename> ]\tInject the Disk Header Info\n");
+	printf("    -ial  [ -f <filename> ]\tInject the Apploader\n");
 }

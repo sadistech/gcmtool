@@ -22,6 +22,10 @@ extern "C" {
 
 // BEGIN CODE...
 
+//error codes
+#define GCM_ERROR						1
+#define GCM_SUCCESS						0
+
 //constants...
 #define MAXFILENAMESIZE					256
 
@@ -69,11 +73,16 @@ extern "C" {
 //file entry constants
 #define GCM_FST_ENTRY_LENGTH			ntohl(0x000c)
 
-// disk sections
+// getting disk sections
 void GCMGetDiskHeader(FILE *ifile, char *buf);
 void GCMGetDiskHeaderInfo(FILE *ifile, char *buf);
 void GCMGetApploader(FILE *ifile, char *buf);
 void GCMGetFST(FILE *ifile, char *buf);
+
+// putting disk sections (for injection): Returns GCM_ERROR or GCM_SUCCESS
+int GCMPutDiskHeader(FILE *ofile, char *buf);
+int GCMPutDiskHeaderInfo(FILE *ofile, char *buf);
+int GCMPutApploader(FILE *ofile, char *buf, u32 length);
 
 //read from header...
 char GCMGetSystemID(FILE *ifile);
