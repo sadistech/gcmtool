@@ -24,10 +24,10 @@
 #define ARG_SET_ICON				"-i"
 #define ARG_SET_ICON_SYN			"--icon"
 #define ARG_SET_ICON_OPT			"[ " OPT_FORMAT_RAW " | " OPT_FORMAT_PPM " ] <pathname>"
-#define ARG_SET_ICON_HELP			"Grabs the icon from <pathname> and injects it into the bnr. " OPT_FORMAT_RAW " is the default"
+#define ARG_SET_ICON_HELP			"Sets the icon from <pathname> and injects it into the bnr. " OPT_FORMAT_RAW " is the default"
 
-#define ARG_GET_ICON				"-gi"
-#define ARG_GET_ICON_SYN			"--get-icon"
+#define ARG_GET_ICON				"-e"
+#define ARG_GET_ICON_SYN			"--extract-icon"
 #define ARG_GET_ICON_OPT			"[ " OPT_FORMAT_RAW " | " OPT_FORMAT_PPM " ] <pathname>"
 #define ARG_GET_ICON_HELP			"Extracts the icon from the bnr in the desired format. " OPT_FORMAT_RAW " is the default"
 
@@ -47,7 +47,7 @@
 #define ARG_SET_FULL_NAME_HELP		"Sets the full name field to <full_name>"
 
 #define ARG_SET_FULL_DEVELOPER		"-fd"
-#define ARG_SET_FULL_DEVELOPER_SYN  "--full-deveoper"
+#define ARG_SET_FULL_DEVELOPER_SYN  "--full-developer"
 #define ARG_SET_FULL_DEVELOPER_OPT  "<full_developer>"
 #define ARG_SET_FULL_DEVELOPER_HELP "Sets the full developer field to <full_developer>"
 
@@ -59,6 +59,9 @@
 //additional options...
 #define OPT_FORMAT_RAW				"-raw"
 #define OPT_FORMAT_PPM				"-ppm"
+
+#define RAW_FORMAT					0
+#define PPM_FORMAT					1
 
 //macros... although they may be simple...
 //these are for getting help and synonyms and stuff
@@ -79,6 +82,8 @@ void printExtendedUsage();
 void openBnr();
 void closeBnr();
 
+void writeToFile(char *data, u32 length, char *path);
+
 FILE *bnrFile;
 char *filename;
 
@@ -89,6 +94,12 @@ int main(int argc, char **argv) {
 	char *newFullName = NULL;
 	char *newFullDeveloper = NULL;
 	char *newDescription = NULL;
+	
+	char *extractIconPath = NULL;
+	char *injectIconPath = NULL;
+	
+	int extractFormat = RAW_FORMAT;
+	int injectFormat = RAW_FORMAT;
 
 	char *currentArg = NULL;
 	do {
@@ -133,6 +144,24 @@ int main(int argc, char **argv) {
 				//if there's a next argument
 				newDescription = GET_NEXT_ARG;
 			}
+		} else if (CHECK_ARG(ARG_GET_ICON)) {
+			//they want to extract the icon
+			if (PEEK_ARG) {
+				//make sure there's at least one more argument
+				if (strcmp(PEEK_ARG, OPT_FORMAT_RAW) == 0) {
+					extractFormat = RAW_FORMAT;
+					SKIP_NARG(1);
+				} else if (strcmp(PEEK_ARG, OPT_FORMAT_PPM) == 0) {
+					extractFormat = PPM_FORMAT;
+					SKIP_NARG(1);
+				}
+				
+				if (PEEK_ARG) {
+					extractIconPath = GET_NEXT_ARG;
+				}
+			}
+		} else if (CHECK_ARG(ARG_SET_ICON)) {
+			
 		} else {
 			//if the argument doesn't fit anything else... it must be the filename.
 			// set the filename and stop looping... start processing!
@@ -152,14 +181,14 @@ int main(int argc, char **argv) {
 	char *data = (char*)malloc(len);
 	
 	if (fread(data, 1, len, bnrFile) != len) {
-		printf("Reading from file... (%s)\n", filename);
+		printf("Error reading from file... (%s)\n", filename);
 		exit(1);
 	}
 
 	GCMBnrStruct *b = GCMRawBnrToStruct(data);
 
 	//display bnr...
-	printf("Version:	   \t%c\n", b->version);
+	printf("Version:       \t%c\n", b->version);
 	printf("Name:          \t%s\n", b->name);
 	printf("Developer:     \t%s\n", b->developer);
 	printf("Full Name:     \t%s\n", b->fullName);
@@ -200,7 +229,25 @@ int main(int argc, char **argv) {
 		fileChanged = 1;
 	}
 	
+	if (extractIconPath != NULL) {
+		char *imageData = NULL;
+		u32 len;
+		
+		if (extractFormat == RAW_FORMAT) {
+			len = GCM_BNR_GRAPHIC_RAW_FILE_LENGTH;
+			imageData = (char*)malloc(len);
+			GCMBnrGetImageRaw(b, imageData);
+		} else {
+			len = GCM_BNR_GRAPHIC_PPM_FILE_LENGTH;
+			imageData = (char*)malloc(len);
+			GCMBnrGetImagePPM(b, imageData);
+		}
+		
+		writeToFile(imageData, len, extractIconPath);
+	}
+	
 	if (fileChanged) {
+		printf("Writing bnr file...\n");
 		rewind(bnrFile);
 		char *buf = (char*)malloc(GCM_BNR_LENGTH_V1);
 		GCMBnrStructToRaw(b, buf);
@@ -247,6 +294,29 @@ void closeBnr() {
 	fclose(bnrFile);
 }
 
+void writeToFile(char *data, u32 length, char *path) {
+	/*
+	**  Takes data of length and writes it to a file path. Displays errors when they happen...
+	*/
+	
+	//char msg[1024] = "Writing to file ";
+	//strcat(msg, path);
+	//verbosePrint(msg);
+	
+	if (!data || !length || !path) return;
+	
+	FILE *ofile = NULL;
+	
+	if (!(ofile = fopen(path, "w"))) {
+		printf("An error occurred trying to open %s\n", path);
+		return;
+	}
+	
+	if (fwrite(data, 1, length, ofile) != length) {
+		printf("An error occurred trying to write to %s\n", path);
+	}
+}
+
 void printUsage() {
 	printf("gcmbnrtool %s- Utility for working with .bnr files from GameCube DVD Images (GCMs)\n", VERSION);
 	printf("http://gcmtool.sourceforge.net\n\n");
@@ -259,4 +329,11 @@ void printExtendedUsage() {
 	printUsage();
 	
 	PRINT_HELP(ARG_HELP);
+	PRINT_HELP(ARG_SET_ICON);
+	PRINT_HELP(ARG_GET_ICON);
+	PRINT_HELP(ARG_SET_NAME);
+	PRINT_HELP(ARG_SET_DEVELOPER);
+	PRINT_HELP(ARG_SET_FULL_NAME);
+	PRINT_HELP(ARG_SET_FULL_DEVELOPER);
+	PRINT_HELP(ARG_SET_DESCRIPTION);
 }
