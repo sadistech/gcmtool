@@ -66,7 +66,6 @@ PATH_SEPARATOR = :
 AMTAR = ${SHELL} /Users/spike/gcmtool/cvs/gcmtool/missing --run tar
 AWK = awk
 CC = gcc
-CXX = g++
 DEPDIR = .deps
 INSTALL_STRIP_PROGRAM = ${SHELL} $(install_sh) -c -s
 PACKAGE = gcmtool
@@ -76,7 +75,7 @@ am__include = include
 am__quote = 
 install_sh = /Users/spike/gcmtool/cvs/gcmtool/install-sh
 bin_PROGRAMS = gcmtool
-gcmtool_SOURCES = main.cpp GCMApploader.h GCMApploader.c GCMDiskHeader.h GCMDiskHeader.c GCMDiskHeaderInfo.h GCMDiskHeaderInfo.c GCMDol.h GCMDol.c GCMextras.h GCMextras.c GCMutils.h GCMutils.c pathfunc.h pathfunc.c types.h
+gcmtool_SOURCES = main.c GCMApploader.h GCMApploader.c GCMDiskHeader.h GCMDiskHeader.c GCMDiskHeaderInfo.h GCMDiskHeaderInfo.c GCMDol.h GCMDol.c GCMextras.h GCMextras.c GCMutils.h GCMutils.c pathfunc.h pathfunc.c types.h
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -112,12 +111,6 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 CFLAGS = -g -O2
-CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
-	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
-CXXLD = $(CXX)
-CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
-	-o $@
-CXXFLAGS = -g -O2
 DIST_SOURCES = $(gcmtool_SOURCES)
 DIST_COMMON = README AUTHORS COPYING ChangeLog INSTALL Makefile.am \
 	Makefile.in NEWS aclocal.m4 config.h.in configure configure.in \
@@ -128,7 +121,7 @@ all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .cpp .o .obj
+.SUFFIXES: .c .o .obj
 
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno
@@ -188,7 +181,7 @@ clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 gcmtool$(EXEEXT): $(gcmtool_OBJECTS) $(gcmtool_DEPENDENCIES) 
 	@rm -f gcmtool$(EXEEXT)
-	$(CXXLINK) $(gcmtool_LDFLAGS) $(gcmtool_OBJECTS) $(gcmtool_LDADD) $(LIBS)
+	$(LINK) $(gcmtool_LDFLAGS) $(gcmtool_OBJECTS) $(gcmtool_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT) core *.core
@@ -220,19 +213,6 @@ distclean-depend:
 	$(CCDEPMODE) $(depcomp) \
 	$(COMPILE) -c `cygpath -w $<`
 CCDEPMODE = depmode=gcc3
-
-.cpp.o:
-	source='$<' object='$@' libtool=no \
-	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' \
-	$(CXXDEPMODE) $(depcomp) \
-	$(CXXCOMPILE) -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<
-
-.cpp.obj:
-	source='$<' object='$@' libtool=no \
-	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' \
-	$(CXXDEPMODE) $(depcomp) \
-	$(CXXCOMPILE) -c -o $@ `cygpath -w $<`
-CXXDEPMODE = depmode=gcc3
 uninstall-info-am:
 
 ETAGS = etags

@@ -512,10 +512,6 @@ s,@AMDEP_TRUE@,,;t t
 s,@AMDEP_FALSE@,#,;t t
 s,@AMDEPBACKSLASH@,\,;t t
 s,@CCDEPMODE@,depmode=gcc3,;t t
-s,@CXX@,g++,;t t
-s,@CXXFLAGS@,-g -O2,;t t
-s,@ac_ct_CXX@,g++,;t t
-s,@CXXDEPMODE@,depmode=gcc3,;t t
 s,@LIBOBJS@,,;t t
 s,@LTLIBOBJS@,,;t t
 CEOF

@@ -1,5 +1,5 @@
 /*
-**  main.cpp
+**  main.c
 **  written by spike <spike666@mac.com>
 **  www.sadistech.com
 **  gcmtool.sourceforge.net
