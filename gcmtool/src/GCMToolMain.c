@@ -61,11 +61,6 @@
 #define ARG_HEX_OPT							""
 #define ARG_HEX_HELP						"Display file offsets in hexadecimal notation"
 
-#define ARG_HELP							"-?"
-#define ARG_HELP_SYN						"--help"
-#define ARG_HELP_OPT						""
-#define ARG_HELP_HELP						"Displays this help text."
-
 // commands:
 // command_appreviation, command_synonym, command_helptext
 // extracting sections...
