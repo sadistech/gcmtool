@@ -10,6 +10,8 @@
 	information about the diskheader.
 [gcmdiskheaderinfotool] new program: gcmdiskheaderinfotool.  Currently only
 	dumps information about diskheaderinfo.
+[gcmapploadertool] new program: gcmapploadertool. Currently only dumps
+	information about the apploader.
 
 2004/6/25
 0.2.4

@@ -156,7 +156,7 @@ GCMDiskHeaderStruct *GCMRawDiskHeaderToStruct(char *rawHeader) {
 	*rawHeader++;
 	
 	rawHeader += 18; //skip padding ?
-	
+
 	h->unknown1 = ntohl(*((u32*)rawHeader)++);
 	
 	bzero(h->gameName, GCM_GAME_NAME_LENGTH);
