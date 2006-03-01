@@ -61,6 +61,11 @@
 #define ARG_HEX_OPT							""
 #define ARG_HEX_HELP						"Display file offsets in hexadecimal notation"
 
+#define ARG_OFFSET							"-o"
+#define ARG_OFFSET_SYN						"--offset"
+#define ARG_OFFSET_OPT						"<offset>"
+#define ARG_OFFSET_HELP						"Set the amount to modify the offsets by. Useful for when you've got additional headers or data at the beginning of your GCM."
+
 // commands:
 // command_appreviation, command_synonym, command_helptext
 // extracting sections...
@@ -178,6 +183,7 @@ char extractRootPath[1024];		//where we're starting to extract from... (director
 int main (int argc, char **argv) {
 	// start flags declarations...
 	
+	gDataOffset = 0; //globally declared in GCMutils.h; Must be initialized before use...
 	int hexFlag = 0;
 	
 	//for extracting:
@@ -253,6 +259,16 @@ int main (int argc, char **argv) {
 			hexFlag = 1;
 			
 			verbosePrint("Hex notation ON.");
+			
+		} else if (CHECK_ARG(ARG_OFFSET)) {
+			//change the data offset
+			
+			gDataOffset = strtoul(GET_NEXT_ARG, NULL, 0);
+			
+			char verboseMsg[32] = "";
+			sprintf(verboseMsg, "Data offset changed to: %d", gDataOffset);
+			
+			verbosePrint(verboseMsg);
 		} else if (CHECK_ARG(ARG_REPLACE_FILESYSTEM)) {
 			// they want to replace the filesystem
 			
