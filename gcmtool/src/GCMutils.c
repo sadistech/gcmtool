@@ -52,7 +52,7 @@ GCMError GCMGetDiskHeader(FILE *ifile, char *buf) {
 		GCM_RETURN_ERROR(GCM_ERR_NULL_ARG);
 	}
 	
-	fseek(ifile, GCM_DISK_HEADER_OFFSET, SEEK_SET);
+	fseek(ifile, GCM_DISK_HEADER_OFFSET + gDataOffset, SEEK_SET);
 	if (fread(buf, 1, GCM_DISK_HEADER_LENGTH, ifile) != GCM_DISK_HEADER_LENGTH) {
 		free(buf);
 		
@@ -72,7 +72,7 @@ GCMError GCMGetDiskHeaderInfo(FILE *ifile, char *buf) {
 		GCM_RETURN_ERROR(GCM_ERR_NULL_ARG);
 	}
 	
-	fseek(ifile, GCM_DISK_HEADER_INFO_OFFSET, SEEK_SET);
+	fseek(ifile, GCM_DISK_HEADER_INFO_OFFSET + gDataOffset, SEEK_SET);
 	if (fread(buf, 1, GCM_DISK_HEADER_INFO_LENGTH, ifile) != GCM_DISK_HEADER_INFO_LENGTH) {
 		free(buf);
 		
@@ -96,9 +96,9 @@ GCMError GCMGetApploader(FILE *ifile, char *buf) {
 	//currently it's grabbing apploaderSize + 0x0020 starting at the apploader's start
 	
 	//first we have to get the apploader size.....
-	u32 appSize = GCMGetApploaderSize(ifile) + GCM_APPLOADER_CODE_OFFSET;
+	u32 appSize = GCMGetApploaderSize(ifile) + GCM_APPLOADER_CODE_OFFSET + gDataOffset;
 	
-	fseek(ifile, GCM_APPLOADER_OFFSET, SEEK_SET);
+	fseek(ifile, GCM_APPLOADER_OFFSET + gDataOffset, SEEK_SET);
 	if (fread(buf, 1, appSize, ifile) != appSize) {
 		free(buf);
 		
@@ -148,7 +148,7 @@ GCMError GCMPutDiskHeader(FILE *ofile, char *buf) {
 		GCM_RETURN_ERROR(GCM_ERR_NULL_ARG);
 	}
 	
-	fseek(ofile, GCM_DISK_HEADER_OFFSET, SEEK_SET);
+	fseek(ofile, GCM_DISK_HEADER_OFFSET + gDataOffset, SEEK_SET);
 	if (fwrite(buf, 1, GCM_DISK_HEADER_LENGTH, ofile) != GCM_DISK_HEADER_LENGTH) {
 		GCM_RETURN_ERROR(GCM_ERR_FILE);
 	}
@@ -171,7 +171,7 @@ GCMError GCMPutDiskHeaderInfo(FILE *ofile, char *buf) {
 		GCM_RETURN_ERROR(GCM_ERR_NULL_ARG);
 	}
 	
-	fseek(ofile, GCM_DISK_HEADER_INFO_OFFSET, SEEK_SET);
+	fseek(ofile, GCM_DISK_HEADER_INFO_OFFSET + gDataOffset, SEEK_SET);
 	if (fwrite(buf, 1, GCM_DISK_HEADER_INFO_LENGTH, ofile) != GCM_DISK_HEADER_INFO_LENGTH) {
 		GCM_RETURN_ERROR(GCM_ERR_FILE);
 	}
@@ -202,7 +202,7 @@ char GCMGetSystemID(FILE *ifile) {
 		return 0;
 	}
 	
-	fseek(ifile, GCM_DISK_HEADER_OFFSET + GCM_SYSTEM_ID_OFFSET, SEEK_SET);
+	fseek(ifile, GCM_DISK_HEADER_OFFSET + GCM_SYSTEM_ID_OFFSET + gDataOffset, SEEK_SET);
 	
 	return (char)fgetc(ifile);
 }
@@ -217,12 +217,14 @@ void GCMGetGameID(FILE *ifile, char *buf) {
 		return;
 	}
 	
-	fseek(ifile, GCM_DISK_HEADER_OFFSET + GCM_GAME_ID_OFFSET, SEEK_SET);
+	fseek(ifile, GCM_DISK_HEADER_OFFSET + GCM_GAME_ID_OFFSET + gDataOffset, SEEK_SET);
 	
 	if (fread(buf, 1, GCM_GAME_ID_LENGTH, ifile) != GCM_GAME_ID_LENGTH) {
 		free(buf);
 		return;
 	}
+	
+	buf[GCM_GAME_ID_LENGTH + 1] = 0; //null-terminate the string...
 }
 
 char GCMGetRegionCode(FILE *ifile) {
@@ -237,7 +239,7 @@ char GCMGetRegionCode(FILE *ifile) {
 		return 0;
 	}
 	
-	fseek(ifile, GCM_DISK_HEADER_OFFSET + GCM_REGION_CODE_OFFSET, SEEK_SET);
+	fseek(ifile, GCM_DISK_HEADER_OFFSET + GCM_REGION_CODE_OFFSET + gDataOffset, SEEK_SET);
 	
 	return fgetc(ifile);
 }
@@ -254,7 +256,7 @@ void GCMGetMakerCode(FILE *ifile, char *buf) {
 		return;
 	}
 	
-	fseek(ifile, GCM_DISK_HEADER_OFFSET + GCM_MAKER_CODE_OFFSET, SEEK_SET);
+	fseek(ifile, GCM_DISK_HEADER_OFFSET + GCM_MAKER_CODE_OFFSET + gDataOffset, SEEK_SET);
 	
 	//let's zero out buf just to be sure it's still null terminated. It should be GCM_MAKER_CODE_LENGTH + 1 bytes.
 	bzero(buf, GCM_MAKER_CODE_LENGTH + 1);
@@ -275,7 +277,7 @@ void GCMGetGameName(FILE *ifile, char *buf) {
 		return;
 	}
 	
-	fseek(ifile, GCM_DISK_HEADER_OFFSET + GCM_GAME_NAME_OFFSET, SEEK_SET);
+	fseek(ifile, GCM_DISK_HEADER_OFFSET + GCM_GAME_NAME_OFFSET + gDataOffset, SEEK_SET);
 	
 	if (fread(buf, 1, GCM_GAME_NAME_LENGTH, ifile) != GCM_GAME_NAME_LENGTH) {
 		free(buf);
@@ -293,7 +295,7 @@ u32 GCMGetDolOffset(FILE *ifile) {
 		return 0;
 	}
 	
-	fseek(ifile, GCM_DOL_OFFSET_OFFSET, SEEK_SET);
+	fseek(ifile, GCM_DOL_OFFSET_OFFSET + gDataOffset, SEEK_SET);
 	u32 *buf = (u32*)malloc(sizeof(u32));
 	if (fread(buf, 1, GCM_DOL_OFFSET_LENGTH, ifile) != GCM_DOL_OFFSET_LENGTH) {
 		free(buf);
@@ -316,7 +318,7 @@ u32 GCMGetApploaderSize(FILE *ifile) {
 	
 	//returns the size of the code for the apploader...
 	
-	fseek(ifile, GCM_APPLOADER_OFFSET + GCM_APPLOADER_SIZE_OFFSET, SEEK_SET);
+	fseek(ifile, GCM_APPLOADER_OFFSET + GCM_APPLOADER_SIZE_OFFSET + gDataOffset, SEEK_SET);
 	u32 *buf = (u32*)malloc(sizeof(u32));
 	if (fread(buf, 1, GCM_APPLOADER_SIZE_LENGTH, ifile) != GCM_APPLOADER_SIZE_LENGTH) {
 		free(buf);
@@ -338,7 +340,7 @@ u32 GCMGetFSTOffset(FILE *ifile) {
 		return 0;
 	}
 	
-	fseek(ifile, GCM_DISK_HEADER_OFFSET + GCM_FST_OFFSET_OFFSET, SEEK_SET);
+	fseek(ifile, GCM_DISK_HEADER_OFFSET + GCM_FST_OFFSET_OFFSET + gDataOffset, SEEK_SET);
 	u32 *buf = (u32*)malloc(sizeof(u32));
 	if (fread(buf, 1, GCM_FST_OFFSET_LENGTH, ifile) != GCM_FST_OFFSET_LENGTH) {
 		free(buf);
@@ -360,7 +362,7 @@ u32 GCMGetFSTSize(FILE *ifile) {
 		return 0;
 	}
 	
-	fseek(ifile, GCM_DISK_HEADER_OFFSET + GCM_FST_SIZE_OFFSET, SEEK_SET);
+	fseek(ifile, GCM_DISK_HEADER_OFFSET + GCM_FST_SIZE_OFFSET + gDataOffset, SEEK_SET);
 	u32 *buf = (u32*)malloc(sizeof(u32));
 	if (fread(buf, 1, GCM_FST_SIZE_LENGTH, ifile) != GCM_FST_SIZE_LENGTH) {
 		free(buf);
