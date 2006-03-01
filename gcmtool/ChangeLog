@@ -1,4 +1,4 @@
-
+[all] compiles for cygwin
 [all] fixed some internal memory issues
 [gcmtool] added extra info to --list-files. use +i +i (Rafael Vuijik)
 [gcmtool] added column headings to --list-files.

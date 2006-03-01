@@ -75,12 +75,18 @@ am__include = @am__include@
 am__quote = @am__quote@
 install_sh = @install_sh@
 bin_PROGRAMS = gcmtool gcmbnrtool gcmdiskheadertool gcmdiskheaderinfotool gcmapploadertool gcmstrip
-gcmtool_SOURCES = GCMToolMain.c GCMApploader.h GCMApploader.c GCMDiskHeader.h GCMDiskHeader.c GCMDiskHeaderInfo.h GCMDiskHeaderInfo.c GCMDol.h GCMDol.c GCMextras.h GCMextras.c GCMutils.h GCMutils.c pathfunc.h pathfunc.c types.h GCMCommandline.h GCMFileEntry.h GCMFileEntry.c FileFunctions.h FileFunctions.c
-gcmbnrtool_SOURCES = GCMBnrToolMain.c GCMBnr.h GCMBnr.c types.h GCMCommandline.h FileFunctions.c FileFunctions.h GCMBnrInfo.h GCMBnrInfo.c
-gcmdiskheadertool_SOURCES = GCMDiskHeaderToolMain.c GCMextras.h GCMextras.c GCMutils.h GCMutils.c GCMCommandline.h FileFunctions.h FileFunctions.c types.h pathfunc.h pathfunc.c GCMFileEntry.h GCMFileEntry.c GCMDol.h GCMDol.c GCMDiskHeader.h GCMDiskHeader.c
-gcmdiskheaderinfotool_SOURCES = GCMDiskHeaderInfoToolMain.c GCMDiskHeaderInfo.h GCMDiskHeaderInfo.c GCMutils.h GCMutils.c GCMextras.h GCMextras.c GCMCommandline.h FileFunctions.h FileFunctions.c types.h pathfunc.h pathfunc.c GCMFileEntry.h GCMFileEntry.c GCMDol.h GCMDol.c
-gcmapploadertool_SOURCES = GCMApploaderToolMain.c GCMApploader.h GCMApploader.c GCMutils.h GCMutils.c GCMextras.h GCMextras.c GCMCommandline.h FileFunctions.h FileFunctions.c types.h pathfunc.h pathfunc.c GCMFileEntry.h GCMFileEntry.c GCMDol.h GCMDol.c
-gcmstrip_SOURCES = GCMStrip.c GCMApploader.h GCMApploader.c GCMutils.h GCMutils.c GCMextras.h GCMextras.c GCMCommandline.h FileFunctions.h FileFunctions.c types.h pathfunc.h pathfunc.c GCMFileEntry.h GCMFileEntry.c GCMDol.h GCMDol.c
+
+gcmtool_SOURCES = GCMToolMain.c GCMApploader.h GCMApploader.c GCMDiskHeader.h GCMDiskHeader.c GCMDiskHeaderInfo.h GCMDiskHeaderInfo.c GCMDol.h GCMDol.c GCMextras.h GCMextras.c GCMutils.h GCMutils.c pathfunc.h pathfunc.c types.h GCMCommandline.h GCMFileEntry.h GCMFileEntry.c FileFunctions.h FileFunctions.c GCMErrors.h GCMErrors.c
+
+gcmbnrtool_SOURCES = GCMBnrToolMain.c GCMBnr.h GCMBnr.c types.h GCMCommandline.h FileFunctions.c FileFunctions.h GCMBnrInfo.h GCMBnrInfo.c GCMErrors.h GCMErrors.c
+
+gcmdiskheadertool_SOURCES = GCMDiskHeaderToolMain.c GCMextras.h GCMextras.c GCMutils.h GCMutils.c GCMCommandline.h FileFunctions.h FileFunctions.c types.h pathfunc.h pathfunc.c GCMFileEntry.h GCMFileEntry.c GCMDol.h GCMDol.c GCMDiskHeader.h GCMDiskHeader.c GCMErrors.h GCMErrors.c
+
+gcmdiskheaderinfotool_SOURCES = GCMDiskHeaderInfoToolMain.c GCMDiskHeaderInfo.h GCMDiskHeaderInfo.c GCMutils.h GCMutils.c GCMextras.h GCMextras.c GCMCommandline.h FileFunctions.h FileFunctions.c types.h pathfunc.h pathfunc.c GCMFileEntry.h GCMFileEntry.c GCMDol.h GCMDol.c GCMErrors.h GCMErrors.c
+
+gcmapploadertool_SOURCES = GCMApploaderToolMain.c GCMApploader.h GCMApploader.c GCMutils.h GCMutils.c GCMextras.h GCMextras.c GCMCommandline.h FileFunctions.h FileFunctions.c types.h pathfunc.h pathfunc.c GCMFileEntry.h GCMFileEntry.c GCMDol.h GCMDol.c GCMErrors.h GCMErrors.c
+
+gcmstrip_SOURCES = GCMStrip.c GCMApploader.h GCMApploader.c GCMutils.h GCMutils.c GCMextras.h GCMextras.c GCMCommandline.h FileFunctions.h FileFunctions.c types.h pathfunc.h pathfunc.c GCMFileEntry.h GCMFileEntry.c GCMDol.h GCMDol.c GCMErrors.h GCMErrors.c
 subdir = src
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
@@ -93,13 +99,14 @@ PROGRAMS = $(bin_PROGRAMS)
 am_gcmapploadertool_OBJECTS = GCMApploaderToolMain.$(OBJEXT) \
 	GCMApploader.$(OBJEXT) GCMutils.$(OBJEXT) GCMextras.$(OBJEXT) \
 	FileFunctions.$(OBJEXT) pathfunc.$(OBJEXT) \
-	GCMFileEntry.$(OBJEXT) GCMDol.$(OBJEXT)
+	GCMFileEntry.$(OBJEXT) GCMDol.$(OBJEXT) GCMErrors.$(OBJEXT)
 gcmapploadertool_OBJECTS = $(am_gcmapploadertool_OBJECTS)
 gcmapploadertool_LDADD = $(LDADD)
 gcmapploadertool_DEPENDENCIES =
 gcmapploadertool_LDFLAGS =
 am_gcmbnrtool_OBJECTS = GCMBnrToolMain.$(OBJEXT) GCMBnr.$(OBJEXT) \
-	FileFunctions.$(OBJEXT) GCMBnrInfo.$(OBJEXT)
+	FileFunctions.$(OBJEXT) GCMBnrInfo.$(OBJEXT) \
+	GCMErrors.$(OBJEXT)
 gcmbnrtool_OBJECTS = $(am_gcmbnrtool_OBJECTS)
 gcmbnrtool_LDADD = $(LDADD)
 gcmbnrtool_DEPENDENCIES =
@@ -107,7 +114,7 @@ gcmbnrtool_LDFLAGS =
 am_gcmdiskheaderinfotool_OBJECTS = GCMDiskHeaderInfoToolMain.$(OBJEXT) \
 	GCMDiskHeaderInfo.$(OBJEXT) GCMutils.$(OBJEXT) \
 	GCMextras.$(OBJEXT) FileFunctions.$(OBJEXT) pathfunc.$(OBJEXT) \
-	GCMFileEntry.$(OBJEXT) GCMDol.$(OBJEXT)
+	GCMFileEntry.$(OBJEXT) GCMDol.$(OBJEXT) GCMErrors.$(OBJEXT)
 gcmdiskheaderinfotool_OBJECTS = $(am_gcmdiskheaderinfotool_OBJECTS)
 gcmdiskheaderinfotool_LDADD = $(LDADD)
 gcmdiskheaderinfotool_DEPENDENCIES =
@@ -115,14 +122,15 @@ gcmdiskheaderinfotool_LDFLAGS =
 am_gcmdiskheadertool_OBJECTS = GCMDiskHeaderToolMain.$(OBJEXT) \
 	GCMextras.$(OBJEXT) GCMutils.$(OBJEXT) FileFunctions.$(OBJEXT) \
 	pathfunc.$(OBJEXT) GCMFileEntry.$(OBJEXT) GCMDol.$(OBJEXT) \
-	GCMDiskHeader.$(OBJEXT)
+	GCMDiskHeader.$(OBJEXT) GCMErrors.$(OBJEXT)
 gcmdiskheadertool_OBJECTS = $(am_gcmdiskheadertool_OBJECTS)
 gcmdiskheadertool_LDADD = $(LDADD)
 gcmdiskheadertool_DEPENDENCIES =
 gcmdiskheadertool_LDFLAGS =
 am_gcmstrip_OBJECTS = GCMStrip.$(OBJEXT) GCMApploader.$(OBJEXT) \
 	GCMutils.$(OBJEXT) GCMextras.$(OBJEXT) FileFunctions.$(OBJEXT) \
-	pathfunc.$(OBJEXT) GCMFileEntry.$(OBJEXT) GCMDol.$(OBJEXT)
+	pathfunc.$(OBJEXT) GCMFileEntry.$(OBJEXT) GCMDol.$(OBJEXT) \
+	GCMErrors.$(OBJEXT)
 gcmstrip_OBJECTS = $(am_gcmstrip_OBJECTS)
 gcmstrip_LDADD = $(LDADD)
 gcmstrip_DEPENDENCIES =
@@ -131,7 +139,7 @@ am_gcmtool_OBJECTS = GCMToolMain.$(OBJEXT) GCMApploader.$(OBJEXT) \
 	GCMDiskHeader.$(OBJEXT) GCMDiskHeaderInfo.$(OBJEXT) \
 	GCMDol.$(OBJEXT) GCMextras.$(OBJEXT) GCMutils.$(OBJEXT) \
 	pathfunc.$(OBJEXT) GCMFileEntry.$(OBJEXT) \
-	FileFunctions.$(OBJEXT)
+	FileFunctions.$(OBJEXT) GCMErrors.$(OBJEXT)
 gcmtool_OBJECTS = $(am_gcmtool_OBJECTS)
 gcmtool_LDADD = $(LDADD)
 gcmtool_DEPENDENCIES =
@@ -153,10 +161,10 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/GCMDiskHeaderInfo.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/GCMDiskHeaderInfoToolMain.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/GCMDiskHeaderToolMain.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/GCMDol.Po ./$(DEPDIR)/GCMFileEntry.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/GCMStrip.Po ./$(DEPDIR)/GCMToolMain.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/GCMextras.Po ./$(DEPDIR)/GCMutils.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/pathfunc.Po
+@AMDEP_TRUE@	./$(DEPDIR)/GCMDol.Po ./$(DEPDIR)/GCMErrors.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/GCMFileEntry.Po ./$(DEPDIR)/GCMStrip.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/GCMToolMain.Po ./$(DEPDIR)/GCMextras.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/GCMutils.Po ./$(DEPDIR)/pathfunc.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -255,6 +263,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GCMDiskHeaderInfoToolMain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GCMDiskHeaderToolMain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GCMDol.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GCMErrors.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GCMFileEntry.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GCMStrip.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GCMToolMain.Po@am__quote@
