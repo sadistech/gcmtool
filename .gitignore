@@ -1,0 +1,4 @@
+*.o
+*.log
+Makefile
+src/.deps

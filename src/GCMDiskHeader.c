@@ -188,42 +188,42 @@ GCMDiskHeaderStruct *GCMRawDiskHeaderToStruct(char *rawHeader) {
 	
 	rawHeader += 18; //skip padding ?
 
-	h->unknown1 = *((u32*)rawHeader)++;
-	h->unknown1 = ntohl(h->unknown1);
+	h->unknown1 = *((u32*)rawHeader);
+	h->unknown1 = ntohl(h->unknown1+1);
 	//((u32*)rawHeader)++;
 	
 	bzero(h->gameName, GCM_GAME_NAME_LENGTH);
 	memcpy(h->gameName, rawHeader, GCM_GAME_NAME_LENGTH);
 	rawHeader += GCM_GAME_NAME_LENGTH;
 	
-	h->debugMonitorOffset = *((u32*)rawHeader)++;
-	h->debugMonitorOffset = ntohl(h->debugMonitorOffset);
+	h->debugMonitorOffset = *((u32*)rawHeader);
+	h->debugMonitorOffset = ntohl(h->debugMonitorOffset+1);
 	
-	h->debugMonitorAddress = *((u32*)rawHeader)++;
-	h->debugMonitorAddress = ntohl(h->debugMonitorAddress);
+	h->debugMonitorAddress = *((u32*)rawHeader);
+	h->debugMonitorAddress = ntohl(h->debugMonitorAddress+1);
 	
 	rawHeader += 24; //skip some padding?
 	
-	h->dolOffset	= *((u32*)rawHeader)++;
-	h->dolOffset	= ntohl(h->dolOffset);
+	h->dolOffset	= *((u32*)rawHeader);
+	h->dolOffset	= ntohl(h->dolOffset+1);
 	
-	h->fstOffset	= *((u32*)rawHeader)++;
-	h->fstOffset	= ntohl(h->fstOffset);
+	h->fstOffset	= *((u32*)rawHeader);
+	h->fstOffset	= ntohl(h->fstOffset+1);
 	
-	h->fstSize		= *((u32*)rawHeader)++;
-	h->fstSize		= ntohl(h->fstSize);
+	h->fstSize		= *((u32*)rawHeader);
+	h->fstSize		= ntohl(h->fstSize+1);
 	
-	h->fstSizeMax   = *((u32*)rawHeader)++;
-	h->fstSizeMax	= ntohl(h->fstSizeMax);
+	h->fstSizeMax   = *((u32*)rawHeader);
+	h->fstSizeMax	= ntohl(h->fstSizeMax+1);
 	
-	h->userPosition = *((u32*)rawHeader)++;
-	h->userPosition = ntohl(h->userPosition);
+	h->userPosition = *((u32*)rawHeader);
+	h->userPosition = ntohl(h->userPosition+1);
 	
-	h->userLength   = *((u32*)rawHeader)++;
-	h->userLength	= ntohl(h->userLength);
+	h->userLength   = *((u32*)rawHeader);
+	h->userLength	= ntohl(h->userLength+1);
 	
-	h->unknown2		= *((u32*)rawHeader)++;
-	h->unknown2		= ntohl(h->unknown2);
+	h->unknown2		= *((u32*)rawHeader);
+	h->unknown2		= ntohl(h->unknown2+1);
 	
 	return h;
 }
