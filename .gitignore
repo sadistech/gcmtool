@@ -1,0 +1,7 @@
+src/.deps
+src/*.o
+src/stamp-h1
+Makefile
+config.log
+config.status
+src/Makefile
