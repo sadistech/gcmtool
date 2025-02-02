@@ -13,6 +13,7 @@
 #include "GCMutils.h"
 #include "GCMextras.h"
 #include "GCMFileEntry.h"
+#include "FileFunctions.h"
 
 #include "GCMCommandline.h"
 #include "pathfunc.h"

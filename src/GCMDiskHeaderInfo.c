@@ -114,31 +114,31 @@ GCMDiskHeaderInfoStruct *GCMRawDiskHeaderInfoToStruct(char *rawInfo) {
 
 	GCMDiskHeaderInfoStruct *d = GCMNewDiskHeaderInfoStruct();
 
-	d->debugMonitorSize	= *((u32*)rawInfo)++;
+	d->debugMonitorSize	= *(rawInfo)++;
 	d->debugMonitorSize	= ntohl(d->debugMonitorSize);
 	
-	d->simulatedMemorySize  = *((u32*)rawInfo)++;
+	d->simulatedMemorySize  = *(rawInfo)++;
 	d->simulatedMemorySize	= ntohl(d->simulatedMemorySize); 
 	
-	d->argumentOffset		= *((u32*)rawInfo)++;
+	d->argumentOffset		= *(rawInfo)++;
 	d->argumentOffset		= ntohl(d->argumentOffset);
 	
-	d->debugFlag			= *((u32*)rawInfo)++;
+	d->debugFlag			= *(rawInfo)++;
 	d->debugFlag			= ntohl(d->argumentOffset);
 	
-	d->trackLocation		= *((u32*)rawInfo)++;
+	d->trackLocation		= *(rawInfo)++;
 	d->trackLocation		= ntohl(d->trackLocation);
 	
-	d->trackSize			= *((u32*)rawInfo)++;
+	d->trackSize			= *(rawInfo)++;
 	d->trackSize			= ntohl(d->trackSize);
 	
-	d->countryCode			= *((u32*)rawInfo)++;
+	d->countryCode			= *(rawInfo)++;
 	d->countryCode			= ntohl(d->countryCode);
 	
-	d->unknown1				= *((u32*)rawInfo)++;
+	d->unknown1				= *(rawInfo)++;
 	d->unknown1				= ntohl(d->unknown1);
 	
-	d->unknown2				= *((u32*)rawInfo)++;
+	d->unknown2				= *(rawInfo)++;
 	d->unknown2				= ntohl(d->unknown2);
 	
 	return d;
