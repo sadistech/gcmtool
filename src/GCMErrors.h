@@ -25,7 +25,7 @@ enum gcm_error {
 
 //global variable that gets set when a GCM_ERROR is returned...
 //a full list of GCMErrno will be provided as implemented
-int GCMErrno;
+extern int GCMErrno;
 
 //GCMErrno codes:
 #define GCM_ERR_NO_ERROR		0
