@@ -9,3 +9,5 @@
 
 #include "GCMErrors.h"
 
+int GCMErrno;
+

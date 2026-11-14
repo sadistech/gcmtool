@@ -21,6 +21,8 @@
 
 #include "FileFunctions.h"
 
+unsigned int gDataOffset;
+
 //some stuff for temp files... (string table and fstData...)
 static FILE *fstTempFile;
 static FILE *stringTableTempFile;

@@ -74,7 +74,7 @@ extern "C" {
 #define GCM_DVD_IMAGE_LENGTH			1459978240  /* the size of a FULL GCM */
 
 // globals:
-unsigned int gDataOffset;
+extern unsigned int gDataOffset;
 
 // prototypes:
 
